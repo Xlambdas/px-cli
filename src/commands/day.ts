@@ -170,6 +170,7 @@ export async function daySession(): Promise<void> {
 
     // Mark done
     task.status = "done";
+    task.completedAt = new Date().toISOString();
     console.log(`  ✓ #${taskId} "${task.title}" done!`);
 
     // Auto-complete parent
@@ -182,6 +183,7 @@ export async function daySession(): Promise<void> {
         });
         if (allDone) {
           parent.status = "done";
+          parent.completedAt = new Date().toISOString();
           console.log(`  ✓ Parent #${parent.id} "${parent.title}" auto-completed!`);
         }
       }

@@ -25,7 +25,7 @@ export function loadData(): AppData {
 
 /**
  * Save all data to disk.
- * 
+ *
  * WHY write the whole file every time?
  * → With JSON, you can't update a single field. You read all, modify, write all.
  * → This is fine for personal use (your file will be <1MB for years).
@@ -35,6 +35,10 @@ export function saveData(data: AppData): void {
   const dir = path.dirname(DATA_PATH);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
+  }
+  // Backup current state before overwriting (for px undo)
+  if (fs.existsSync(DATA_PATH)) {
+    fs.copyFileSync(DATA_PATH, DATA_PATH + ".bak");
   }
   fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), "utf-8");
 }

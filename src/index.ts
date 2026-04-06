@@ -20,7 +20,11 @@ import { markDone } from "./commands/done";
 import { addDependency } from "./commands/dep";
 import { listTasks } from "./commands/list";
 import { showStatus } from "./commands/status";
+import { showStats } from "./commands/stats";
+import { editTask } from "./commands/edit";
+import { undo } from "./commands/undo";
 import { projectAdd, projectList } from "./commands/project";
+import { startServer } from "./server";
 
 const [command, ...args] = process.argv.slice(2);
 
@@ -36,6 +40,12 @@ async function main() {
     case "done":
       markDone(args);
       break;
+    case "edit":
+      await editTask(args);
+      break;
+    case "undo":
+      undo();
+      break;
     case "dep":
       addDependency(args);
       break;
@@ -46,6 +56,9 @@ async function main() {
       break;
     case "status":
       showStatus(args);
+      break;
+    case "stats":
+      showStats();
       break;
 
     // Daily workflow
@@ -58,6 +71,42 @@ async function main() {
     case "inbox":
       await inboxReview();
       break;
+    case "web":
+      if (args[0] === "help") {
+        console.log(`
+    px web — Access from your phone
+
+    1. Start the server:
+      px web
+
+    2. Open the Phone URL on your phone browser.
+
+    ── If your phone can't connect ──
+
+    Windows Firewall blocking?
+      Run PowerShell as Admin:
+      netsh advfirewall firewall add rule name="px-web" dir=in action=allow protocol=TCP localport=3478
+
+    Find your laptop IP:
+      ipconfig
+      Look for "IPv4 Address" under your WiFi adapter.
+
+    ── If phone and laptop are on different networks ──
+
+    Option A: Free tunnel (no install)
+      In a second terminal:
+      npx localtunnel --port 3478
+      → Gives you a public URL, open it on any phone.
+
+    Option B: SSH tunnel (no install)
+      In a second terminal:
+      ssh -R 80:localhost:3478 nokey@localhost.run
+      → Gives you a public URL like https://abc123.localhost.run
+          `);
+      } else {
+        startServer();
+      }
+        break;
 
     // Projects
     case "project":
@@ -83,9 +132,13 @@ async function main() {
     day                                    Interactive daily session
 
     done <ID>                              Mark task done
+    edit <ID>                              Edit a task interactively
+    undo                                   Revert last action
     dep <ID> --needs <ID>                  Add dependency
     list [--all] [--project "X"]           Browse tasks
     status [ID]                            Project overview or task detail
+    stats                                  Productivity stats
+    web                                    Start web UI for phone (experimental)
       `);
       break;
   }

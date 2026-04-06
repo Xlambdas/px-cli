@@ -218,18 +218,6 @@
       "id": 18,
       "title": "Energy-based task suggestion",
       "duration": 90
-    },
-    {
-      "projectIds": [
-        3
-      ],
-      "subtaskIds": [],
-      "conditionIds": [],
-      "status": "todo",
-      "createdAt": "2026-04-06T20:03:30.813Z",
-      "id": 19,
-      "title": "Learning from behavior patterns",
-      "duration": 120
     }
   ],
   "projects": [
@@ -258,6 +246,6 @@
     1,
     2
   ],
-  "nextTaskId": 20,
+  "nextTaskId": 19,
   "nextProjectId": 4
 }

@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>px</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --border: #2a2d3a;
+            --text: #e2e4ea;
+            --text2: #8b8fa3;
+            --accent: #6c72cb;
+            --green: #4ade80;
+            --red: #f87171;
+            --orange: #fb923c;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100dvh;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ── Header ── */
+        header {
+            padding: 16px 20px 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .streak {
+            font-size: 14px;
+            color: var(--text2);
+        }
+
+        /* ── Tabs ── */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text2);
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.15s;
+        }
+
+        .tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        /* ── Quick Capture ── */
+        .capture {
+            padding: 16px 20px;
+            display: flex;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .capture input {
+            flex: 1;
+            padding: 12px 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 16px;
+            /* prevents zoom on iOS */
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .capture input:focus {
+            border-color: var(--accent);
+        }
+
+        .capture input::placeholder {
+            color: var(--text2);
+        }
+
+        .capture button {
+            padding: 12px 18px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: opacity 0.15s;
+        }
+
+        .capture button:active {
+            opacity: 0.7;
+        }
+
+        /* ── Sections ── */
+        .section {
+            display: none;
+            padding: 16px 20px 100px;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* ── Task List ── */
+        .project-group {
+            margin-bottom: 24px;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .project-name {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text2);
+        }
+
+        .project-pct {
+            font-size: 13px;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .progress-track {
+            height: 4px;
+            background: var(--border);
+            border-radius: 4px;
+            margin-bottom: 14px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .task-item.subtask {
+            padding-left: 28px;
+        }
+
+        .task-item.done {
+            opacity: 0.4;
+        }
+
+        .task-item.blocked {
+            opacity: 0.5;
+        }
+
+        .task-check {
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1px;
+            transition: all 0.15s;
+            color: transparent;
+            font-size: 13px;
+        }
+
+        .task-check:active {
+            transform: scale(0.9);
+        }
+
+        .task-check.done {
+            background: var(--green);
+            border-color: var(--green);
+            color: white;
+        }
+
+        .task-check.blocked {
+            border-color: var(--red);
+            cursor: not-allowed;
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-title {
+            font-size: 15px;
+            line-height: 1.4;
+        }
+
+        .task-meta {
+            font-size: 12px;
+            color: var(--text2);
+            margin-top: 3px;
+        }
+
+        .task-meta .blocked-reason {
+            color: var(--red);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text2);
+            font-size: 14px;
+        }
+
+        /* ── Stats ── */
+        .stat-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card.wide {
+            grid-column: 1 / -1;
+        }
+
+        .progress-big {
+            height: 8px;
+            background: var(--border);
+            border-radius: 8px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        .progress-big .progress-fill {
+            background: var(--green);
+        }
+
+        /* ── Inbox ── */
+        .inbox-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .inbox-title {
+            font-size: 15px;
+            flex: 1;
+        }
+
+        .inbox-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--orange);
+            border-radius: 50%;
+            margin-right: 12px;
+            min-width: 8px;
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--green);
+            color: #0f1117;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>⚡ px</h1>
+        <span class="streak" id="streak"></span>
+    </header>
+
+    <div class="capture">
+        <input type="text" id="quickInput" placeholder="Quick capture..." autocomplete="off">
+        <button onclick="quickCapture()">Add</button>
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('tasks')">Tasks</button>
+        <button class="tab" onclick="switchTab('inbox')">Inbox <span id="inboxCount"></span></button>
+        <button class="tab" onclick="switchTab('stats')">Stats</button>
+    </div>
+
+    <div class="section active" id="sec-tasks"></div>
+    <div class="section" id="sec-inbox"></div>
+    <div class="section" id="sec-stats"></div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let DATA = null;
+
+        // ── Fetch & Render ──
+
+        async function load() {
+            const res = await fetch('/api/data');
+            DATA = await res.json();
+            renderTasks();
+            renderInbox();
+            renderStats();
+        }
+
+        function renderTasks() {
+            const el = document.getElementById('sec-tasks');
+            const focused = DATA.projects.filter(p => p.focused);
+
+            if (focused.length === 0) {
+                el.innerHTML = '<div class="empty-state">No projects focused.<br>Run <b>px focus 1 2</b> in your terminal.</div>';
+                return;
+            }
+
+            let html = '';
+            for (const p of focused) {
+                const tasks = DATA.tasks.filter(t =>
+                    t.projectIds.includes(p.id) && !t.parentId && t.status === 'todo'
+                );
+                const doneTasks = DATA.tasks.filter(t =>
+                    t.projectIds.includes(p.id) && !t.parentId && t.status === 'done'
+                );
+
+                html += `<div class="project-group">
+      <div class="project-header">
+        <span class="project-name">${esc(p.title)}</span>
+        <span class="project-pct">${p.progress}%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:${p.progress}%"></div></div>`;
+
+                // Ready tasks first, then blocked
+                const ready = tasks.filter(t => !t.blocked);
+                const blocked = tasks.filter(t => t.blocked);
+
+                for (const t of [...ready, ...blocked]) {
+                    html += renderTaskItem(t, false);
+                    // Subtasks
+                    for (const sid of t.subtaskIds) {
+                        const sub = DATA.tasks.find(s => s.id === sid);
+                        if (sub && sub.status === 'todo') {
+                            html += renderTaskItem(sub, true);
+                        }
+                    }
+                }
+
+                if (tasks.length === 0 && doneTasks.length > 0) {
+                    html += '<div class="empty-state">All done! 🎉</div>';
+                }
+                if (tasks.length === 0 && doneTasks.length === 0) {
+                    html += '<div class="empty-state">No tasks yet</div>';
+                }
+
+                html += '</div>';
+            }
+            el.innerHTML = html;
+        }
+
+        function renderTaskItem(t, isSub) {
+            const checkClass = t.status === 'done' ? 'done' : t.blocked ? 'blocked' : '';
+            const itemClass = `task-item ${isSub ? 'subtask' : ''} ${t.status === 'done' ? 'done' : ''} ${t.blocked ? 'blocked' : ''}`;
+
+            let meta = '';
+            if (t.duration) meta += `${t.duration}min `;
+            if (t.deadline) meta += formatDeadline(t.deadline) + ' ';
+            if (t.blocked) meta += `<span class="blocked-reason">⛔ ${esc(t.blockReason)}</span>`;
+
+            const onclick = t.blocked ? '' : `onclick="toggleDone(${t.id})"`;
+
+            return `<div class="${itemClass}">
+    <button class="task-check ${checkClass}" ${onclick}>${t.status === 'done' ? '✓' : t.blocked ? '✕' : ''}</button>
+    <div class="task-info">
+      <div class="task-title">${esc(t.title)}</div>
+      ${meta ? `<div class="task-meta">${meta}</div>` : ''}
+    </div>
+  </div>`;
+        }
+
+        function renderInbox() {
+            const inbox = DATA.tasks.filter(t => t.projectIds.length === 0 && !t.parentId && t.status === 'todo');
+            const countEl = document.getElementById('inboxCount');
+            countEl.textContent = inbox.length > 0 ? `(${inbox.length})` : '';
+
+            const el = document.getElementById('sec-inbox');
+            if (inbox.length === 0) {
+                el.innerHTML = '<div class="empty-state">Inbox empty 📭</div>';
+                return;
+            }
+
+            let html = '';
+            for (const t of inbox) {
+                html += `<div class="inbox-item">
+      <div class="inbox-dot"></div>
+      <span class="inbox-title">${esc(t.title)}</span>
+    </div>`;
+            }
+            html += '<div class="empty-state" style="padding:20px">Assign tasks to projects with <b>px inbox</b> in terminal</div>';
+            el.innerHTML = html;
+        }
+
+        function renderStats() {
+            const s = DATA.stats;
+            const total = s.totalDone + s.totalTodo;
+            const pct = total > 0 ? Math.round((s.totalDone / total) * 100) : 0;
+
+            let html = `<div class="stat-cards">
+    <div class="stat-card">
+      <div class="stat-value">${s.doneToday}</div>
+      <div class="stat-label">Done today</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${s.doneThisWeek}</div>
+      <div class="stat-label">This week</div>
+    </div>
+    <div class="stat-card wide">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <div class="stat-value">${s.totalDone}<span style="font-size:16px;color:var(--text2)">/${total}</span></div>
+        <div class="stat-label">${pct}% complete</div>
+      </div>
+      <div class="progress-big"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>
+  </div>`;
+
+            // Project breakdown
+            html += '<div style="margin-top:8px">';
+            for (const p of DATA.projects) {
+                const taskCount = DATA.tasks.filter(t => t.projectIds.includes(p.id) && !t.parentId).length;
+                const doneCount = DATA.tasks.filter(t => t.projectIds.includes(p.id) && !t.parentId && t.status === 'done').length;
+                html += `<div class="stat-card" style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <div class="stat-label" style="font-weight:700;color:var(--text)">${esc(p.title)}${p.focused ? ' ★' : ''}</div>
+        <div class="stat-label">${doneCount}/${taskCount}</div>
+      </div>
+      <div class="progress-track" style="margin-top:10px;margin-bottom:0"><div class="progress-fill" style="width:${p.progress}%"></div></div>
+    </div>`;
+            }
+            html += '</div>';
+
+            document.getElementById('sec-stats').innerHTML = html;
+        }
+
+        // ── Actions ──
+
+        async function quickCapture() {
+            const input = document.getElementById('quickInput');
+            const title = input.value.trim();
+            if (!title) return;
+
+            input.value = '';
+            const res = await fetch('/api/quick', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title }),
+            });
+            if (res.ok) {
+                toast('✓ Added to inbox');
+                load();
+            }
+        }
+
+        async function toggleDone(id) {
+            const task = DATA.tasks.find(t => t.id === id);
+            if (!task || task.blocked) return;
+
+            const res = await fetch(`/api/done/${id}`, { method: 'POST' });
+            const data = await res.json();
+
+            if (res.ok) {
+                toast('✓ Done!');
+                load();
+            } else {
+                toast('⛔ ' + data.error);
+            }
+        }
+
+        // ── UI Helpers ──
+
+        function switchTab(name) {
+            document.querySelectorAll('.tab').forEach((t, i) => {
+                t.classList.toggle('active', ['tasks', 'inbox', 'stats'][i] === name);
+            });
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('sec-' + name).classList.add('active');
+        }
+
+        function toast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 1500);
+        }
+
+        function esc(s) {
+            const d = document.createElement('div');
+            d.textContent = s;
+            return d.innerHTML;
+        }
+
+        function formatDeadline(dl) {
+            const d = new Date(dl);
+            const diff = Math.ceil((d - new Date()) / 86400000);
+            const label = d.toLocaleDateString('en', { month: 'short', day: 'numeric' });
+            if (diff < 0) return '⚠ OVERDUE';
+            if (diff <= 3) return '⚠ ' + label;
+            return label;
+        }
+
+        // Enter key to submit
+        document.getElementById('quickInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') quickCapture();
+        });
+
+        // Initial load
+        load();
+    </script>
+</body>
+
+</html>
