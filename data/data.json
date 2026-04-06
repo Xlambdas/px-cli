@@ -34,6 +34,17 @@
       "createdAt": "2026-04-06T17:56:34.176Z",
       "id": 3,
       "title": "faire session sport"
+    },
+    {
+      "projectIds": [
+        2
+      ],
+      "subtaskIds": [],
+      "conditionIds": [3],
+      "status": "todo",
+      "createdAt": "2026-04-06T17:56:34.176Z",
+      "id": 4,
+      "title": "faire truc"
     }
   ],
   "projects": [
@@ -50,11 +61,18 @@
       "id": 2,
       "title": "Internship",
       "deadline": "2026-06-30"
+    },
+    {
+      "status": "active",
+      "createdAt": "2026-04-06T17:54:12.320Z",
+      "id": 3,
+      "title": "test",
+      "deadline": "2026-06-30"
     }
   ],
   "focus": [
     1,
-    2
+    3
   ],
   "nextTaskId": 4,
   "nextProjectId": 3
