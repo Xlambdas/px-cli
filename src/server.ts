@@ -2,6 +2,7 @@ import express from "express";
 import * as path from "path";
 import * as os from "os";
 import { loadData, saveData } from "./utils/storage";
+import { generateTaskId } from "./models";
 import { canComplete, projectProgress } from "./utils/helpers";
 
 const app = express();
@@ -42,7 +43,7 @@ app.post("/api/quick", (req, res) => {
     if (!title || !title.trim()) return res.status(400).json({ error: "Title required" });
     const data = loadData();
     const task = {
-        id: String(data.nextTaskId++),
+        id: generateTaskId(data),
         title: title.trim(),
         projectIds: [] as string[],
         subtaskIds: [] as string[],

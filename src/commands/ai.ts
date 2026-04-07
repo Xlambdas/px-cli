@@ -1,6 +1,6 @@
 import * as readline from "readline";
 import { loadData, saveData } from "../utils/storage";
-import { createTask, ProjectProfile } from "../models";
+import { createTask, generateSubtaskId, generateTaskId, ProjectProfile } from "../models";
 import { getTaskOrDie } from "../utils/helpers";
 import { buildContext, buildNextPrompt, buildPlanPrompt, buildExpandPrompt } from "../ai/promptBuilder";
 import { parseAIResponse, TaskSuggestion } from "../ai/parser";
@@ -209,7 +209,9 @@ export async function aiCommand(args: string[]): Promise<void> {
 
     for (const s of accepted) {
         const task = createTask({
-            id: String(data.nextTaskId++),
+            id: isExpand && parentTask
+                ? generateSubtaskId(data, parentTask.id)
+                : generateTaskId(data, projectId),
             title: s.title,
             projectIds: [projectId],
             duration: s.duration,
@@ -224,7 +226,7 @@ export async function aiCommand(args: string[]): Promise<void> {
         if (!isExpand && s.subtasks.length > 0) {
             for (const subTitle of s.subtasks) {
                 const sub = createTask({
-                    id: String(data.nextTaskId++),
+                    id: generateSubtaskId(data, task.id),
                     title: subTitle,
                     projectIds: [projectId],
                     parentId: task.id,

@@ -1,5 +1,5 @@
 import { loadData, saveData } from "../utils/storage";
-import { createTask } from "../models";
+import { createTask, generateTaskId } from "../models";
 
 /**
     * px quick "Fix the navbar"
@@ -18,7 +18,7 @@ export function quickAdd(args: string[]): void {
 
     const data = loadData();
     const task = createTask({
-        id: String(data.nextTaskId++),
+        id: generateTaskId(data),
         title,
         // No project = inbox
     });

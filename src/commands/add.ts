@@ -67,7 +67,7 @@ export function addTask(args: string[]): void {
     if (parentId !== undefined) {
         const parent = data.tasks.find((t) => t.id === parentId);
         if (!parent) {
-            console.error(`Parent task #${parentId} not found.`);
+            console.error(`Parent task ${parentId} not found.`);
             process.exit(1);
         }
         // Inherit projects from parent if none specified
@@ -79,12 +79,10 @@ export function addTask(args: string[]): void {
     // Generate ID for the new task
     let taskId: string;
     if (parentId !== undefined) {
-        const parent = data.tasks.find((t) => t.id === parentId)!;
-        // Generate subtask ID: parentId.index
-        const subtaskIndex = parent.subtaskIds.length + 1;
-        taskId = generateSubtaskId(parentId, subtaskIndex);
+        taskId = generateSubtaskId(data, parentId);
     } else {
-        taskId = generateTaskId(data);
+        // For top-level tasks, use first project to build project-scoped ID (e.g. 3.2).
+        taskId = generateTaskId(data, projectIds[0]);
     }
 
     const task = createTask({
@@ -109,10 +107,10 @@ export function addTask(args: string[]): void {
 
     const location =
         parentId !== undefined
-            ? `(subtask of #${parentId})`
+            ? `(subtask of ${parentId})`
             : projectIds.length > 0
                 ? `(${projectNames.join(", ")})`
                 : "(inbox)";
 
-    console.log(`✓ Task #${task.id} "${task.title}" added ${location}`);
+    console.log(`✓ Task ${task.id} "${task.title}" added ${location}`);
 }

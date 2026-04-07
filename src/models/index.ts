@@ -97,11 +97,32 @@ export function createEmptyData(): AppData {
 // === ID GENERATION ===
 
 /**
- * Generate a new task ID (top-level task)
- * Format: just the number as string (e.g., "1", "2", "3")
+ * Generate a new top-level task ID for a project.
+ * Format: projectId.index (e.g., "2.1", "2.2").
+ *
+ * If no project is provided (inbox), falls back to the global counter string.
  */
-export function generateTaskId(data: AppData): string {
-    return String(data.nextTaskId++);
+export function generateTaskId(data: AppData, projectId?: string): string {
+    if (!projectId) {
+        return String(data.nextTaskId++);
+    }
+
+    const prefix = `${projectId}.`;
+    let maxIndex = 0;
+
+    for (const t of data.tasks) {
+        if (t.parentId !== undefined) continue;
+        if (!t.projectIds.includes(projectId)) continue;
+        if (!t.id.startsWith(prefix)) continue;
+
+        const rest = t.id.slice(prefix.length);
+        if (!/^\d+$/.test(rest)) continue;
+
+        const idx = parseInt(rest, 10);
+        if (idx > maxIndex) maxIndex = idx;
+    }
+
+    return `${projectId}.${maxIndex + 1}`;
 }
 
 /**
@@ -113,10 +134,23 @@ export function generateProjectId(data: AppData): string {
 }
 
 /**
- * Generate a subtask ID
- * Format: parentTaskId.subtaskIndex (e.g., "5.1", "5.2")
- * The index is based on the position in the parent's subtaskIds array
+ * Generate a nested subtask ID.
+ * Format: parentTaskId.index (e.g., "2.2.1", "2.2.2").
  */
-export function generateSubtaskId(parentTaskId: string, subtaskIndex: number): string {
-    return `${parentTaskId}.${subtaskIndex}`;
+export function generateSubtaskId(data: AppData, parentTaskId: string): string {
+    const prefix = `${parentTaskId}.`;
+    let maxIndex = 0;
+
+    for (const t of data.tasks) {
+        if (t.parentId !== parentTaskId) continue;
+        if (!t.id.startsWith(prefix)) continue;
+
+        const rest = t.id.slice(prefix.length);
+        if (!/^\d+$/.test(rest)) continue;
+
+        const idx = parseInt(rest, 10);
+        if (idx > maxIndex) maxIndex = idx;
+    }
+
+    return `${parentTaskId}.${maxIndex + 1}`;
 }

@@ -1,0 +1,892 @@
+{
+  "tasks": [
+    {
+      "projectIds": [
+        "1"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "done",
+      "createdAt": "2026-04-06T17:55:23.877Z",
+      "id": "1",
+      "title": "Design homepage",
+      "duration": 90,
+      "completedAt": "2026-04-06T19:45:51.419Z"
+    },
+    {
+      "projectIds": [
+        "2"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "done",
+      "createdAt": "2026-04-06T17:56:12.571Z",
+      "id": "2",
+      "title": "Write CV",
+      "duration": 30
+    },
+    {
+      "projectIds": [
+        "2"
+      ],
+      "subtaskIds": [
+        "3.1"
+      ],
+      "conditionIds": [],
+      "status": "done",
+      "createdAt": "2026-04-06T17:56:34.176Z",
+      "id": "3",
+      "title": "faire session sport",
+      "completedAt": "2026-04-06T18:52:43.911Z",
+      "duration": 40
+    },
+    {
+      "projectIds": [
+        "2"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "done",
+      "createdAt": "2026-04-06T18:46:46.996Z",
+      "id": "3.1",
+      "title": "task testttt",
+      "parentId": "3",
+      "completedAt": "2026-04-06T18:52:43.901Z"
+    },
+    {
+      "projectIds": [
+        "1"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "done",
+      "createdAt": "2026-04-06T19:09:00.343Z",
+      "id": "5",
+      "title": "truc a faire",
+      "completedAt": "2026-04-06T19:09:49.245Z"
+    },
+    {
+      "id": "6",
+      "title": "Test phone",
+      "projectIds": [
+        "2"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-06T19:46:10.222Z"
+    },
+    {
+      "id": "7",
+      "title": "Nouveau ttst phone",
+      "projectIds": [
+        "2"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-06T19:46:23.854Z"
+    },
+    {
+      "projectIds": [
+        "3"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-06T20:03:22.975Z",
+      "id": "8",
+      "title": "Add px remove command (delete task/project)",
+      "duration": 30
+    },
+    {
+      "projectIds": [
+        "3"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-06T20:03:23.373Z",
+      "id": "9",
+      "title": "Web UI: assign inbox tasks to projects",
+      "duration": 60
+    },
+    {
+      "projectIds": [
+        "3"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-06T20:03:23.777Z",
+      "id": "10",
+      "title": "Web UI: add focus selection",
+      "duration": 60
+    },
+    {
+      "projectIds": [
+        "3"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-06T20:03:24.132Z",
+      "id": "11",
+      "title": "Web UI: show subtask checkboxes",
+      "duration": 45
+    },
+    {
+      "projectIds": [
+        "3"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-06T20:03:24.512Z",
+      "id": "12",
+      "title": "Add px archive command (hide done projects)",
+      "duration": 30
+    },
+    {
+      "projectIds": [
+        "3"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-06T20:03:24.857Z",
+      "id": "13",
+      "title": "Add px notes command (add notes to tasks)",
+      "duration": 45
+    },
+    {
+      "projectIds": [
+        "3"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-06T20:03:25.215Z",
+      "id": "14",
+      "title": "Add px priority command (high/low)",
+      "duration": 30
+    },
+    {
+      "projectIds": [
+        "3"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-06T20:03:25.558Z",
+      "id": "15",
+      "title": "Add px find command (search tasks)",
+      "duration": 30
+    },
+    {
+      "projectIds": [
+        "3"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-06T20:03:25.913Z",
+      "id": "16",
+      "title": "AI: generate tasks from project description",
+      "duration": 120
+    },
+    {
+      "projectIds": [
+        "3"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-06T20:03:26.258Z",
+      "id": "17",
+      "title": "Calendar integration (time blocks)",
+      "duration": 120
+    },
+    {
+      "projectIds": [
+        "3"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-06T20:03:26.602Z",
+      "id": "18",
+      "title": "Energy-based task suggestion",
+      "duration": 90
+    },
+    {
+      "projectIds": [
+        "3"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-06T20:03:30.813Z",
+      "id": "19",
+      "title": "Learning from behavior patterns",
+      "duration": 120
+    },
+    {
+      "projectIds": [
+        "4"
+      ],
+      "subtaskIds": [
+        "20.1",
+        "20.2"
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.490Z",
+      "id": "20",
+      "title": "Define Core Course Data Model",
+      "duration": 60
+    },
+    {
+      "projectIds": [
+        "4"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.492Z",
+      "id": "20.1",
+      "title": "Brainstorm essential data fields for each course (e.g., Course Code, Title, Year/Semester, Key Topics, Learning Outcomes, Main Resources, Instructor)",
+      "parentId": "20"
+    },
+    {
+      "projectIds": [
+        "4"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "done",
+      "createdAt": "2026-04-07T07:54:53.492Z",
+      "id": "20.2",
+      "title": "Prioritize the top 5-7 most critical fields for initial implementation",
+      "parentId": "20",
+      "completedAt": "2026-04-07T08:31:30.115Z"
+    },
+    {
+      "projectIds": [
+        "4"
+      ],
+      "subtaskIds": [
+        "23.1",
+        "23.2"
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.492Z",
+      "id": "23",
+      "title": "Inventory Existing Course Materials",
+      "duration": 90
+    },
+    {
+      "projectIds": [
+        "4"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.492Z",
+      "id": "23.1",
+      "title": "Create a comprehensive list of all cognitive science courses taken",
+      "parentId": "23"
+    },
+    {
+      "projectIds": [
+        "4"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.492Z",
+      "id": "23.2",
+      "title": "For each course, identify the primary location(s) of its materials (e.g., university LMS, personal cloud storage, local drive)",
+      "parentId": "23"
+    },
+    {
+      "projectIds": [
+        "4"
+      ],
+      "subtaskIds": [
+        "26.1",
+        "26.2"
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.492Z",
+      "id": "26",
+      "title": "Create Initial Database Structure (Schema)",
+      "duration": 90
+    },
+    {
+      "projectIds": [
+        "4"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.492Z",
+      "id": "26.1",
+      "title": "Set up the chosen storage tool (e.g., create a spreadsheet, define Notion DB properties, write a basic SQL table definition)",
+      "parentId": "26"
+    },
+    {
+      "projectIds": [
+        "4"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.492Z",
+      "id": "26.2",
+      "title": "Implement the core data fields identified in 'Define Core Course Data Model' as columns/properties",
+      "parentId": "26"
+    },
+    {
+      "projectIds": [
+        "4"
+      ],
+      "subtaskIds": [
+        "29.1",
+        "29.2",
+        "29.3"
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.493Z",
+      "id": "29",
+      "title": "Populate Data for 2 Pilot Courses",
+      "duration": 120
+    },
+    {
+      "projectIds": [
+        "4"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.493Z",
+      "id": "29.1",
+      "title": "Select two distinct cognitive science courses from your inventory",
+      "parentId": "29"
+    },
+    {
+      "projectIds": [
+        "4"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.493Z",
+      "id": "29.2",
+      "title": "Extract relevant data for Course A and input it into your database structure",
+      "parentId": "29"
+    },
+    {
+      "projectIds": [
+        "4"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.493Z",
+      "id": "29.3",
+      "title": "Extract relevant data for Course B and input it into your database structure",
+      "parentId": "29"
+    },
+    {
+      "projectIds": [
+        "4"
+      ],
+      "subtaskIds": [
+        "33.1",
+        "33.2"
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.493Z",
+      "id": "33",
+      "title": "Outline Future Integration Data Needs",
+      "duration": 75
+    },
+    {
+      "projectIds": [
+        "4"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.493Z",
+      "id": "33.1",
+      "title": "Brainstorm how the 'playground' might use your course data (e.g., for quizzing, topic exploration, resource linking)",
+      "parentId": "33"
+    },
+    {
+      "projectIds": [
+        "4"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.493Z",
+      "id": "33.2",
+      "title": "List the types of data outputs (e.g., JSON, CSV, API access) that a 'learning platform' would likely require",
+      "parentId": "33"
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [
+        "36.1",
+        "36.2"
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.401Z",
+      "id": "36",
+      "title": "Research fundamental calisthenics exercises",
+      "duration": 90
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "done",
+      "createdAt": "2026-04-07T09:02:55.405Z",
+      "id": "36.1",
+      "title": "Identify core bodyweight movements (e.g., push-ups, squats, planks, inverted rows)",
+      "parentId": "36",
+      "completedAt": "2026-04-07T09:04:45.519Z"
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.405Z",
+      "id": "36.2",
+      "title": "Find 2-3 reliable beginner resources (websites, apps, YouTube channels)",
+      "parentId": "36"
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [
+        "39.1",
+        "39.2"
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.406Z",
+      "id": "39",
+      "title": "Assess current physical fitness level (baseline)",
+      "duration": 60
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.406Z",
+      "id": "39.1",
+      "title": "Perform max reps/time for 3-5 fundamental exercises (e.g., push-ups on knees, wall sits, plank hold)",
+      "parentId": "39"
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.406Z",
+      "id": "39.2",
+      "title": "Record all baseline scores for future comparison",
+      "parentId": "39"
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [
+        "42.1",
+        "42.2"
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.406Z",
+      "id": "42",
+      "title": "Define specific, measurable fundamental goals for the first 4 weeks",
+      "duration": 60
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.406Z",
+      "id": "42.1",
+      "title": "Set initial targets for reps/time for chosen fundamental exercises (e.g., 'perform 5 clean push-ups on knees')",
+      "parentId": "42"
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.406Z",
+      "id": "42.2",
+      "title": "Establish a short-term achievement goal related to body control (e.g., 'hold a perfect plank for 30 seconds')",
+      "parentId": "42"
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [
+        "45.1",
+        "45.2",
+        "45.3"
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": "45",
+      "title": "Create a basic 2-3 day per week beginner workout routine structure",
+      "duration": 90
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": "45.1",
+      "title": "Outline training days and rest days for the week",
+      "parentId": "45"
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": "45.2",
+      "title": "Select 4-6 appropriate beginner exercises with target sets/reps/hold times",
+      "parentId": "45"
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": "45.3",
+      "title": "Allocate time for warm-up and cool-down for each session",
+      "parentId": "45"
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [
+        "49.1",
+        "49.2",
+        "49.3"
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": "49",
+      "title": "Learn and practice proper form for 2-3 core exercises",
+      "duration": 120
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": "49.1",
+      "title": "Watch detailed instructional videos for chosen exercises (e.g., squat, incline push-up)",
+      "parentId": "49"
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": "49.2",
+      "title": "Practice movements slowly in front of a mirror or record yourself for self-correction",
+      "parentId": "49"
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": "49.3",
+      "title": "Focus on muscle activation and body alignment without pushing for reps",
+      "parentId": "49"
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [
+        "53.1",
+        "53.2",
+        "53.3"
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": "53",
+      "title": "Execute the first scheduled workout session, focusing on form",
+      "duration": 90
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": "53.1",
+      "title": "Complete the planned warm-up routine",
+      "parentId": "53"
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": "53.2",
+      "title": "Perform chosen exercises focusing *only* on maintaining perfect form, not on reps or speed",
+      "parentId": "53"
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.409Z",
+      "id": "53.3",
+      "title": "Complete cool-down and stretching after the workout",
+      "parentId": "53"
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [
+        "57.1",
+        "57.2"
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.409Z",
+      "id": "57",
+      "title": "Set up a system for tracking workout progress",
+      "duration": 60
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.409Z",
+      "id": "57.1",
+      "title": "Choose a tracking method (notebook, spreadsheet, mobile app)",
+      "parentId": "57"
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.409Z",
+      "id": "57.2",
+      "title": "Identify key metrics to record for each workout (date, exercises, sets, reps, duration, perceived effort, notes on form)",
+      "parentId": "57"
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [
+        "60.1",
+        "60.2",
+        "60.3"
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.409Z",
+      "id": "60",
+      "title": "Review the first week's workouts and make minor adjustments",
+      "duration": 60
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.409Z",
+      "id": "60.1",
+      "title": "Evaluate if initial exercises were too easy/hard or if discomfort occurred",
+      "parentId": "60"
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.409Z",
+      "id": "60.2",
+      "title": "Adjust reps/sets or exercise variations for upcoming sessions if needed",
+      "parentId": "60"
+    },
+    {
+      "projectIds": [
+        "5"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.409Z",
+      "id": "60.3",
+      "title": "Note any specific areas needing more attention or modification for the next week",
+      "parentId": "60"
+    }
+  ],
+  "projects": [
+    {
+      "status": "active",
+      "createdAt": "2026-04-06T17:53:16.007Z",
+      "id": "1",
+      "title": "Portfolio",
+      "deadline": "2026-04-10"
+    },
+    {
+      "status": "active",
+      "createdAt": "2026-04-06T17:54:12.320Z",
+      "id": "2",
+      "title": "Internship",
+      "deadline": "2026-06-30"
+    },
+    {
+      "status": "active",
+      "createdAt": "2026-04-06T20:03:22.566Z",
+      "id": "3",
+      "title": "px-cli development"
+    },
+    {
+      "status": "active",
+      "createdAt": "2026-04-07T07:36:11.674Z",
+      "id": "4",
+      "title": "Cognitive Science DB",
+      "description": "all my student courses (about cognitive science) in one place, ready to use for further integration into a playground that will integrate later a learning platform",
+      "deadline": "2026-05-30"
+    },
+    {
+      "status": "active",
+      "createdAt": "2026-04-07T08:59:03.471Z",
+      "id": "5",
+      "title": "calisthenics",
+      "description": "masterize the control of my body with musculation exercices"
+    },
+    {
+      "id": "6",
+      "title": "testt",
+      "description": "this is not a real project but a test project so I can check if everything is working perfectly.",
+      "status": "active",
+      "createdAt": "2026-04-07T11:34:59.653Z"
+    }
+  ],
+  "focus": [
+    "3",
+    "4",
+    "5"
+  ],
+  "nextTaskId": 64,
+  "nextProjectId": 7,
+  "projectProfiles": {
+    "5": {
+      "projectId": "5",
+      "type": "fitness",
+      "stage": "building",
+      "goal": "learn fundamentals",
+      "learnedPatterns": {
+        "preferredTaskTypes": [
+          "assess",
+          "current",
+          "physical",
+          "define",
+          "specific",
+          "measurable",
+          "create",
+          "basic",
+          "week",
+          "learn",
+          "practice",
+          "proper",
+          "execute",
+          "first",
+          "scheduled",
+          "system",
+          "tracking",
+          "workout",
+          "review",
+          "weeks"
+        ]
+      }
+    }
+  }
+}

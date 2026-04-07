@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { execSync } from "child_process";
 import { loadData, saveData } from "../utils/storage";
-import { AppData, Task } from "../models";
+import { AppData, Task, generateSubtaskId, generateTaskId } from "../models";
 import { canComplete, fmtDeadline, fmtDuration, projectProgress } from "../utils/helpers";
 
 /**
@@ -163,17 +163,17 @@ export function pxEnd(): void {
     *   > Description here
     *   Deadline: 2026-05-01
     *
-    *   - [x] #1 Task done (60min)
-    *   - [ ] #2 Task todo (90min) [needs #1]
-    *     - [x] #3 Subtask done
-    *     - [ ] #4 Subtask todo
+    *   - [x] 2.1 Task done (60min)
+    *   - [ ] 2.2 Task todo (90min) [needs 2.1]
+    *     - [x] 2.2.1 Subtask done
+    *     - [ ] 2.2.2 Subtask todo
     *
     *   ## Inbox
-    *   - [ ] #9 Unassigned task
+    *   - [ ] 9 Unassigned task
 */
 function exportMarkdown(data: AppData): void {
     let md = `<!-- PX PROJECTS — Edit tasks here, then run px start to import -->\n`;
-    md += `<!-- Format: - [x] #ID Title (duration) [needs #ID, #ID] -->\n`;
+    md += `<!-- Format: - [x] ID Title (duration) [needs ID, ID] -->\n`;
     md += `<!-- Change [x] to [ ] or [ ] to [x] to toggle status -->\n\n`;
 
     for (const p of data.projects) {
@@ -221,11 +221,11 @@ function formatTaskMd(task: Task, data: AppData, indent: number): string {
     const check = task.status === "done" ? "[x]" : "[ ]";
     const dur = task.duration ? ` (${task.duration}min)` : "";
     const deps = task.conditionIds.length > 0
-        ? ` [needs ${task.conditionIds.map((id) => `#${id}`).join(", ")}]`
+        ? ` [needs ${task.conditionIds.join(", ")}]`
         : "";
     const dl = task.deadline ? ` {${task.deadline}}` : "";
 
-    let line = `${prefix}- ${check} #${task.id} ${task.title}${dur}${deps}${dl}\n`;
+    let line = `${prefix}- ${check} ${task.id} ${task.title}${dur}${deps}${dl}\n`;
 
     // Subtasks
     for (const sid of task.subtaskIds) {
@@ -252,18 +252,18 @@ interface ImportChanges {
 /**
  * Parse projects.md back into data.
  * Updates: status, title, duration, deadline, dependencies.
- * Creates new tasks if they don't have a #ID.
+ * Creates new tasks if they don't have an explicit ID token.
  *
  * Task line format:
- *   - [x] #3 Task title (60min) [needs #1, #2] {2026-05-01}
+ *   - [x] 3.1 Task title (60min) [needs 2.1, 2.2] {2026-05-01}
  *   - [ ] New task without ID (45min)
  *
  * We detect:
- *   #ID             → existing task (update it)
- *   no #ID          → new task (create it)
+ *   ID              → existing task (update it)
+ *   no ID           → new task (create it)
  *   [x] vs [ ]      → status
  *   (NUMmin)        → duration
- *   [needs #N, #M]  → dependencies
+ *   [needs A, B]    → dependencies
  *   {YYYY-MM-DD}    → deadline
  *   everything else → title
  */
@@ -358,7 +358,7 @@ function parseMarkdown(md: string, data: AppData): ImportChanges {
             continue;
         }
 
-        // Detect task lines: - [x] #3 Title (60min) [needs #1] {2026-05-01}
+        // Detect task lines: - [x] 3.1 Title (60min) [needs 2.1] {2026-05-01}
         //                or: - [ ] New task title (30min)
         const taskMatch = line.match(/^(\s*)-\s+\[(x| )\]\s+(.*)/);
         if (!taskMatch) continue;
@@ -368,14 +368,14 @@ function parseMarkdown(md: string, data: AppData): ImportChanges {
         const rest = taskMatch[3].trim();
 
         // Parse components
-        const idMatch = rest.match(/^#(\d+)\s+/);
+        const idMatch = rest.match(/^(?:#)?([0-9]+(?:\.[0-9]+)*)\s+/);
         const durationMatch = rest.match(/\((\d+)min\)/);
         const depsMatch = rest.match(/\[needs\s+([^\]]+)\]/);
         const deadlineMatch = rest.match(/\{(\d{4}-\d{2}-\d{2})\}/);
 
-        // Extract title: remove #ID, (duration), [needs], {deadline}
+        // Extract title: remove ID token, (duration), [needs], {deadline}
         let title = rest
-            .replace(/^#\d+\s+/, "")
+            .replace(/^(?:#)?[0-9]+(?:\.[0-9]+)*\s+/, "")
             .replace(/\(\d+min\)/, "")
             .replace(/\[needs\s+[^\]]+\]/, "")
             .replace(/\{\d{4}-\d{2}-\d{2}\}/, "")
@@ -384,7 +384,7 @@ function parseMarkdown(md: string, data: AppData): ImportChanges {
         const duration = durationMatch ? parseInt(durationMatch[1], 10) : undefined;
         const deadline = deadlineMatch ? deadlineMatch[1] : undefined;
         const depIds = depsMatch
-            ? depsMatch[1].split(",").map((s) => s.trim().replace("#", "")).filter((s) => s.length > 0)
+            ? depsMatch[1].split(",").map((s) => s.trim().replace(/^#/, "")).filter((s) => s.length > 0)
             : [];
 
         // Determine parent based on indent level
@@ -397,8 +397,60 @@ function parseMarkdown(md: string, data: AppData): ImportChanges {
         if (idMatch) {
             // ── Existing task: update fields ──
             const taskId = idMatch[1];
-            const task = data.tasks.find((t) => t.id === taskId);
-            if (!task) continue;
+            let task = data.tasks.find((t) => t.id === taskId);
+
+            // If task doesn't exist yet but ID is explicit in markdown, create it with that ID.
+            if (!task) {
+                const projectIds: string[] = [];
+                if (currentProjectId !== null) {
+                    projectIds.push(currentProjectId);
+                }
+
+                task = {
+                    id: taskId,
+                    title,
+                    projectIds,
+                    parentId,
+                    subtaskIds: [],
+                    conditionIds: depIds,
+                    status: isDone ? "done" : "todo",
+                    duration,
+                    deadline,
+                    createdAt: new Date().toISOString(),
+                    completedAt: isDone ? new Date().toISOString() : undefined,
+                };
+                data.tasks.push(task);
+                changes.newTasks++;
+
+                if (parentId !== undefined) {
+                    const parentTask = data.tasks.find((t) => t.id === parentId);
+                    if (parentTask && !parentTask.subtaskIds.includes(task.id)) {
+                        parentTask.subtaskIds.push(task.id);
+                    }
+                }
+            }
+
+            // Keep parent relationship aligned with indentation edits.
+            if (task.parentId !== parentId) {
+                if (task.parentId !== undefined) {
+                    const oldParent = data.tasks.find((t) => t.id === task!.parentId);
+                    if (oldParent) {
+                        oldParent.subtaskIds = oldParent.subtaskIds.filter((sid) => sid !== task!.id);
+                    }
+                }
+                task.parentId = parentId;
+                if (parentId !== undefined) {
+                    const newParent = data.tasks.find((t) => t.id === parentId);
+                    if (newParent && !newParent.subtaskIds.includes(task.id)) {
+                        newParent.subtaskIds.push(task.id);
+                    }
+                }
+            }
+
+            // Keep top-level tasks attached to current project section.
+            if (task.parentId === undefined && currentProjectId !== null && !task.projectIds.includes(currentProjectId)) {
+                task.projectIds = [currentProjectId];
+            }
 
             // Status
             const newStatus = isDone ? "done" : "todo";
@@ -442,7 +494,7 @@ function parseMarkdown(md: string, data: AppData): ImportChanges {
             indentStack.push({ indent, taskId });
 
         } else {
-            // ── New task: no #ID found ──
+            // ── New task: no explicit ID found ──
             if (!title) continue;
 
             const projectIds: string[] = [];
@@ -451,7 +503,9 @@ function parseMarkdown(md: string, data: AppData): ImportChanges {
             }
 
             const newTask: Task = {
-                id: String(data.nextTaskId++),
+                id: parentId !== undefined
+                    ? generateSubtaskId(data, parentId)
+                    : generateTaskId(data, currentProjectId ?? undefined),
                 title,
                 projectIds,
                 parentId,
