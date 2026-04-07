@@ -70,7 +70,7 @@ export function showStats(): void {
             }
             console.log();
         }
-      }
+    }
 }
 
 function computeStreak(completedDates: string[]): number {

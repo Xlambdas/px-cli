@@ -41,8 +41,63 @@ export function showStatus(args: string[]): void {
         return;
     }
 
-    // Task detail
+    // Try as project first (by ID or name)
     const id = parseInt(args[0], 10);
+    const project = !isNaN(id)
+        ? data.projects.find((p) => p.id === id)
+        : data.projects.find((p) => p.title.toLowerCase() === args[0].toLowerCase());
+
+    // If it matches a project → show project detail
+    if (project) {
+        const pct = projectProgress(data, project.id);
+        const topTasks = data.tasks.filter(
+            (t) => t.projectIds.includes(project.id) && t.parentId === undefined
+        );
+        const done = topTasks.filter((t) => t.status === "done").length;
+        const dl = fmtDeadline(project.deadline);
+        const focus = data.focus.includes(project.id) ? " ★" : "";
+        const profile = (data as any).projectProfiles?.[project.id];
+
+        console.log(`\n📂 ${project.title}${focus}`);
+        if (project.description) console.log(`   ${project.description}`);
+        if (dl) console.log(`   Deadline: ${dl}`);
+        if (profile?.type) console.log(`   Type: ${profile.type}`);
+        if (profile?.stage) console.log(`   Stage: ${profile.stage}`);
+        if (profile?.goal) console.log(`   Goal: ${profile.goal}`);
+        console.log(`   Progress: ${done}/${topTasks.length} tasks  ${pct}%`);
+
+        if (topTasks.length > 0) {
+            console.log();
+            for (let i = 0; i < topTasks.length; i++) {
+                const t = topTasks[i];
+                const isLast = i === topTasks.length - 1;
+                const mark = t.status === "done" ? "✓" : canComplete(data, t).ok ? "○" : "⛔";
+                const prefix = isLast ? "└─" : "├─";
+                const dur = fmtDuration(t.duration);
+                const tdl = fmtDeadline(t.deadline);
+                console.log(`   ${prefix} ${mark} #${t.id}  ${t.title}  ${dur}  ${tdl}`);
+
+                for (let j = 0; j < t.subtaskIds.length; j++) {
+                    const sub = data.tasks.find((s) => s.id === t.subtaskIds[j]);
+                    if (!sub) continue;
+                    const subMark = sub.status === "done" ? "✓" : "○";
+                    const indent = isLast ? "   " : "│  ";
+                    const subPrefix = j === t.subtaskIds.length - 1 ? "└─" : "├─";
+                    console.log(`   ${indent}${subPrefix} ${subMark} #${sub.id}  ${sub.title}`);
+                }
+            }
+        }
+
+        console.log();
+        return;
+    }
+
+    // Otherwise treat as task ID
+    if (isNaN(id)) {
+        console.error(`Project or task "${args[0]}" not found.`);
+        process.exit(1);
+    }
+
     const task = getTaskOrDie(data, id);
     const check = canComplete(data, task);
     const pct = taskProgress(data, task);

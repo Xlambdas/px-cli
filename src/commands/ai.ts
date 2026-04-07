@@ -25,11 +25,21 @@ export async function aiCommand(args: string[]): Promise<void> {
     // ── Pick project ──
     let projectId: number;
 
-    if (mode === "help") {
+    if (mode === "setup") {
         console.log(`
-    🤖 px ai — Smart task suggestions
+--- px ai — Setup & Usage ---
 
-    Commands:
+    Step 1: Get your API key (free)
+        1. Go to aistudio.google.com
+        2. Click "Get API key" → "Create API key"
+        3. Copy the key
+
+    Step 2: Save the key
+        Run in PowerShell:
+        [System.Environment]::SetEnvironmentVariable("GEMINI_API_KEY", "your-key-here", "User")
+        Then restart PowerShell.
+
+    Step 3: Use it
         px ai                 Suggest next tasks for focused project
         px ai next            Same as above
         px ai plan            Full project plan (5-8 tasks)
@@ -41,12 +51,12 @@ export async function aiCommand(args: string[]): Promise<void> {
         3. You pick which suggestions to add (1,3,5 / all / none)
         4. System learns what you accept vs reject over time
 
-    Requires:
-        GEMINI_API_KEY environment variable (free from aistudio.google.com)
-        Set it:  [System.Environment]::SetEnvironmentVariable("GEMINI_API_KEY", "your-key", "User")
-        Then restart PowerShell.
-        `);
-        return;
+    Troubleshooting:
+        Quota error?      Wait 30 seconds and retry (rolling rate limit)
+        Wrong model?      Check src/ai/gemini.ts uses gemini-2.5-flash
+
+    `);
+    return;
     } else if (mode === "expand") {
         const taskId = parseInt(args[1], 10);
         if (isNaN(taskId)) {
