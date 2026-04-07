@@ -26,6 +26,7 @@ import { undo } from "./commands/undo";
 import { projectAdd, projectList } from "./commands/project";
 import { startServer } from "./server";
 import { aiCommand } from "./commands/ai";
+import { pxStart, pxEnd } from "./commands/sync";
 
 const [command, ...args] = process.argv.slice(2);
 
@@ -118,6 +119,12 @@ async function main() {
         case "ai":
             await aiCommand(args);
             break;
+        case "start":
+            pxStart();
+            break;
+        case "end":
+            pxEnd();
+                break;
 
         // Projects
         case "project":
@@ -160,6 +167,8 @@ function showGeneralHelp(): void {
 
         ai [next|plan|expand <ID>]
         web
+        start                                  Pull latest + import changes
+        end                                    Export + commit + push
         help <command>
 
 --- Run "px help <command>" for details on any command ---
@@ -372,8 +381,36 @@ function showCommandHelp(cmd: string): void {
         - localtunnel for remote access
         - SSH tunnel option
     `,
-    };
+        start: `
+\x1b[32m--- px start ---\x1b[0m
 
+    Morning routine. Run this when you sit down to work.
+
+    What it does:
+        1. git pull (get latest from any device)
+        2. Checks if projects.md was edited
+        3. Imports status changes back into data.json
+        4. Creates a backup before importing
+
+    Notes:
+        Edit projects.md on your phone to toggle tasks.
+        Change [ ] to [x] or [x] to [ ] — px start picks it up.
+    `,
+
+        end: `
+\x1b[32m--- px end ---\x1b[0m
+
+    End of session. Run this when you stop working.
+
+    What it does:
+        1. Exports all projects/tasks to projects.md
+        2. git add + commit + push
+
+    Notes:
+        projects.md is human-readable and editable.
+        You can edit it on your phone and run px start to import.
+    `,
+        };
 
     const text = help[cmd];
     if (text) {
