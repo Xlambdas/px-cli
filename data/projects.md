@@ -17,6 +17,17 @@ Deadline: 2026-06-30
 - [ ] #6 Test phone
 - [ ] #7 Nouveau ttst phone
 
+# testt 
+> this is not a real project but a test project so I can check if everything is working perfectly.
+
+- [ ] #64 test1
+- [ ] #65 sper cool en tout cas... (35min)
+  - [ ] #66 first subtask
+    - [ ] #67 nv test subsubtask
+  - [ ] #68 nouvellllllllleauuuuu task
+  - [ ] #69 uctfyvgbhu uni
+- [ ] #70 big task (60min)
+
 # px-cli development  (0%)
 
 - [ ] #8 Add px remove command (delete task/project) (30min)
