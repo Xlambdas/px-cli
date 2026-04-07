@@ -16,15 +16,15 @@ const DATA_DIR = path.join(__dirname, "../../data");
 const MD_PATH = path.join(DATA_DIR, "projects.md");
 
 /**
-    * px start
-    *
-    * Morning routine:
-    * 1. git pull (get latest from any device)
-    * 2. If markdown sync enabled:
-    *    - Check if projects.md was edited
-    *    - If yes, parse changes back into data.json
-    *    - Backup data.json before overwriting
-*/
+ * px start
+ *
+ * Morning routine:
+ * 1. git pull (get latest from any device)
+ * 2. If markdown sync enabled:
+ *    - Check if projects.md was edited
+ *    - If yes, parse changes back into data.json
+ *    - Backup data.json before overwriting
+ */
 export function pxStart(): void {
     const cwd = path.join(__dirname, "../..");
 
@@ -44,37 +44,43 @@ export function pxStart(): void {
         return;
     }
 
-    // Check if projects.md exists and was modified
+    // Check if projects.md exists
     if (!fs.existsSync(MD_PATH)) {
         console.log("  No projects.md found — skipping import.");
         console.log("\n  ✓ Ready to work!\n");
         return;
     }
 
-    const data = loadData();
     const mdContent = fs.readFileSync(MD_PATH, "utf-8");
 
-    // Check if md is empty or just whitespace
     if (!mdContent.trim()) {
         console.log("  projects.md is empty — skipping import.");
         console.log("\n  ✓ Ready to work!\n");
         return;
     }
 
-    // Parse markdown back into data
+    // Create timestamped backup BEFORE any changes
+    const dataPath = path.join(DATA_DIR, "data.json");
+    if (fs.existsSync(dataPath)) {
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+        const bakPath = path.join(DATA_DIR, `data.${timestamp}.import.bak`);
+        fs.copyFileSync(dataPath, bakPath);
+        console.log(`  📦 Backup: ${path.basename(bakPath)}`);
+    }
+
+    // Load data and apply ALL changes from markdown
+    const data = loadData();
     const changes = parseMarkdown(mdContent, data);
 
-    if (changes > 0) {
-        // Backup before applying
-        const bakPath = path.join(DATA_DIR, "data.json.pre-import.bak");
-        const dataPath = path.join(DATA_DIR, "data.json");
-        if (fs.existsSync(dataPath)) {
-            fs.copyFileSync(dataPath, bakPath);
-            console.log(`  📦 Backup saved: data.json.pre-import.bak`);
-        }
-
+    if (changes.total > 0) {
         saveData(data);
-        console.log(`  ✓ Imported ${changes} change(s) from projects.md`);
+        console.log(`  ✓ Imported from projects.md:`);
+        if (changes.statusChanges > 0) console.log(`      ${changes.statusChanges} status change(s)`);
+        if (changes.titleChanges > 0) console.log(`      ${changes.titleChanges} title update(s)`);
+        if (changes.durationChanges > 0) console.log(`      ${changes.durationChanges} duration update(s)`);
+        if (changes.deadlineChanges > 0) console.log(`      ${changes.deadlineChanges} deadline update(s)`);
+        if (changes.depChanges > 0) console.log(`      ${changes.depChanges} dependency update(s)`);
+        if (changes.newTasks > 0) console.log(`      ${changes.newTasks} new task(s) added`);
     } else {
         console.log("  No changes detected in projects.md.");
     }
@@ -208,41 +214,195 @@ function formatTaskMd(task: Task, data: AppData, indent: number): string {
     return line;
 }
 
+interface ImportChanges {
+    statusChanges: number;
+    titleChanges: number;
+    durationChanges: number;
+    deadlineChanges: number;
+    depChanges: number;
+    newTasks: number;
+    total: number;
+}
+
 /**
-    * Parse projects.md back into data.
-    * Only updates STATUS changes (checked/unchecked).
-    * Returns number of changes made.
-    *
-    * WHY only status? → Keeping it simple. Renaming tasks or adding new ones
-    * via markdown is fragile. Status toggle is safe and useful.
-*/
-function parseMarkdown(md: string, data: AppData): number {
-    let changes = 0;
+ * Parse projects.md back into data.
+ * Updates: status, title, duration, deadline, dependencies.
+ * Creates new tasks if they don't have a #ID.
+ *
+ * Task line format:
+ *   - [x] #3 Task title (60min) [needs #1, #2] {2026-05-01}
+ *   - [ ] New task without ID (45min)
+ *
+ * We detect:
+ *   #ID             → existing task (update it)
+ *   no #ID          → new task (create it)
+ *   [x] vs [ ]      → status
+ *   (NUMmin)        → duration
+ *   [needs #N, #M]  → dependencies
+ *   {YYYY-MM-DD}    → deadline
+ *   everything else → title
+ */
+function parseMarkdown(md: string, data: AppData): ImportChanges {
+    const changes: ImportChanges = {
+        statusChanges: 0,
+        titleChanges: 0,
+        durationChanges: 0,
+        deadlineChanges: 0,
+        depChanges: 0,
+        newTasks: 0,
+        total: 0,
+    };
 
-    // Match lines like: - [x] #3 Task title
-    // or:               - [ ] #3 Task title
-    const taskRegex = /^[\s]*-\s+\[(x| )\]\s+#(\d+)\s/gm;
-    let match: RegExpExecArray | null;
+    let currentProjectId: number | null = null;
+    let currentParentId: number | undefined = undefined;
+    let lastTopLevelTaskId: number | undefined = undefined;
 
-    while ((match = taskRegex.exec(md)) !== null) {
-        const isDone = match[1] === "x";
-        const taskId = parseInt(match[2], 10);
-        const task = data.tasks.find((t) => t.id === taskId);
+    const lines = md.split("\n");
 
-        if (!task) continue;
-
-        const newStatus = isDone ? "done" : "todo";
-        if (task.status !== newStatus) {
-            task.status = newStatus;
-            if (isDone && !task.completedAt) {
-                task.completedAt = new Date().toISOString();
+    for (const line of lines) {
+        // Detect project headers: # Project Name  (50%)
+        const projectMatch = line.match(/^#\s+(.+?)(?:\s+\(\d+%\))?$/);
+        if (projectMatch) {
+            const projectName = projectMatch[1].trim();
+            if (projectName.toLowerCase() === "inbox") {
+                currentProjectId = 0; // special: inbox
+            } else {
+                const project = data.projects.find(
+                    (p) => p.title.toLowerCase() === projectName.toLowerCase()
+                );
+                currentProjectId = project ? project.id : null;
             }
-            if (!isDone) {
-                task.completedAt = undefined;
+            currentParentId = undefined;
+            lastTopLevelTaskId = undefined;
+            continue;
+        }
+
+        // Detect task lines: - [x] #3 Title (60min) [needs #1] {2026-05-01}
+        //                or: - [ ] New task title (30min)
+        const taskMatch = line.match(/^(\s*)-\s+\[(x| )\]\s+(.*)/);
+        if (!taskMatch) continue;
+
+        const indent = taskMatch[1].length;
+        const isDone = taskMatch[2] === "x";
+        const rest = taskMatch[3].trim();
+
+        // Parse components from the rest of the line
+        const idMatch = rest.match(/^#(\d+)\s+/);
+        const durationMatch = rest.match(/\((\d+)min\)/);
+        const depsMatch = rest.match(/\[needs\s+([^\]]+)\]/);
+        const deadlineMatch = rest.match(/\{(\d{4}-\d{2}-\d{2})\}/);
+
+        // Extract title: remove #ID, (duration), [needs], {deadline}
+        let title = rest
+            .replace(/^#\d+\s+/, "")
+            .replace(/\(\d+min\)/, "")
+            .replace(/\[needs\s+[^\]]+\]/, "")
+            .replace(/\{\d{4}-\d{2}-\d{2}\}/, "")
+            .trim();
+
+        const duration = durationMatch ? parseInt(durationMatch[1], 10) : undefined;
+        const deadline = deadlineMatch ? deadlineMatch[1] : undefined;
+        const depIds = depsMatch
+            ? depsMatch[1].split(",").map((s) => parseInt(s.trim().replace("#", ""), 10)).filter((n) => !isNaN(n))
+            : [];
+
+        const isSubtask = indent >= 2;
+
+        if (idMatch) {
+            // ── Existing task: update fields ──
+            const taskId = parseInt(idMatch[1], 10);
+            const task = data.tasks.find((t) => t.id === taskId);
+            if (!task) continue;
+
+            // Status
+            const newStatus = isDone ? "done" : "todo";
+            if (task.status !== newStatus) {
+                task.status = newStatus;
+                if (isDone && !task.completedAt) task.completedAt = new Date().toISOString();
+                if (!isDone) task.completedAt = undefined;
+                changes.statusChanges++;
             }
-            changes++;
+
+            // Title
+            if (title && title !== task.title) {
+                task.title = title;
+                changes.titleChanges++;
+            }
+
+            // Duration
+            if (duration !== undefined && duration !== task.duration) {
+                task.duration = duration;
+                changes.durationChanges++;
+            }
+
+            // Deadline
+            if (deadline && deadline !== task.deadline) {
+                task.deadline = deadline;
+                changes.deadlineChanges++;
+            } else if (!deadline && task.deadline) {
+                task.deadline = undefined;
+                changes.deadlineChanges++;
+            }
+
+            // Dependencies
+            const currentDeps = JSON.stringify(task.conditionIds.sort());
+            const newDeps = JSON.stringify(depIds.sort());
+            if (currentDeps !== newDeps) {
+                task.conditionIds = depIds;
+                changes.depChanges++;
+            }
+
+            // Track for subtask parenting
+            if (!isSubtask) {
+                lastTopLevelTaskId = taskId;
+            }
+
+        } else {
+            // ── New task: no #ID found ──
+            if (!title) continue;
+
+            const projectIds: number[] = [];
+            if (currentProjectId && currentProjectId > 0) {
+                projectIds.push(currentProjectId);
+            }
+
+            const parentId = isSubtask ? lastTopLevelTaskId : undefined;
+
+            const newTask: Task = {
+                id: data.nextTaskId++,
+                title,
+                projectIds,
+                parentId,
+                subtaskIds: [],
+                conditionIds: depIds,
+                status: isDone ? "done" : "todo",
+                duration,
+                deadline,
+                createdAt: new Date().toISOString(),
+                completedAt: isDone ? new Date().toISOString() : undefined,
+            };
+
+            data.tasks.push(newTask);
+
+            // Register as subtask in parent
+            if (parentId !== undefined) {
+                const parent = data.tasks.find((t) => t.id === parentId);
+                if (parent) {
+                    parent.subtaskIds.push(newTask.id);
+                }
+            }
+
+            // Track for subtask parenting
+            if (!isSubtask) {
+                lastTopLevelTaskId = newTask.id;
+            }
+
+            changes.newTasks++;
         }
     }
+
+    changes.total = changes.statusChanges + changes.titleChanges + changes.durationChanges
+        + changes.deadlineChanges + changes.depChanges + changes.newTasks;
 
     return changes;
 }
