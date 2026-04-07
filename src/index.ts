@@ -25,128 +25,128 @@ import { editTask } from "./commands/edit";
 import { undo } from "./commands/undo";
 import { projectAdd, projectList } from "./commands/project";
 import { startServer } from "./server";
-import { aiSuggest } from "./commands/ai";
+import { aiCommand } from "./commands/ai";
 
 const [command, ...args] = process.argv.slice(2);
 
 async function main() {
-  switch (command) {
-    // Tasks
-    case "add":
-      addTask(args);
-      break;
-    case "quick":
-      quickAdd(args);
-      break;
-    case "done":
-      markDone(args);
-      break;
-    case "edit":
-      await editTask(args);
-      break;
-    case "undo":
-      undo();
-      break;
-    case "dep":
-      addDependency(args);
-      break;
+    switch (command) {
+        // Tasks
+        case "add":
+            addTask(args);
+            break;
+        case "quick":
+            quickAdd(args);
+            break;
+        case "done":
+            markDone(args);
+            break;
+        case "edit":
+            await editTask(args);
+            break;
+        case "undo":
+            undo();
+            break;
+        case "dep":
+            addDependency(args);
+            break;
 
-    // Views
-    case "list":
-      listTasks(args);
-      break;
-    case "status":
-      showStatus(args);
-      break;
-    case "stats":
-      showStats();
-      break;
+        // Views
+        case "list":
+            listTasks(args);
+            break;
+        case "status":
+            showStatus(args);
+            break;
+        case "stats":
+            showStats();
+            break;
 
-    // Daily workflow
-    case "focus":
-      setFocus(args);
-      break;
-    case "day":
-      await daySession();
-      break;
-    case "inbox":
-      await inboxReview();
-      break;
-    case "web":
-      if (args[0] === "help") {
-        console.log(`
-    px web — Access from your phone
+        // Daily workflow
+        case "focus":
+            setFocus(args);
+            break;
+        case "day":
+            await daySession();
+            break;
+        case "inbox":
+            await inboxReview();
+            break;
+        case "web":
+            if (args[0] === "help") {
+                console.log(`
+                    px web — Access from your phone
 
-    1. Start the server:
-      px web
+                    1. Start the server:
+                      px web
 
-    2. Open the Phone URL on your phone browser.
+                    2. Open the Phone URL on your phone browser.
 
-    ── If your phone can't connect ──
+                    ── If your phone can't connect ──
 
-    Windows Firewall blocking?
-      Run PowerShell as Admin:
-      netsh advfirewall firewall add rule name="px-web" dir=in action=allow protocol=TCP localport=3478
+                    Windows Firewall blocking?
+                      Run PowerShell as Admin:
+                      netsh advfirewall firewall add rule name="px-web" dir=in action=allow protocol=TCP localport=3478
 
-    Find your laptop IP:
-      ipconfig
-      Look for "IPv4 Address" under your WiFi adapter.
+                    Find your laptop IP:
+                      ipconfig
+                      Look for "IPv4 Address" under your WiFi adapter.
 
-    ── If phone and laptop are on different networks ──
+                    ── If phone and laptop are on different networks ──
 
-    Option A: Free tunnel (no install)
-      In a second terminal:
-      npx localtunnel --port 3478
-      → Gives you a public URL, open it on any phone.
+                    Option A: Free tunnel (no install)
+                      In a second terminal:
+                      npx localtunnel --port 3478
+                      → Gives you a public URL, open it on any phone.
 
-    Option B: SSH tunnel (no install)
-      In a second terminal:
-      ssh -R 80:localhost:3478 nokey@localhost.run
-      → Gives you a public URL like https://abc123.localhost.run
-          `);
-      } else {
-        startServer();
-      }
-        break;
-    case "ai":
-      await aiSuggest(args);
-      break;
+                    Option B: SSH tunnel (no install)
+                      In a second terminal:
+                      ssh -R 80:localhost:3478 nokey@localhost.run
+                      → Gives you a public URL like https://abc123.localhost.run
+                `);
+            } else {
+                startServer();
+            }
+                break;
+        case "ai":
+            await aiCommand(args);
+            break;
 
-    // Projects
-    case "project":
-      if (args[0] === "add") projectAdd(args.slice(1));
-      else if (args[0] === "list") projectList();
-      else console.log("Usage: px project add|list");
-      break;
+        // Projects
+        case "project":
+            if (args[0] === "add") projectAdd(args.slice(1));
+            else if (args[0] === "list") projectList();
+            else console.log("Usage: px project add|list");
+            break;
 
-    // Help
-    default:
-      console.log(`
-  px - Project Execute
+        // Help
+        default:
+            console.log(`
+    px - Project Execute
 
-  Commands:
-    project add "Name" [--deadline DATE]   Create a project
-    project list                           List all projects
+    Commands:
+        project add "Name" [--deadline DATE]   Create a project
+        project list                           List all projects
 
-    add "Task" [--project "X"] [--parent ID] [--duration MIN] [--deadline DATE]
-    quick "Task title"                     Quick capture to inbox
-    inbox                                  Review inbox tasks
+        add "Task" [--project "X"] [--parent ID] [--duration MIN] [--deadline DATE]
+        quick "Task title"                     Quick capture to inbox
+        inbox                                  Review inbox tasks
 
-    focus [ID ID ...]                      Set/view focused projects
-    day                                    Interactive daily session
+        focus [ID ID ...]                      Set/view focused projects
+        day                                    Interactive daily session
 
-    done <ID>                              Mark task done
-    edit <ID>                              Edit a task interactively
-    undo                                   Revert last action
-    dep <ID> --needs <ID>                  Add dependency
-    list [--all] [--project "X"]           Browse tasks
-    status [ID]                            Project overview or task detail
-    stats                                  Productivity stats
-    web                                    Start web UI for phone (experimental)
-    ai <project-id>                        Get AI task suggestions for a project
-      `);
-      break;
-  }
+        done <ID>                              Mark task done
+        edit <ID>                              Edit a task interactively
+        undo                                   Revert last action
+        dep <ID> --needs <ID>                  Add dependency
+        list [--all] [--project "X"]           Browse tasks
+        status [ID]                            Project overview or task detail
+        stats                                  Productivity stats
+        web                                    Start web UI for phone (experimental)
+        ai <project-id>                        Get AI task suggestions for a project
+            `);
+            break;
+    }
 }
 
 main().catch(console.error);

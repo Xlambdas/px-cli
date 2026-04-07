@@ -439,6 +439,371 @@
       "id": 35,
       "title": "List the types of data outputs (e.g., JSON, CSV, API access) that a 'learning platform' would likely require",
       "parentId": 33
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [
+        37,
+        38
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.401Z",
+      "id": 36,
+      "title": "Research fundamental calisthenics exercises",
+      "duration": 90
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "done",
+      "createdAt": "2026-04-07T09:02:55.405Z",
+      "id": 37,
+      "title": "Identify core bodyweight movements (e.g., push-ups, squats, planks, inverted rows)",
+      "parentId": 36,
+      "completedAt": "2026-04-07T09:04:45.519Z"
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.405Z",
+      "id": 38,
+      "title": "Find 2-3 reliable beginner resources (websites, apps, YouTube channels)",
+      "parentId": 36
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [
+        40,
+        41
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.406Z",
+      "id": 39,
+      "title": "Assess current physical fitness level (baseline)",
+      "duration": 60
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.406Z",
+      "id": 40,
+      "title": "Perform max reps/time for 3-5 fundamental exercises (e.g., push-ups on knees, wall sits, plank hold)",
+      "parentId": 39
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.406Z",
+      "id": 41,
+      "title": "Record all baseline scores for future comparison",
+      "parentId": 39
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [
+        43,
+        44
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.406Z",
+      "id": 42,
+      "title": "Define specific, measurable fundamental goals for the first 4 weeks",
+      "duration": 60
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.406Z",
+      "id": 43,
+      "title": "Set initial targets for reps/time for chosen fundamental exercises (e.g., 'perform 5 clean push-ups on knees')",
+      "parentId": 42
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.406Z",
+      "id": 44,
+      "title": "Establish a short-term achievement goal related to body control (e.g., 'hold a perfect plank for 30 seconds')",
+      "parentId": 42
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [
+        46,
+        47,
+        48
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": 45,
+      "title": "Create a basic 2-3 day per week beginner workout routine structure",
+      "duration": 90
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": 46,
+      "title": "Outline training days and rest days for the week",
+      "parentId": 45
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": 47,
+      "title": "Select 4-6 appropriate beginner exercises with target sets/reps/hold times",
+      "parentId": 45
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": 48,
+      "title": "Allocate time for warm-up and cool-down for each session",
+      "parentId": 45
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [
+        50,
+        51,
+        52
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": 49,
+      "title": "Learn and practice proper form for 2-3 core exercises",
+      "duration": 120
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": 50,
+      "title": "Watch detailed instructional videos for chosen exercises (e.g., squat, incline push-up)",
+      "parentId": 49
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": 51,
+      "title": "Practice movements slowly in front of a mirror or record yourself for self-correction",
+      "parentId": 49
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": 52,
+      "title": "Focus on muscle activation and body alignment without pushing for reps",
+      "parentId": 49
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [
+        54,
+        55,
+        56
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": 53,
+      "title": "Execute the first scheduled workout session, focusing on form",
+      "duration": 90
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": 54,
+      "title": "Complete the planned warm-up routine",
+      "parentId": 53
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.408Z",
+      "id": 55,
+      "title": "Perform chosen exercises focusing *only* on maintaining perfect form, not on reps or speed",
+      "parentId": 53
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.409Z",
+      "id": 56,
+      "title": "Complete cool-down and stretching after the workout",
+      "parentId": 53
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [
+        58,
+        59
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.409Z",
+      "id": 57,
+      "title": "Set up a system for tracking workout progress",
+      "duration": 60
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.409Z",
+      "id": 58,
+      "title": "Choose a tracking method (notebook, spreadsheet, mobile app)",
+      "parentId": 57
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.409Z",
+      "id": 59,
+      "title": "Identify key metrics to record for each workout (date, exercises, sets, reps, duration, perceived effort, notes on form)",
+      "parentId": 57
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [
+        61,
+        62,
+        63
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.409Z",
+      "id": 60,
+      "title": "Review the first week's workouts and make minor adjustments",
+      "duration": 60
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.409Z",
+      "id": 61,
+      "title": "Evaluate if initial exercises were too easy/hard or if discomfort occurred",
+      "parentId": 60
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.409Z",
+      "id": 62,
+      "title": "Adjust reps/sets or exercise variations for upcoming sessions if needed",
+      "parentId": 60
+    },
+    {
+      "projectIds": [
+        5
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T09:02:55.409Z",
+      "id": 63,
+      "title": "Note any specific areas needing more attention or modification for the next week",
+      "parentId": 60
     }
   ],
   "projects": [
@@ -469,12 +834,52 @@
       "title": "Cognitive Science DB",
       "description": "all my student courses (about cognitive science) in one place, ready to use for further integration into a playground that will integrate later a learning platform",
       "deadline": "2026-05-30"
+    },
+    {
+      "status": "active",
+      "createdAt": "2026-04-07T08:59:03.471Z",
+      "id": 5,
+      "title": "calisthenics",
+      "description": "masterize the control of my body with musculation exercices"
     }
   ],
   "focus": [
+    3,
     4,
-    3
+    5
   ],
-  "nextTaskId": 36,
-  "nextProjectId": 5
+  "nextTaskId": 64,
+  "nextProjectId": 6,
+  "projectProfiles": {
+    "5": {
+      "projectId": 5,
+      "type": "fitness",
+      "stage": "building",
+      "goal": "learn fundamentals",
+      "learnedPatterns": {
+        "preferredTaskTypes": [
+          "assess",
+          "current",
+          "physical",
+          "define",
+          "specific",
+          "measurable",
+          "create",
+          "basic",
+          "week",
+          "learn",
+          "practice",
+          "proper",
+          "execute",
+          "first",
+          "scheduled",
+          "system",
+          "tracking",
+          "workout",
+          "review",
+          "weeks"
+        ]
+      }
+    }
+  }
 }

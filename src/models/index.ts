@@ -26,6 +26,17 @@ export interface Project {
     createdAt: string;
 }
 
+export interface ProjectProfile {
+    projectId: number;
+    type?: string;
+    stage?: string;
+    goal?: string;
+    learnedPatterns?: {
+        preferredTaskTypes?: string[];
+        avoidedTaskTypes?: string[];
+    };
+}
+
 // This is what gets saved to disk
 export interface AppData {
     tasks: Task[];
@@ -33,7 +44,9 @@ export interface AppData {
     focus: number[];           // IDs of today's focused projects
     nextTaskId: number;        // auto-increment counter
     nextProjectId: number;
+    projectProfiles: { [projectId: number]: ProjectProfile };
 }
+
 
 // Factory functions — create objects with safe defaults
 // WHY: So you never forget a required field when creating a task/project
@@ -77,5 +90,6 @@ export function createEmptyData(): AppData {
         focus: [],
         nextTaskId: 1,
         nextProjectId: 1,
+        projectProfiles: {},
     };
 }

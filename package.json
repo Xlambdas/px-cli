@@ -1,25 +1,25 @@
 {
-  "name": "px-cli",
-  "version": "1.0.0",
-  "description": "Personal project execution CLI",
-  "main": "dist/index.js",
-  "bin": {
-    "px": "dist/index.js"
-  },
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc && node dist/index.js"
-  },
-  "license": "ISC",
-  "keywords": [],
-  "author": "",
-  "type": "commonjs",
-  "devDependencies": {
-    "@types/express": "^5.0.6",
-    "@types/node": "^25.5.2",
-    "typescript": "^6.0.2"
-  },
-  "dependencies": {
-    "express": "^5.2.1"
-  }
+    "name": "px-cli",
+    "version": "1.0.0",
+    "description": "Personal project execution CLI",
+    "main": "dist/index.js",
+    "bin": {
+        "px": "dist/index.js"
+    },
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc && node dist/index.js"
+    },
+    "license": "ISC",
+    "keywords": [],
+    "author": "",
+    "type": "commonjs",
+    "devDependencies": {
+        "@types/express": "^5.0.6",
+        "@types/node": "^25.5.2",
+        "typescript": "^6.0.2"
+    },
+    "dependencies": {
+        "express": "^5.2.1"
+    }
 }

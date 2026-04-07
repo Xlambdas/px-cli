@@ -401,11 +401,12 @@
                 );
 
                 html += `<div class="project-group">
-      <div class="project-header">
-        <span class="project-name">${esc(p.title)}</span>
-        <span class="project-pct">${p.progress}%</span>
-      </div>
-      <div class="progress-track"><div class="progress-fill" style="width:${p.progress}%"></div></div>`;
+                <div class="project-header">
+                    <span class="project-name">${esc(p.title)}</span>
+                    <span class="project-pct">${p.progress}%</span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" style="width:${p.progress}%"></div>
+                </div>`;
 
                 // Ready tasks first, then blocked
                 const ready = tasks.filter(t => !t.blocked);
@@ -445,13 +446,14 @@
 
             const onclick = t.blocked ? '' : `onclick="toggleDone(${t.id})"`;
 
-            return `<div class="${itemClass}">
-    <button class="task-check ${checkClass}" ${onclick}>${t.status === 'done' ? '✓' : t.blocked ? '✕' : ''}</button>
-    <div class="task-info">
-      <div class="task-title">${esc(t.title)}</div>
-      ${meta ? `<div class="task-meta">${meta}</div>` : ''}
-    </div>
-  </div>`;
+            return `
+            <div class="${itemClass}">
+                <button class="task-check ${checkClass}" ${onclick}>${t.status === 'done' ? '✓' : t.blocked ? '✕' : ''}</button>
+                <div class="task-info">
+                    <div class="task-title">${esc(t.title)}</div>
+                    ${meta ? `<div class="task-meta">${meta}</div>` : ''}
+                </div>
+            </div>`;
         }
 
         function renderInbox() {
@@ -482,35 +484,36 @@
             const pct = total > 0 ? Math.round((s.totalDone / total) * 100) : 0;
 
             let html = `<div class="stat-cards">
-    <div class="stat-card">
-      <div class="stat-value">${s.doneToday}</div>
-      <div class="stat-label">Done today</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">${s.doneThisWeek}</div>
-      <div class="stat-label">This week</div>
-    </div>
-    <div class="stat-card wide">
-      <div style="display:flex;justify-content:space-between;align-items:baseline">
-        <div class="stat-value">${s.totalDone}<span style="font-size:16px;color:var(--text2)">/${total}</span></div>
-        <div class="stat-label">${pct}% complete</div>
-      </div>
-      <div class="progress-big"><div class="progress-fill" style="width:${pct}%"></div></div>
-    </div>
-  </div>`;
+                <div class="stat-card">
+                    <div class="stat-value">${s.doneToday}</div>
+                    <div class="stat-label">Done today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${s.doneThisWeek}</div>
+                    <div class="stat-label">This week</div>
+                </div>
+                <div class="stat-card wide">
+                    <div style="display:flex;justify-content:space-between;align-items:baseline">
+                        <div class="stat-value">${s.totalDone}<span style="font-size:16px;color:var(--text2)">/${total}</span></div>
+                        <div class="stat-label">${pct}% complete</div>
+                    </div>
+                    <div class="progress-big"><div class="progress-fill" style="width:${pct}%"></div></div>
+                </div>
+            </div>`;
 
             // Project breakdown
             html += '<div style="margin-top:8px">';
             for (const p of DATA.projects) {
                 const taskCount = DATA.tasks.filter(t => t.projectIds.includes(p.id) && !t.parentId).length;
                 const doneCount = DATA.tasks.filter(t => t.projectIds.includes(p.id) && !t.parentId && t.status === 'done').length;
-                html += `<div class="stat-card" style="margin-bottom:12px">
-      <div style="display:flex;justify-content:space-between;align-items:baseline">
-        <div class="stat-label" style="font-weight:700;color:var(--text)">${esc(p.title)}${p.focused ? ' ★' : ''}</div>
-        <div class="stat-label">${doneCount}/${taskCount}</div>
-      </div>
-      <div class="progress-track" style="margin-top:10px;margin-bottom:0"><div class="progress-fill" style="width:${p.progress}%"></div></div>
-    </div>`;
+                html += `
+                <div class="stat-card" style="margin-bottom:12px">
+                    <div style="display:flex;justify-content:space-between;align-items:baseline">
+                        <div class="stat-label" style="font-weight:700;color:var(--text)">${esc(p.title)}${p.focused ? ' ★' : ''}</div>
+                        <div class="stat-label">${doneCount}/${taskCount}</div>
+                    </div>
+                    <div class="progress-track" style="margin-top:10px;margin-bottom:0"><div class="progress-fill" style="width:${p.progress}%"></div></div>
+                </div>`;
             }
             html += '</div>';
 

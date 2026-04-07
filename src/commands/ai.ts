@@ -1,106 +1,180 @@
-// gg api key : AIzaSyBVcUT9psJLLHKi3n1BhGBimDtqSC8MopI
-
 import * as readline from "readline";
-import * as https from "https";
 import { loadData, saveData } from "../utils/storage";
-import { createTask } from "../models";
+import { createTask, ProjectProfile } from "../models";
+import { getTaskOrDie } from "../utils/helpers";
+import { buildContext, buildNextPrompt, buildPlanPrompt, buildExpandPrompt } from "../ai/promptBuilder";
+import { parseAIResponse, TaskSuggestion } from "../ai/parser";
+import { callGemini } from "../ai/gemini";
 
-export async function aiSuggest(args: string[]): Promise<void> {
+export async function aiCommand(args: string[]): Promise<void> {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
         console.error("  ⚠ GEMINI_API_KEY not set.");
-        console.error('  Run: [System.Environment]::SetEnvironmentVariable("GEMINI_API_KEY", "your-key", "User")');
-        console.error("  Then restart PowerShell.");
-        process.exit(1);
-    }
-
-    const projectId = parseInt(args[0], 10);
-    if (isNaN(projectId)) {
-        console.error("Usage: px ai <project-id>");
+        console.error('  1. Go to aistudio.google.com → Get API key');
+        console.error('  2. Run: [System.Environment]::SetEnvironmentVariable("GEMINI_API_KEY", "your-key", "User")');
+        console.error("  3. Restart PowerShell");
         process.exit(1);
     }
 
     const data = loadData();
-    const project = data.projects.find((p) => p.id === projectId);
-    if (!project) {
-        console.error(`Project #${projectId} not found.`);
-        process.exit(1);
-    }
+    const mode = args[0] || "next";
 
-    // Gather existing tasks for context
-    const existingTasks = data.tasks
-        .filter((t) => t.projectIds.includes(projectId) && !t.parentId)
-        .map((t) => {
-            const subs = t.subtaskIds
-                .map((sid) => data.tasks.find((s) => s.id === sid)?.title)
-                .filter(Boolean);
-            let line = `- ${t.title} [${t.status}]`;
-            if (subs.length > 0) line += `\n  Subtasks: ${subs.join(", ")}`;
-            return line;
-        })
-        .join("\n");
-
-    const prompt = `I'm working on a project called "${project.title}".
-${project.description ? `Description: ${project.description}` : ""}
-${project.deadline ? `Deadline: ${project.deadline}` : ""}
-
-${existingTasks ? `Here are my current tasks:\n${existingTasks}\n` : "No tasks yet."}
-
-Suggest 5-8 tasks I might be missing to complete this project successfully.
-Each task should be actionable and completable in 30min-2h.
-For complex tasks, suggest 2-3 subtasks.
-
-Respond ONLY in this exact JSON format, no other text:
-[
-  {
-    "title": "Task title",
-    "duration": 60,
-    "subtasks": ["Subtask 1", "Subtask 2"]
-  }
-]`;
-
-    console.log(`\n  🤖 Asking Gemini about "${project.title}"...\n`);
-
-    let response: string;
-    try {
-        response = await callGemini(apiKey, prompt);
-    } catch (err: any) {
-        console.error(`  ⚠ API error: ${err.message}`);
-        return;
-    }
-
-    // Parse suggestions
-    let suggestions: Array<{ title: string; duration?: number; subtasks?: string[] }>;
-    try {
-        const jsonMatch = response.match(/\[[\s\S]*\]/);
-        if (!jsonMatch) throw new Error("No JSON found");
-        suggestions = JSON.parse(jsonMatch[0]);
-    } catch {
-        console.error("  ⚠ Couldn't parse suggestions. Raw response:");
-        console.log(response);
-        return;
-    }
-
-    // Show suggestions
-    console.log("  Suggestions:\n");
-    suggestions.forEach((s, i) => {
-        console.log(`  ${i + 1}. ${s.title}  (${s.duration || "?"}min)`);
-        if (s.subtasks && s.subtasks.length > 0) {
-            for (const sub of s.subtasks) {
-                console.log(`     └─ ${sub}`);
-            }
-        }
-    });
-
-    // Let user pick
     const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
     const ask = (q: string): Promise<string> => new Promise((r) => rl.question(q, r));
 
+    // ── Pick project ──
+    let projectId: number;
+
+    if (mode === "help") {
+        console.log(`
+    🤖 px ai — Smart task suggestions
+
+    Commands:
+        px ai                 Suggest next tasks for focused project
+        px ai next            Same as above
+        px ai plan            Full project plan (5-8 tasks)
+        px ai expand <ID>     Break a task into subtasks
+
+    How it works:
+        1. First run asks 3 questions (type, stage, goal) — saved forever
+        2. AI reads your project context, existing tasks, and progress
+        3. You pick which suggestions to add (1,3,5 / all / none)
+        4. System learns what you accept vs reject over time
+
+    Requires:
+        GEMINI_API_KEY environment variable (free from aistudio.google.com)
+        Set it:  [System.Environment]::SetEnvironmentVariable("GEMINI_API_KEY", "your-key", "User")
+        Then restart PowerShell.
+        `);
+        return;
+    } else if (mode === "expand") {
+        const taskId = parseInt(args[1], 10);
+        if (isNaN(taskId)) {
+            console.error("Usage: px ai expand <task-id>");
+            rl.close();
+            process.exit(1);
+        }
+        const task = getTaskOrDie(data, taskId);
+        if (task.projectIds.length === 0) {
+            console.error("  ⚠ Task has no project. Assign it first.");
+            rl.close();
+            process.exit(1);
+        }
+        projectId = task.projectIds[0];
+    } else if (data.focus.length === 1) {
+        projectId = data.focus[0];
+    } else if (data.focus.length > 1) {
+        console.log("\n  Focused projects:");
+        for (const pid of data.focus) {
+            const p = data.projects.find((pr) => pr.id === pid);
+            if (p) console.log(`    ${p.id}. ${p.title}`);
+        }
+        const answer = await ask("\n  Which project? (ID): ");
+        projectId = parseInt(answer.trim(), 10);
+        if (!data.projects.find((p) => p.id === projectId)) {
+            console.error("  ⚠ Project not found.");
+            rl.close();
+            process.exit(1);
+        }
+    } else {
+        console.log("\n  Projects:");
+        for (const p of data.projects) {
+            console.log(`    ${p.id}. ${p.title}`);
+        }
+        const answer = await ask("\n  Which project? (ID): ");
+        projectId = parseInt(answer.trim(), 10);
+        if (!data.projects.find((p) => p.id === projectId)) {
+            console.error("  ⚠ Project not found.");
+            rl.close();
+            process.exit(1);
+        }
+    }
+
+    // ── Load or create profile ──
+    if (!data.projectProfiles[projectId]) {
+        data.projectProfiles[projectId] = { projectId };
+    }
+    const profile = data.projectProfiles[projectId];
+
+    // ── Ask missing context (saved permanently) ──
+    let profileChanged = false;
+
+    if (!profile.type) {
+        const answer = await ask("  What type of project is this? (e.g. web app, learning, fitness, creative): ");
+        if (answer.trim()) { profile.type = answer.trim(); profileChanged = true; }
+    }
+
+    if (!profile.stage) {
+        const answer = await ask("  What stage is it at? (e.g. planning, building, testing, polishing, launching): ");
+        if (answer.trim()) { profile.stage = answer.trim(); profileChanged = true; }
+    }
+
+    if (!profile.goal) {
+        const answer = await ask("  What's the main goal? (e.g. launch by May, learn fundamentals, get fit): ");
+        if (answer.trim()) { profile.goal = answer.trim(); profileChanged = true; }
+    }
+
+    if (profileChanged) {
+        saveData(data);
+        console.log("  ✓ Profile saved — won't ask these again\n");
+    }
+
+    // ── Build prompt ──
+    const ctx = buildContext(data, projectId);
+    let prompt: string;
+    let modeLabel: string;
+
+    if (mode === "expand") {
+        const taskId = parseInt(args[1], 10);
+        const task = getTaskOrDie(data, taskId);
+        prompt = buildExpandPrompt(ctx, task);
+        modeLabel = `expanding "${task.title}"`;
+    } else if (mode === "plan") {
+        prompt = buildPlanPrompt(ctx);
+        modeLabel = "full plan";
+    } else {
+        prompt = buildNextPrompt(ctx);
+        modeLabel = "next tasks";
+    }
+
+    console.log(`  🤖 Getting ${modeLabel} for "${ctx.project.title}"...\n`);
+
+    // ── Call API ──
+    let rawResponse: string;
+    try {
+        rawResponse = await callGemini(apiKey, prompt);
+    } catch (err: any) {
+        console.error(`  ⚠ API error: ${err.message}`);
+        rl.close();
+        return;
+    }
+
+    // ── Parse ──
+    const suggestions = parseAIResponse(rawResponse);
+    if (!suggestions) {
+        console.error("  ⚠ Couldn't parse AI response. Raw output:");
+        console.log(rawResponse);
+        rl.close();
+        return;
+    }
+
+    // ── Display ──
+    console.log("  Suggestions:\n");
+    suggestions.forEach((s, i) => {
+        console.log(`  ${i + 1}. ${s.title}  (${s.duration || "?"}min)`);
+        for (const sub of s.subtasks) {
+            console.log(`     └─ ${sub}`);
+        }
+    });
+
+    // ── Pick ──
     console.log();
     const answer = await ask("  Add which? (e.g. 1,3,5 / all / none): ");
     const trimmed = answer.trim().toLowerCase();
 
     if (trimmed === "none" || trimmed === "n" || trimmed === "") {
+        trackRejections(profile, suggestions);
+        saveData(data);
         rl.close();
         console.log("  Nothing added.");
         return;
@@ -110,20 +184,34 @@ Respond ONLY in this exact JSON format, no other text:
     if (trimmed === "all" || trimmed === "a") {
         indices = suggestions.map((_, i) => i);
     } else {
-        indices = trimmed.split(",").map((s) => parseInt(s.trim(), 10) - 1).filter((n) => !isNaN(n) && n >= 0 && n < suggestions.length);
+        indices = trimmed
+            .split(",")
+            .map((s) => parseInt(s.trim(), 10) - 1)
+            .filter((n) => !isNaN(n) && n >= 0 && n < suggestions.length);
     }
 
-    for (const idx of indices) {
-        const s = suggestions[idx];
+    const accepted = indices.map((i) => suggestions[i]);
+    const rejected = suggestions.filter((_, i) => !indices.includes(i));
+
+    // ── Add tasks ──
+    const isExpand = mode === "expand";
+    const parentTask = isExpand ? getTaskOrDie(data, parseInt(args[1], 10)) : undefined;
+
+    for (const s of accepted) {
         const task = createTask({
             id: data.nextTaskId++,
             title: s.title,
             projectIds: [projectId],
             duration: s.duration,
+            parentId: isExpand ? parentTask!.id : undefined,
         });
         data.tasks.push(task);
 
-        if (s.subtasks && s.subtasks.length > 0) {
+        if (isExpand && parentTask) {
+            parentTask.subtaskIds.push(task.id);
+        }
+
+        if (!isExpand && s.subtasks.length > 0) {
             for (const subTitle of s.subtasks) {
                 const sub = createTask({
                     id: data.nextTaskId++,
@@ -136,47 +224,60 @@ Respond ONLY in this exact JSON format, no other text:
             }
         }
 
-        const subCount = s.subtasks?.length || 0;
+        const subCount = isExpand ? 0 : s.subtasks.length;
         console.log(`  ✓ Added "${s.title}"${subCount > 0 ? ` + ${subCount} subtasks` : ""}`);
     }
 
+    trackAcceptances(profile, accepted);
+    trackRejections(profile, rejected);
+
     rl.close();
     saveData(data);
-    console.log(`\n  Done! ${indices.length} task(s) added.\n`);
+    console.log(`\n  Done! ${accepted.length} task(s) added.\n`);
 }
 
-function callGemini(apiKey: string, prompt: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const body = JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-        });
+function trackAcceptances(profile: ProjectProfile, tasks: TaskSuggestion[]): void {
+    if (!profile.learnedPatterns) profile.learnedPatterns = {};
+    if (!profile.learnedPatterns.preferredTaskTypes) profile.learnedPatterns.preferredTaskTypes = [];
+    for (const t of tasks) {
+        for (const kw of extractKeywords(t.title)) {
+            if (!profile.learnedPatterns.preferredTaskTypes.includes(kw)) {
+                profile.learnedPatterns.preferredTaskTypes.push(kw);
+            }
+        }
+    }
+    if (profile.learnedPatterns.preferredTaskTypes.length > 20) {
+        profile.learnedPatterns.preferredTaskTypes = profile.learnedPatterns.preferredTaskTypes.slice(-20);
+    }
+}
 
-        const options = {
-            hostname: "generativelanguage.googleapis.com",
-            path: `/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-        };
+function trackRejections(profile: ProjectProfile, tasks: TaskSuggestion[]): void {
+    if (tasks.length === 0) return;
+    if (!profile.learnedPatterns) profile.learnedPatterns = {};
+    if (!profile.learnedPatterns.avoidedTaskTypes) profile.learnedPatterns.avoidedTaskTypes = [];
+    for (const t of tasks) {
+        for (const kw of extractKeywords(t.title)) {
+            if (!profile.learnedPatterns.avoidedTaskTypes.includes(kw)) {
+                profile.learnedPatterns.avoidedTaskTypes.push(kw);
+            }
+        }
+    }
+    if (profile.learnedPatterns.avoidedTaskTypes.length > 20) {
+        profile.learnedPatterns.avoidedTaskTypes = profile.learnedPatterns.avoidedTaskTypes.slice(-20);
+    }
+}
 
-        const req = https.request(options, (res) => {
-            let data = "";
-            res.on("data", (chunk) => (data += chunk));
-            res.on("end", () => {
-                try {
-                    const parsed = JSON.parse(data);
-                    if (parsed.error) {
-                        reject(new Error(parsed.error.message));
-                    } else {
-                        resolve(parsed.candidates[0].content.parts[0].text);
-                    }
-                } catch {
-                    reject(new Error("Invalid API response"));
-                }
-            });
-        });
-
-        req.on("error", reject);
-        req.write(body);
-        req.end();
-    });
+function extractKeywords(title: string): string[] {
+    const stopWords = new Set([
+        "a", "an", "the", "and", "or", "but", "in", "on", "at", "to", "for",
+        "of", "with", "by", "from", "as", "is", "was", "are", "be", "been",
+        "do", "does", "did", "will", "would", "could", "should", "may", "might",
+        "up", "out", "if", "not", "no", "so", "it", "its", "my", "your",
+    ]);
+    return title
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, "")
+        .split(/\s+/)
+        .filter((w) => w.length > 3 && !stopWords.has(w))
+        .slice(0, 3);
 }
