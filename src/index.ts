@@ -25,6 +25,7 @@ import { editTask } from "./commands/edit";
 import { undo } from "./commands/undo";
 import { projectAdd, projectList } from "./commands/project";
 import { startServer } from "./server";
+import { aiSuggest } from "./commands/ai";
 
 const [command, ...args] = process.argv.slice(2);
 
@@ -107,6 +108,9 @@ async function main() {
         startServer();
       }
         break;
+    case "ai":
+      await aiSuggest(args);
+      break;
 
     // Projects
     case "project":
@@ -139,6 +143,7 @@ async function main() {
     status [ID]                            Project overview or task detail
     stats                                  Productivity stats
     web                                    Start web UI for phone (experimental)
+    ai <project-id>                        Get AI task suggestions for a project
       `);
       break;
   }

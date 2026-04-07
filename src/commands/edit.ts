@@ -32,6 +32,10 @@ export async function editTask(args: string[]): Promise<void> {
     const newTitle = await ask(`  Title (${task.title}): `);
     if (newTitle.trim()) task.title = newTitle.trim();
 
+    // Description
+    const newDescr = await ask(`  Description (${task.description || "none"}): `);
+    if (newDescr.trim()) task.description = newDescr.trim();
+
     // Duration
     const durLabel = task.duration ? `${task.duration}min` : "none";
     const newDur = await ask(`  Duration in min (${durLabel}): `);

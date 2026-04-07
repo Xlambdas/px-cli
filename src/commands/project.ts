@@ -14,9 +14,12 @@ export function projectAdd(args: string[]): void {
   // Parse: first non-flag arg is title, --deadline is optional
   const title = args.find((a) => !a.startsWith("--"));
   if (!title) {
-    console.error("Usage: px project add \"Project name\" [--deadline YYYY-MM-DD]");
+    console.error("Usage: px project add \"Project name\" [--descr \"Description\"] [--deadline YYYY-MM-DD]");
     process.exit(1);
   }
+
+  const descrIdx = args.indexOf("--descr");
+  const description = descrIdx !== -1 ? args[descrIdx + 1] : undefined;
 
   const deadlineIdx = args.indexOf("--deadline");
   const deadline = deadlineIdx !== -1 ? args[deadlineIdx + 1] : undefined;
@@ -24,6 +27,7 @@ export function projectAdd(args: string[]): void {
   const project = createProject({
     id: data.nextProjectId++,
     title,
+    description,
     deadline,
   });
 
@@ -46,13 +50,14 @@ export function projectList(): void {
     return;
   }
 
-  console.log("\n📂 Projects\n");
+  console.log("\n-- Projects --\n");
   for (const p of data.projects) {
     const pct = projectProgress(data, p.id);
     const dl = fmtDeadline(p.deadline);
     const bar = progressBar(pct);
     const focusTag = data.focus.includes(p.id) ? " ★" : "";
-    console.log(`  #${p.id}  ${bar} ${pct}%  ${p.title}${focusTag}  ${dl}`);
+    const description = p.description ? ` - ${p.description}` : "";
+    console.log(`  #${p.id}  ${bar} ${pct}%  ${p.title}${description}${focusTag}  ${dl}`);
   }
   console.log();
 }

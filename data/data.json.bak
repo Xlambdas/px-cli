@@ -218,6 +218,226 @@
       "id": 18,
       "title": "Energy-based task suggestion",
       "duration": 90
+    },
+    {
+      "projectIds": [
+        3
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-06T20:03:30.813Z",
+      "id": 19,
+      "title": "Learning from behavior patterns",
+      "duration": 120
+    },
+    {
+      "projectIds": [
+        4
+      ],
+      "subtaskIds": [
+        21,
+        22
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.490Z",
+      "id": 20,
+      "title": "Define Core Course Data Model",
+      "duration": 60
+    },
+    {
+      "projectIds": [
+        4
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.492Z",
+      "id": 21,
+      "title": "Brainstorm essential data fields for each course (e.g., Course Code, Title, Year/Semester, Key Topics, Learning Outcomes, Main Resources, Instructor)",
+      "parentId": 20
+    },
+    {
+      "projectIds": [
+        4
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.492Z",
+      "id": 22,
+      "title": "Prioritize the top 5-7 most critical fields for initial implementation",
+      "parentId": 20
+    },
+    {
+      "projectIds": [
+        4
+      ],
+      "subtaskIds": [
+        24,
+        25
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.492Z",
+      "id": 23,
+      "title": "Inventory Existing Course Materials",
+      "duration": 90
+    },
+    {
+      "projectIds": [
+        4
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.492Z",
+      "id": 24,
+      "title": "Create a comprehensive list of all cognitive science courses taken",
+      "parentId": 23
+    },
+    {
+      "projectIds": [
+        4
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.492Z",
+      "id": 25,
+      "title": "For each course, identify the primary location(s) of its materials (e.g., university LMS, personal cloud storage, local drive)",
+      "parentId": 23
+    },
+    {
+      "projectIds": [
+        4
+      ],
+      "subtaskIds": [
+        27,
+        28
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.492Z",
+      "id": 26,
+      "title": "Create Initial Database Structure (Schema)",
+      "duration": 90
+    },
+    {
+      "projectIds": [
+        4
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.492Z",
+      "id": 27,
+      "title": "Set up the chosen storage tool (e.g., create a spreadsheet, define Notion DB properties, write a basic SQL table definition)",
+      "parentId": 26
+    },
+    {
+      "projectIds": [
+        4
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.492Z",
+      "id": 28,
+      "title": "Implement the core data fields identified in 'Define Core Course Data Model' as columns/properties",
+      "parentId": 26
+    },
+    {
+      "projectIds": [
+        4
+      ],
+      "subtaskIds": [
+        30,
+        31,
+        32
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.493Z",
+      "id": 29,
+      "title": "Populate Data for 2 Pilot Courses",
+      "duration": 120
+    },
+    {
+      "projectIds": [
+        4
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.493Z",
+      "id": 30,
+      "title": "Select two distinct cognitive science courses from your inventory",
+      "parentId": 29
+    },
+    {
+      "projectIds": [
+        4
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.493Z",
+      "id": 31,
+      "title": "Extract relevant data for Course A and input it into your database structure",
+      "parentId": 29
+    },
+    {
+      "projectIds": [
+        4
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.493Z",
+      "id": 32,
+      "title": "Extract relevant data for Course B and input it into your database structure",
+      "parentId": 29
+    },
+    {
+      "projectIds": [
+        4
+      ],
+      "subtaskIds": [
+        34,
+        35
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.493Z",
+      "id": 33,
+      "title": "Outline Future Integration Data Needs",
+      "duration": 75
+    },
+    {
+      "projectIds": [
+        4
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.493Z",
+      "id": 34,
+      "title": "Brainstorm how the 'playground' might use your course data (e.g., for quizzing, topic exploration, resource linking)",
+      "parentId": 33
+    },
+    {
+      "projectIds": [
+        4
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-07T07:54:53.493Z",
+      "id": 35,
+      "title": "List the types of data outputs (e.g., JSON, CSV, API access) that a 'learning platform' would likely require",
+      "parentId": 33
     }
   ],
   "projects": [
@@ -240,12 +460,20 @@
       "createdAt": "2026-04-06T20:03:22.566Z",
       "id": 3,
       "title": "px-cli development"
+    },
+    {
+      "status": "active",
+      "createdAt": "2026-04-07T07:36:11.674Z",
+      "id": 4,
+      "title": "Cognitive Science DB",
+      "description": "all my student courses (about cognitive science) in one place, ready to use for further integration into a playground that will integrate later a learning platform",
+      "deadline": "2026-05-30"
     }
   ],
   "focus": [
-    1,
-    2
+    4,
+    3
   ],
-  "nextTaskId": 19,
-  "nextProjectId": 4
+  "nextTaskId": 36,
+  "nextProjectId": 5
 }

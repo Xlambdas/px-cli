@@ -21,6 +21,7 @@ export function addTask(args: string[]): void {
   // Extract title: first arg that isn't a flag or a flag's value
   let title = "";
   const projectNames: string[] = [];
+  let description: string | undefined;
   let duration: number | undefined;
   let deadline: string | undefined;
   let parentId: number | undefined;
@@ -30,6 +31,8 @@ export function addTask(args: string[]): void {
     const arg = args[i];
     if (arg === "--project") {
       projectNames.push(args[++i]);
+    } else if (arg == "--descr") {
+      description = args[++i];
     } else if (arg === "--duration") {
       duration = parseInt(args[++i], 10);
     } else if (arg === "--deadline") {
@@ -43,7 +46,7 @@ export function addTask(args: string[]): void {
   }
 
   if (!title) {
-    console.error('Usage: px add "Task title" [--project "Name"] [--parent ID] [--duration MIN] [--deadline DATE]');
+    console.error('Usage: px add "Task title" [--project "Name"] [--descr "Description"] [--parent ID] [--duration MIN] [--deadline DATE]');
     process.exit(1);
   }
 
@@ -76,6 +79,7 @@ export function addTask(args: string[]): void {
   const task = createTask({
     id: data.nextTaskId++,
     title,
+    description,
     projectIds,
     parentId,
     duration,

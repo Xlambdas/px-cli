@@ -5,6 +5,7 @@
 export interface Task {
     id: number;
     title: string;
+    description?: string;
     projectIds: number[];     // which projects this task belongs to (can be multiple)
     parentId?: number;         // if this is a subtask, who's the parent?
     subtaskIds: number[];      // IDs of child tasks
@@ -19,6 +20,7 @@ export interface Task {
 export interface Project {
     id: number;
     title: string;
+    description?: string;
     status: "active" | "done";
     deadline?: string;
     createdAt: string;
@@ -39,6 +41,7 @@ export interface AppData {
 export function createTask(fields: {
     id: number;
     title: string;
+    description?: string;
     projectIds?: number[];
     parentId?: number;
     duration?: number;
@@ -57,6 +60,7 @@ export function createTask(fields: {
 export function createProject(fields: {
     id: number;
     title: string;
+    description?: string;
     deadline?: string;
 }): Project {
     return {
