@@ -56,7 +56,7 @@ export async function inboxReview(): Promise<void> {
             console.log("  → Skipped\n");
         } else {
             // Try to parse as project ID
-            const pid = parseInt(answer, 10);
+            const pid = answer.trim();
             const project = data.projects.find((p) => p.id === pid);
             if (project) {
                 task.projectIds.push(pid);

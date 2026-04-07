@@ -1,5 +1,5 @@
 import { loadData, saveData } from "../utils/storage";
-import { createTask } from "../models";
+import { createTask, generateTaskId, generateSubtaskId } from "../models";
 
 /**
     * px add "Title" --project "Name" --duration 60 --deadline 2026-05-01 --parent 3
@@ -24,7 +24,7 @@ export function addTask(args: string[]): void {
     let description: string | undefined;
     let duration: number | undefined;
     let deadline: string | undefined;
-    let parentId: number | undefined;
+    let parentId: string | undefined;
 
     let i = 0;
     while (i < args.length) {
@@ -38,7 +38,7 @@ export function addTask(args: string[]): void {
         } else if (arg === "--deadline") {
             deadline = args[++i];
         } else if (arg === "--parent") {
-            parentId = parseInt(args[++i], 10);
+            parentId = args[++i];
         } else if (!arg.startsWith("--")) {
             title = arg;
         }
@@ -51,7 +51,7 @@ export function addTask(args: string[]): void {
     }
 
     // Resolve project names → IDs
-    const projectIds: number[] = [];
+    const projectIds: string[] = [];
     for (const name of projectNames) {
         const proj = data.projects.find(
             (p) => p.title.toLowerCase() === name.toLowerCase()
@@ -76,8 +76,19 @@ export function addTask(args: string[]): void {
         }
     }
 
+    // Generate ID for the new task
+    let taskId: string;
+    if (parentId !== undefined) {
+        const parent = data.tasks.find((t) => t.id === parentId)!;
+        // Generate subtask ID: parentId.index
+        const subtaskIndex = parent.subtaskIds.length + 1;
+        taskId = generateSubtaskId(parentId, subtaskIndex);
+    } else {
+        taskId = generateTaskId(data);
+    }
+
     const task = createTask({
-        id: data.nextTaskId++,
+        id: taskId,
         title,
         description,
         projectIds,

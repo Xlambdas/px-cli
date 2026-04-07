@@ -66,26 +66,50 @@ export function pxStart(): void {
         const bakPath = path.join(DATA_DIR, `data.${timestamp}.import.bak`);
         fs.copyFileSync(dataPath, bakPath);
         console.log(`  📦 Backup: ${path.basename(bakPath)}`);
+        cleanOldBackups();
     }
 
     // Load data and apply ALL changes from markdown
     const data = loadData();
     const changes = parseMarkdown(mdContent, data);
 
+    // Always save — even if parseMarkdown reports 0 "changes",
+    // the git pull may have updated data.json itself
+    saveData(data);
+
     if (changes.total > 0) {
-        saveData(data);
         console.log(`  ✓ Imported from projects.md:`);
+        if (changes.newProjects > 0) console.log(`      ${changes.newProjects} new project(s)`);
+        if (changes.newTasks > 0) console.log(`      ${changes.newTasks} new task(s) added`);
         if (changes.statusChanges > 0) console.log(`      ${changes.statusChanges} status change(s)`);
         if (changes.titleChanges > 0) console.log(`      ${changes.titleChanges} title update(s)`);
         if (changes.durationChanges > 0) console.log(`      ${changes.durationChanges} duration update(s)`);
         if (changes.deadlineChanges > 0) console.log(`      ${changes.deadlineChanges} deadline update(s)`);
         if (changes.depChanges > 0) console.log(`      ${changes.depChanges} dependency update(s)`);
-        if (changes.newTasks > 0) console.log(`      ${changes.newTasks} new task(s) added`);
     } else {
         console.log("  No changes detected in projects.md.");
     }
 
     console.log("\n  ✓ Ready to work!\n");
+}
+
+/**
+ * Keep only the last 5 import backups.
+ */
+function cleanOldBackups(): void {
+    try {
+        const files = fs.readdirSync(DATA_DIR)
+            .filter((f) => f.match(/^data\..*\.import\.bak$/))
+            .sort()
+            .reverse();
+
+        // Delete all but the last 5
+        for (let i = 5; i < files.length; i++) {
+            fs.unlinkSync(path.join(DATA_DIR, files[i]));
+        }
+    } catch {
+        // Not critical — ignore errors
+    }
 }
 
 /**
@@ -215,6 +239,7 @@ function formatTaskMd(task: Task, data: AppData, indent: number): string {
 }
 
 interface ImportChanges {
+    newProjects: number;
     statusChanges: number;
     titleChanges: number;
     durationChanges: number;
@@ -244,6 +269,7 @@ interface ImportChanges {
  */
 function parseMarkdown(md: string, data: AppData): ImportChanges {
     const changes: ImportChanges = {
+        newProjects: 0,
         statusChanges: 0,
         titleChanges: 0,
         durationChanges: 0,
@@ -253,27 +279,82 @@ function parseMarkdown(md: string, data: AppData): ImportChanges {
         total: 0,
     };
 
-    let currentProjectId: number | null = null;
-    let currentParentId: number | undefined = undefined;
-    let lastTopLevelTaskId: number | undefined = undefined;
+    let currentProjectId: string | null = null;
+    let lastTopLevelTaskId: string | undefined = undefined;
+
+    // Track indent levels for nested subtasks
+    // indent 0 = top-level, indent 2 = subtask of last top-level, indent 4 = sub-subtask, etc.
+    const indentStack: { indent: number; taskId: string }[] = [];
 
     const lines = md.split("\n");
 
-    for (const line of lines) {
+    for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+        const line = lines[lineIdx];
+
+        // Skip comments
+        if (line.trim().startsWith("<!--")) continue;
+
         // Detect project headers: # Project Name  (50%)
-        const projectMatch = line.match(/^#\s+(.+?)(?:\s+\(\d+%\))?$/);
+        // Also handles: # Project Name (no percentage)
+        const projectMatch = line.match(/^#\s+(.+?)(?:\s+\(\d+%\))?\s*$/);
         if (projectMatch) {
             const projectName = projectMatch[1].trim();
-            if (projectName.toLowerCase() === "inbox") {
-                currentProjectId = 0; // special: inbox
-            } else {
-                const project = data.projects.find(
-                    (p) => p.title.toLowerCase() === projectName.toLowerCase()
-                );
-                currentProjectId = project ? project.id : null;
-            }
-            currentParentId = undefined;
             lastTopLevelTaskId = undefined;
+            indentStack.length = 0;
+
+            if (projectName.toLowerCase() === "inbox") {
+                currentProjectId = null; // null means inbox (no specific project)
+                continue;
+            }
+
+            // Try to find existing project
+            let project = data.projects.find(
+                (p) => p.title.toLowerCase() === projectName.toLowerCase()
+            );
+
+            if (!project) {
+                // NEW PROJECT — create it
+                // Look ahead for description (> line) and metadata (Deadline:, Type:, etc.)
+                let description: string | undefined;
+                let deadline: string | undefined;
+
+                for (let j = lineIdx + 1; j < lines.length && j < lineIdx + 10; j++) {
+                    const next = lines[j].trim();
+                    if (next.startsWith("> ")) {
+                        description = next.slice(2).trim();
+                    } else if (next.startsWith("Deadline:")) {
+                        deadline = next.replace("Deadline:", "").trim();
+                    } else if (next.startsWith("- [")) {
+                        break; // reached tasks, stop looking
+                    }
+                }
+
+                project = {
+                    id: String(data.nextProjectId++),
+                    title: projectName,
+                    description,
+                    status: "active" as const,
+                    deadline,
+                    createdAt: new Date().toISOString(),
+                };
+                data.projects.push(project);
+                changes.newProjects++;
+            }
+
+            currentProjectId = project.id;
+            continue;
+        }
+
+        // Skip metadata lines (>, Deadline:, Type:, Stage:, Goal:)
+        const trimmed = line.trim();
+        if (
+            trimmed.startsWith("> ") ||
+            trimmed.startsWith("Deadline:") ||
+            trimmed.startsWith("Type:") ||
+            trimmed.startsWith("Stage:") ||
+            trimmed.startsWith("Goal:") ||
+            trimmed === ""
+        ) {
             continue;
         }
 
@@ -286,7 +367,7 @@ function parseMarkdown(md: string, data: AppData): ImportChanges {
         const isDone = taskMatch[2] === "x";
         const rest = taskMatch[3].trim();
 
-        // Parse components from the rest of the line
+        // Parse components
         const idMatch = rest.match(/^#(\d+)\s+/);
         const durationMatch = rest.match(/\((\d+)min\)/);
         const depsMatch = rest.match(/\[needs\s+([^\]]+)\]/);
@@ -303,14 +384,19 @@ function parseMarkdown(md: string, data: AppData): ImportChanges {
         const duration = durationMatch ? parseInt(durationMatch[1], 10) : undefined;
         const deadline = deadlineMatch ? deadlineMatch[1] : undefined;
         const depIds = depsMatch
-            ? depsMatch[1].split(",").map((s) => parseInt(s.trim().replace("#", ""), 10)).filter((n) => !isNaN(n))
+            ? depsMatch[1].split(",").map((s) => s.trim().replace("#", "")).filter((s) => s.length > 0)
             : [];
 
-        const isSubtask = indent >= 2;
+        // Determine parent based on indent level
+        // Pop stack until we find indent < current
+        while (indentStack.length > 0 && indentStack[indentStack.length - 1].indent >= indent) {
+            indentStack.pop();
+        }
+        const parentId = indentStack.length > 0 ? indentStack[indentStack.length - 1].taskId : undefined;
 
         if (idMatch) {
             // ── Existing task: update fields ──
-            const taskId = parseInt(idMatch[1], 10);
+            const taskId = idMatch[1];
             const task = data.tasks.find((t) => t.id === taskId);
             if (!task) continue;
 
@@ -345,31 +431,27 @@ function parseMarkdown(md: string, data: AppData): ImportChanges {
             }
 
             // Dependencies
-            const currentDeps = JSON.stringify(task.conditionIds.sort());
-            const newDeps = JSON.stringify(depIds.sort());
+            const currentDeps = JSON.stringify([...task.conditionIds].sort());
+            const newDeps = JSON.stringify([...depIds].sort());
             if (currentDeps !== newDeps) {
                 task.conditionIds = depIds;
                 changes.depChanges++;
             }
 
-            // Track for subtask parenting
-            if (!isSubtask) {
-                lastTopLevelTaskId = taskId;
-            }
+            // Push onto indent stack
+            indentStack.push({ indent, taskId });
 
         } else {
             // ── New task: no #ID found ──
             if (!title) continue;
 
-            const projectIds: number[] = [];
-            if (currentProjectId && currentProjectId > 0) {
+            const projectIds: string[] = [];
+            if (currentProjectId !== null) {
                 projectIds.push(currentProjectId);
             }
 
-            const parentId = isSubtask ? lastTopLevelTaskId : undefined;
-
             const newTask: Task = {
-                id: data.nextTaskId++,
+                id: String(data.nextTaskId++),
                 title,
                 projectIds,
                 parentId,
@@ -386,23 +468,21 @@ function parseMarkdown(md: string, data: AppData): ImportChanges {
 
             // Register as subtask in parent
             if (parentId !== undefined) {
-                const parent = data.tasks.find((t) => t.id === parentId);
-                if (parent) {
-                    parent.subtaskIds.push(newTask.id);
+                const parentTask = data.tasks.find((t) => t.id === parentId);
+                if (parentTask) {
+                    parentTask.subtaskIds.push(newTask.id);
                 }
             }
 
-            // Track for subtask parenting
-            if (!isSubtask) {
-                lastTopLevelTaskId = newTask.id;
-            }
+            // Push onto indent stack
+            indentStack.push({ indent, taskId: newTask.id });
 
             changes.newTasks++;
         }
     }
 
-    changes.total = changes.statusChanges + changes.titleChanges + changes.durationChanges
-        + changes.deadlineChanges + changes.depChanges + changes.newTasks;
+    changes.total = changes.newProjects + changes.statusChanges + changes.titleChanges
+        + changes.durationChanges + changes.deadlineChanges + changes.depChanges + changes.newTasks;
 
     return changes;
 }

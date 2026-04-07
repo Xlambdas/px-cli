@@ -10,16 +10,16 @@ import { getTaskOrDie } from "../utils/helpers";
     *   You realize "oh wait, I can't deploy until I build" mid-session.
 */
 export function addDependency(args: string[]): void {
-    const taskId = parseInt(args[0], 10);
+    const taskId = args[0];
     const needsIdx = args.indexOf("--needs");
 
-    if (isNaN(taskId) || needsIdx === -1) {
+    if (!taskId || needsIdx === -1) {
         console.error("Usage: px dep <task-id> --needs <dependency-id>");
         process.exit(1);
     }
 
-    const depId = parseInt(args[needsIdx + 1], 10);
-    if (isNaN(depId)) {
+    const depId = args[needsIdx + 1];
+    if (!depId) {
         console.error("Usage: px dep <task-id> --needs <dependency-id>");
         process.exit(1);
     }

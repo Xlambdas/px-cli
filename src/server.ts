@@ -42,11 +42,11 @@ app.post("/api/quick", (req, res) => {
     if (!title || !title.trim()) return res.status(400).json({ error: "Title required" });
     const data = loadData();
     const task = {
-        id: data.nextTaskId++,
+        id: String(data.nextTaskId++),
         title: title.trim(),
-        projectIds: [] as number[],
-        subtaskIds: [] as number[],
-        conditionIds: [] as number[],
+        projectIds: [] as string[],
+        subtaskIds: [] as string[],
+        conditionIds: [] as string[],
         status: "todo" as const,
         createdAt: new Date().toISOString(),
     };
@@ -56,7 +56,7 @@ app.post("/api/quick", (req, res) => {
 });
 
 app.post("/api/done/:id", (req, res) => {
-    const id = parseInt(req.params.id, 10);
+    const id = req.params.id;
     const data = loadData();
     const task = data.tasks.find((t) => t.id === id);
     if (!task) return res.status(404).json({ error: "Task not found" });
@@ -83,7 +83,7 @@ app.post("/api/done/:id", (req, res) => {
 });
 
 app.post("/api/untodo/:id", (req, res) => {
-    const id = parseInt(req.params.id, 10);
+    const id = req.params.id;
     const data = loadData();
     const task = data.tasks.find((t) => t.id === id);
     if (!task) return res.status(404).json({ error: "Task not found" });

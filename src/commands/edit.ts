@@ -10,8 +10,8 @@ import { getTaskOrDie } from "../utils/helpers";
     * would be painful to remember. This way you just see what's there and fix it.
 */
 export async function editTask(args: string[]): Promise<void> {
-    const id = parseInt(args[0], 10);
-    if (isNaN(id)) {
+    const id = args[0];
+    if (!id || id.length === 0) {
         console.error("Usage: px edit <task-id>");
         process.exit(1);
     }
@@ -65,7 +65,7 @@ export async function editTask(args: string[]): Promise<void> {
     }
     const newProj = await ask(`  Project IDs comma-separated (Enter to keep): `);
     if (newProj.trim()) {
-        const ids = newProj.split(",").map((s) => parseInt(s.trim(), 10)).filter((n) => !isNaN(n));
+        const ids = newProj.split(",").map((s) => s.trim()).filter((n) => n.length > 0);
         // Validate all IDs exist
         const allValid = ids.every((pid) => data.projects.find((p) => p.id === pid));
         if (allValid) {

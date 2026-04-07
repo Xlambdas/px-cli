@@ -23,7 +23,7 @@ export async function aiCommand(args: string[]): Promise<void> {
     const ask = (q: string): Promise<string> => new Promise((r) => rl.question(q, r));
 
     // ── Pick project ──
-    let projectId: number;
+    let projectId: string;
 
     if (mode === "setup") {
         console.log(`
@@ -58,8 +58,8 @@ export async function aiCommand(args: string[]): Promise<void> {
     `);
     return;
     } else if (mode === "expand") {
-        const taskId = parseInt(args[1], 10);
-        if (isNaN(taskId)) {
+        const taskId = args[1];
+        if (!taskId) {
             console.error("Usage: px ai expand <task-id>");
             rl.close();
             process.exit(1);
@@ -80,7 +80,7 @@ export async function aiCommand(args: string[]): Promise<void> {
             if (p) console.log(`    ${p.id}. ${p.title}`);
         }
         const answer = await ask("\n  Which project? (ID): ");
-        projectId = parseInt(answer.trim(), 10);
+        projectId = answer.trim();
         if (!data.projects.find((p) => p.id === projectId)) {
             console.error("  ⚠ Project not found.");
             rl.close();
@@ -92,7 +92,7 @@ export async function aiCommand(args: string[]): Promise<void> {
             console.log(`    ${p.id}. ${p.title}`);
         }
         const answer = await ask("\n  Which project? (ID): ");
-        projectId = parseInt(answer.trim(), 10);
+        projectId = answer.trim();
         if (!data.projects.find((p) => p.id === projectId)) {
             console.error("  ⚠ Project not found.");
             rl.close();
@@ -135,7 +135,7 @@ export async function aiCommand(args: string[]): Promise<void> {
     let modeLabel: string;
 
     if (mode === "expand") {
-        const taskId = parseInt(args[1], 10);
+        const taskId = args[1];
         const task = getTaskOrDie(data, taskId);
         prompt = buildExpandPrompt(ctx, task);
         modeLabel = `expanding "${task.title}"`;
@@ -205,11 +205,11 @@ export async function aiCommand(args: string[]): Promise<void> {
 
     // ── Add tasks ──
     const isExpand = mode === "expand";
-    const parentTask = isExpand ? getTaskOrDie(data, parseInt(args[1], 10)) : undefined;
+    const parentTask = isExpand ? getTaskOrDie(data, args[1]) : undefined;
 
     for (const s of accepted) {
         const task = createTask({
-            id: data.nextTaskId++,
+            id: String(data.nextTaskId++),
             title: s.title,
             projectIds: [projectId],
             duration: s.duration,
@@ -224,7 +224,7 @@ export async function aiCommand(args: string[]): Promise<void> {
         if (!isExpand && s.subtasks.length > 0) {
             for (const subTitle of s.subtasks) {
                 const sub = createTask({
-                    id: data.nextTaskId++,
+                    id: String(data.nextTaskId++),
                     title: subTitle,
                     projectIds: [projectId],
                     parentId: task.id,

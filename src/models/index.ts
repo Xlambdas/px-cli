@@ -3,22 +3,22 @@
 // No logic here. Logic lives in services.
 
 export interface Task {
-    id: number;
+    id: string;
     title: string;
     description?: string;
-    projectIds: number[];     // which projects this task belongs to (can be multiple)
-    parentId?: number;         // if this is a subtask, who's the parent?
-    subtaskIds: number[];      // IDs of child tasks
-    conditionIds: number[];    // IDs of tasks that must be done BEFORE this one
+    projectIds: string[];     // which projects this task belongs to (can be multiple)
+    parentId?: string;        // if this is a subtask, who's the parent?
+    subtaskIds: string[];     // IDs of child tasks
+    conditionIds: string[];   // IDs of tasks that must be done BEFORE this one
     status: "todo" | "done";
-    duration?: number;         // estimated minutes
-    deadline?: string;         // ISO date string e.g. "2026-05-01"
-    createdAt: string;         // ISO date string
-    completedAt?: string;       // ISO date string
+    duration?: number;        // estimated minutes
+    deadline?: string;        // ISO date string e.g. "2026-05-01"
+    createdAt: string;        // ISO date string
+    completedAt?: string;      // ISO date string
 }
 
 export interface Project {
-    id: number;
+    id: string;
     title: string;
     description?: string;
     status: "active" | "done";
@@ -27,7 +27,7 @@ export interface Project {
 }
 
 export interface ProjectProfile {
-    projectId: number;
+    projectId: string;
     type?: string;
     stage?: string;
     goal?: string;
@@ -41,10 +41,10 @@ export interface ProjectProfile {
 export interface AppData {
     tasks: Task[];
     projects: Project[];
-    focus: number[];           // IDs of today's focused projects
-    nextTaskId: number;        // auto-increment counter
-    nextProjectId: number;
-    projectProfiles: { [projectId: number]: ProjectProfile };
+    focus: string[];           // IDs of today's focused projects
+    nextTaskId: number;        // auto-increment counter (converted to string)
+    nextProjectId: number;     // auto-increment counter (converted to string)
+    projectProfiles: { [projectId: string]: ProjectProfile };
 }
 
 
@@ -52,11 +52,11 @@ export interface AppData {
 // WHY: So you never forget a required field when creating a task/project
 
 export function createTask(fields: {
-    id: number;
+    id: string;
     title: string;
     description?: string;
-    projectIds?: number[];
-    parentId?: number;
+    projectIds?: string[];
+    parentId?: string;
     duration?: number;
     deadline?: string;
 }): Task {
@@ -71,7 +71,7 @@ export function createTask(fields: {
 }
 
 export function createProject(fields: {
-    id: number;
+    id: string;
     title: string;
     description?: string;
     deadline?: string;
@@ -92,4 +92,31 @@ export function createEmptyData(): AppData {
         nextProjectId: 1,
         projectProfiles: {},
     };
+}
+
+// === ID GENERATION ===
+
+/**
+ * Generate a new task ID (top-level task)
+ * Format: just the number as string (e.g., "1", "2", "3")
+ */
+export function generateTaskId(data: AppData): string {
+    return String(data.nextTaskId++);
+}
+
+/**
+ * Generate a new project ID
+ * Format: just the number as string (e.g., "1", "2", "3")
+ */
+export function generateProjectId(data: AppData): string {
+    return String(data.nextProjectId++);
+}
+
+/**
+ * Generate a subtask ID
+ * Format: parentTaskId.subtaskIndex (e.g., "5.1", "5.2")
+ * The index is based on the position in the parent's subtaskIds array
+ */
+export function generateSubtaskId(parentTaskId: string, subtaskIndex: number): string {
+    return `${parentTaskId}.${subtaskIndex}`;
 }

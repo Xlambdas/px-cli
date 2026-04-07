@@ -143,13 +143,13 @@ export async function daySession(): Promise<void> {
         }
 
         // Parse "done <id>" or just "<id>"
-        const match = trimmed.match(/^(?:done\s+)?(\d+)$/);
+        const match = trimmed.match(/^(?:done\s+)?([\w.]+)$/);
         if (!match) {
             console.log("  ⚠ Type a task ID or 'q' to quit");
             continue;
         }
 
-        const taskId = parseInt(match[1], 10);
+        const taskId = match[1];
         const task = data.tasks.find((t) => t.id === taskId);
 
         if (!task) {

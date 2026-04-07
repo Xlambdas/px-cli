@@ -42,10 +42,9 @@ export function showStatus(args: string[]): void {
     }
 
     // Try as project first (by ID or name)
-    const id = parseInt(args[0], 10);
-    const project = !isNaN(id)
-        ? data.projects.find((p) => p.id === id)
-        : data.projects.find((p) => p.title.toLowerCase() === args[0].toLowerCase());
+    const id = args[0];
+    const project = data.projects.find((p) => p.id === id)
+        || data.projects.find((p) => p.title.toLowerCase() === args[0].toLowerCase());
 
     // If it matches a project → show project detail
     if (project) {
@@ -93,7 +92,7 @@ export function showStatus(args: string[]): void {
     }
 
     // Otherwise treat as task ID
-    if (isNaN(id)) {
+    if (!id || id.length === 0) {
         console.error(`Project or task "${args[0]}" not found.`);
         process.exit(1);
     }

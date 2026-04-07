@@ -5,7 +5,7 @@ import { Task, AppData } from "../models";
     * WHY throw? → If you type `px done 999` and task 999 doesn't exist,
     * you want a clear error, not silent failure.
 */
-export function getTaskOrDie(data: AppData, id: number): Task {
+export function getTaskOrDie(data: AppData, id: string): Task {
     const task = data.tasks.find((t) => t.id === id);
     if (!task) {
         console.error(`Task #${id} not found.`);
@@ -61,7 +61,7 @@ export function taskProgress(data: AppData, task: Task): number {
     * = % of its TOP-LEVEL tasks that are done
     * (subtasks don't count separately — they contribute via their parent)
 */
-export function projectProgress(data: AppData, projectId: number): number {
+export function projectProgress(data: AppData, projectId: string): number {
     const tasks = data.tasks.filter(
         (t) => t.projectIds.includes(projectId) && t.parentId === undefined
     );

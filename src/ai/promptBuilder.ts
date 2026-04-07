@@ -11,7 +11,7 @@ export interface AIContext {
     allTasks: Task[];
 }
 
-export function buildContext(data: AppData, projectId: number): AIContext {
+export function buildContext(data: AppData, projectId: string): AIContext {
     const project = data.projects.find((p) => p.id === projectId)!;
     const profile = data.projectProfiles[projectId] || { projectId };
     const existingTasks = data.tasks.filter(

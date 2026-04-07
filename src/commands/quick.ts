@@ -18,7 +18,7 @@ export function quickAdd(args: string[]): void {
 
     const data = loadData();
     const task = createTask({
-        id: data.nextTaskId++,
+        id: String(data.nextTaskId++),
         title,
         // No project = inbox
     });

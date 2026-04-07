@@ -14,8 +14,8 @@ import { getTaskOrDie, canComplete, taskProgress } from "../utils/helpers";
     *   the parent task is logically done. No need to manually mark it.
 */
 export function markDone(args: string[]): void {
-    const id = parseInt(args[0], 10);
-    if (isNaN(id)) {
+    const id = args[0];
+    if (!id || id.length === 0) {
         console.error("Usage: px done <task-id>");
         process.exit(1);
     }

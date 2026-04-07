@@ -1,5 +1,5 @@
 import { loadData, saveData } from "../utils/storage";
-import { createProject } from "../models";
+import { createProject, generateProjectId } from "../models";
 import { projectProgress, fmtDeadline } from "../utils/helpers";
 
 /**
@@ -25,7 +25,7 @@ export function projectAdd(args: string[]): void {
     const deadline = deadlineIdx !== -1 ? args[deadlineIdx + 1] : undefined;
 
     const project = createProject({
-        id: data.nextProjectId++,
+        id: generateProjectId(data),
         title,
         description,
         deadline,

@@ -32,7 +32,7 @@ export function setFocus(args: string[]): void {
     }
 
     // Set focus
-    const ids = args.map((a) => parseInt(a, 10));
+    const ids = args;
     for (const id of ids) {
         if (!data.projects.find((p) => p.id === id)) {
             console.error(`Project #${id} not found.`);
