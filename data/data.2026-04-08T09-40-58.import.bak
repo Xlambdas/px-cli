@@ -185,38 +185,38 @@
     },
     {
       "projectIds": [
-        "5"
+        "4"
       ],
       "subtaskIds": [],
       "conditionIds": [],
       "status": "todo",
       "createdAt": "2026-04-07T12:53:59.238Z",
       "id": "4.1",
-      "title": "find references"
+      "title": "first task"
     },
     {
       "projectIds": [
-        "5"
+        "4"
       ],
-      "subtaskIds": [
-        "4.2.1"
+      "subtaskIds": [],
+      "conditionIds": [
+        "4.1"
       ],
-      "conditionIds": [],
       "status": "todo",
       "createdAt": "2026-04-07T12:54:14.772Z",
       "id": "4.2",
-      "title": "separate tasks to do"
+      "title": "second task"
     },
     {
       "projectIds": [
-        "5"
+        "4"
       ],
       "subtaskIds": [],
       "conditionIds": [],
       "status": "todo",
       "createdAt": "2026-04-07T12:54:22.021Z",
       "id": "4.3",
-      "title": "search how shaders works"
+      "title": "third task"
     },
     {
       "projectIds": [
@@ -233,9 +233,9 @@
     },
     {
       "id": "4.4",
-      "title": "implement this into unity",
+      "title": "test neww card",
       "projectIds": [
-        "5"
+        "4"
       ],
       "subtaskIds": [],
       "conditionIds": [],
@@ -244,26 +244,14 @@
     },
     {
       "projectIds": [
-        "5"
+        "4"
       ],
       "subtaskIds": [],
       "conditionIds": [],
       "status": "todo",
       "createdAt": "2026-04-07T19:32:05.364Z",
       "id": "4.5",
-      "title": "polish the first version"
-    },
-    {
-      "id": "4.2.1",
-      "title": "separate the differents phase of the animation",
-      "projectIds": [
-        "5"
-      ],
-      "parentId": "4.2",
-      "subtaskIds": [],
-      "conditionIds": [],
-      "status": "todo",
-      "createdAt": "2026-04-08T10:19:41.679Z"
+      "title": "task"
     }
   ],
   "projects": [
@@ -294,19 +282,14 @@
       "id": "4",
       "title": "new project",
       "description": "this is a new project"
-    },
-    {
-      "id": "5",
-      "title": "Coffee game",
-      "description": "animation of a glass coffee cup filling with coffee liquid",
-      "status": "active",
-      "createdAt": "2026-04-08T10:19:41.679Z"
     }
   ],
   "focus": [
-    "4"
+    "1",
+    "2",
+    "3"
   ],
   "nextTaskId": 4,
-  "nextProjectId": 6,
+  "nextProjectId": 5,
   "projectProfiles": {}
 }

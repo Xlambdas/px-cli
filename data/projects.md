@@ -29,12 +29,12 @@ Deadline: 2026-06-30
 - [ ] 3.3 big task (60min) [needs 3.1]
 - [ ] 3.4 test quick task (20min)
 
-# new project  (0%)
-> this is a new project
+# Coffee game  (0%)
+> animation of a glass coffee cup filling with coffee liquid 
 
-- [ ] 4.1 first task
-- [ ] 4.2 second task [needs 4.1]
-- [ ] 4.3 third task
-- [ ] 4.4 test neww card
-- [ ] 4.5 task
-
+- [ ] 4.1 find references
+- [ ] 4.2 separate tasks to do
+  - [ ] 4.2.1 separate the differents phase of the animation
+- [ ] 4.3 search how shaders works
+- [ ] 4.4 implement this into unity
+- [ ] 4.5 polish the first version

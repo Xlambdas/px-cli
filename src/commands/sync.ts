@@ -5,6 +5,8 @@ import { loadData, saveData } from "../utils/storage";
 import { AppData, Task, generateSubtaskId, generateTaskId } from "../models";
 import { canComplete, fmtDeadline, fmtDuration, projectProgress } from "../utils/helpers";
 
+import { spawnSync } from "child_process";
+
 /**
     * FEATURE FLAG
     * Set to true to enable markdown export on px end / markdown import on px start.
@@ -25,18 +27,42 @@ const MD_PATH = path.join(DATA_DIR, "projects.md");
  *    - If yes, parse changes back into data.json
  *    - Backup data.json before overwriting
  */
-export function pxStart(): void {
-    const cwd = path.join(__dirname, "../..");
+export function pxStart(perso: boolean = false): void {
+    const cwd = process.cwd();
 
     // Git pull
-    console.log("\n  ⬇ Pulling latest changes...");
-    try {
-        const output = execSync("git pull", { cwd, encoding: "utf-8", stdio: "pipe" });
-        console.log(`  ${output.trim()}`);
-    } catch (err: any) {
-        console.error(`  ⚠ Git pull failed: ${err.message}`);
-        console.error("  Make sure you're in a git repo and have a remote set up.");
-        return;
+    if (perso) {
+        console.log("\n  ⬇ Pulling latest changes (personal)...");
+        const home = process.env.USERPROFILE || process.env.HOME || "";
+        const keyPath = path.join(home, ".ssh", "id_ed25519_personal");
+        const sshCmd = `ssh -vvv -i "${keyPath}" -o IdentitiesOnly=yes`;
+        // console.log(`  DEBUG: key = ${keyPath}`);
+        // console.log(`  DEBUG: cwd = ${cwd}`);
+        // console.log(`  DEBUG: GIT_SSH_COMMAND = ${sshCmd}`);
+        try {
+            execSync(`git pull`, {
+                cwd,
+                stdio: "inherit",
+                env: { ...process.env, GIT_SSH_COMMAND: sshCmd },
+            });
+        } catch (err: any) {
+            console.error(`  ⚠ Git pull failed`);
+            return;
+        }
+    } else {
+        console.log("\n  ⬇ Pulling latest changes...");
+        try {
+            const output = execSync("git pull", {
+                cwd,
+                encoding: "utf-8",
+                stdio: "pipe",
+                env: { ...process.env },
+            });
+            console.log(`  ${output.trim()}`);
+        } catch (err: any) {
+            console.error(`  ⚠ Git pull failed: ${err.message}`);
+            return;
+        }
     }
 
     if (!ENABLE_MARKDOWN_SYNC) {

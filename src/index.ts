@@ -120,7 +120,7 @@ async function main() {
             await aiCommand(args);
             break;
         case "start":
-            pxStart();
+            pxStart(process.argv.includes("--perso"));
             break;
         case "end":
             pxEnd();
