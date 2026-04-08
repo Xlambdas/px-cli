@@ -202,10 +202,11 @@
         "4.2.1"
       ],
       "conditionIds": [],
-      "status": "todo",
+      "status": "done",
       "createdAt": "2026-04-07T12:54:14.772Z",
       "id": "4.2",
-      "title": "separate tasks to do"
+      "title": "separate tasks to do",
+      "completedAt": "2026-04-08T10:34:38.582Z"
     },
     {
       "projectIds": [
@@ -304,7 +305,7 @@
     }
   ],
   "focus": [
-    "4"
+    "5"
   ],
   "nextTaskId": 4,
   "nextProjectId": 6,
