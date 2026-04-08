@@ -30,13 +30,6 @@ export function canComplete(data: AppData, task: Task): { ok: boolean; reason?: 
             return { ok: false, reason: `Blocked by #${depId} "${dep.title}"` };
         }
     }
-    // Check subtasks
-    for (const subId of task.subtaskIds) {
-        const sub = data.tasks.find((t) => t.id === subId);
-        if (sub && sub.status !== "done") {
-            return { ok: false, reason: `Subtask #${subId} "${sub.title}" not done` };
-        }
-    }
     return { ok: true };
 }
 
