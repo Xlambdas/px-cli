@@ -8,21 +8,33 @@ Deadline: 2026-04-10
 - [x] 1.1 Design homepage (90min)
 - [x] 1.2 truc a faire
 
-# Internship  (50%)
+# Internship  (100%)
 Deadline: 2026-06-30
 
 - [x] 2.1 Write CV (30min)
 - [x] 2.2 faire session sport (40min)
   - [x] 2.2.1 task testttt
-- [ ] 2.3 Test phone
-- [ ] 2.4 Nouveau ttst phone
+- [x] 2.3 Test phone
+- [x] 2.4 Nouveau ttst phone
 
-# testt
+# testt  (25%)
 > this is not a real project but a test project so I can check if everything is working perfectly.
 
-- [ ] 3.1 test1
+- [x] 3.1 test1
 - [ ] 3.2 sper cool en tout cas... (35min)
   - [ ] 3.2.1 first subtask
+    - [ ] 3.2.1.1 nv test subsubtask
   - [ ] 3.2.2 nouvellllllllleauuuuu task
-  - [ ] 3.2.3 uctfyvgbhu uni
-- [ ] 3.3 big task (60min)
+  - [x] 3.2.3 uctfyvgbhu uni
+- [ ] 3.3 big task (60min) [needs 3.1]
+- [ ] 3.4 test quick task (20min)
+
+# new project  (0%)
+> this is a new project
+
+- [ ] 4.1 first task
+- [ ] 4.2 second task [needs 4.1]
+- [ ] 4.3 third task
+- [ ] 4.4 test neww card
+- [ ] 4.5 task
+
