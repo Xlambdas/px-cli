@@ -10,35 +10,44 @@ import { getTaskOrDie } from "../utils/helpers";
     *   You realize "oh wait, I can't deploy until I build" mid-session.
 */
 export function addDependency(args: string[]): void {
-    const taskId = args[0];
     const needsIdx = args.indexOf("--needs");
 
-    if (!taskId || needsIdx === -1) {
-        console.error("Usage: px dep <task-id> --needs <dependency-id>");
+    if (needsIdx === -1 || needsIdx === 0) {
+        console.error("Usage: px dep <id> [id ...] --needs <id> [id ...]");
         process.exit(1);
     }
 
-    const depId = args[needsIdx + 1];
-    if (!depId) {
-        console.error("Usage: px dep <task-id> --needs <dependency-id>");
-        process.exit(1);
-    }
+    // Everything before --needs = task IDs to update
+    const taskIds = args.slice(0, needsIdx).filter((s) => s.length > 0);
+    // Everything after --needs = dependency IDs
+    const depIds = args.slice(needsIdx + 1).filter((s) => s.length > 0);
 
-    if (taskId === depId) {
-        console.error("A task cannot depend on itself.");
+    if (taskIds.length === 0 || depIds.length === 0) {
+        console.error("Usage: px dep <id> [id ...] --needs <id> [id ...]");
         process.exit(1);
     }
 
     const data = loadData();
-    const task = getTaskOrDie(data, taskId);
-    const dep = getTaskOrDie(data, depId);
+    let added = 0;
 
-    if (task.conditionIds.includes(depId)) {
-        console.log(`Dependency already exists.`);
-        return;
+    for (const taskId of taskIds) {
+        const task = getTaskOrDie(data, taskId);
+        for (const depId of depIds) {
+            if (taskId === depId) {
+                console.log(`  ⚠ #${taskId} cannot depend on itself, skipped`);
+                continue;
+            }
+            const dep = getTaskOrDie(data, depId);
+            if (task.conditionIds.includes(depId)) {
+                console.log(`  #${taskId} already depends on #${depId}, skipped`);
+                continue;
+            }
+            task.conditionIds.push(depId);
+            console.log(`  ✓ #${taskId} "${task.title}" now needs #${depId} "${dep.title}"`);
+            added++;
+        }
     }
 
-    task.conditionIds.push(depId);
-    saveData(data);
-    console.log(`✓ #${taskId} "${task.title}" now needs #${depId} "${dep.title}" first`);
+    if (added > 0) saveData(data);
+    console.log(`\n  ${added} dependency(s) added.`);
 }

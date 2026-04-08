@@ -268,25 +268,33 @@ function showCommandHelp(cmd: string): void {
     Mark a task as done.
 
     Checks before completing:
-        - All subtasks must be done
         - All dependencies (px dep) must be done
 
     Notes:
-        Auto-completes parent when all subtasks finish.
+        - Completing a task with subtasks also completes all subtasks
+        - Completing the last subtask auto-completes the parent
 
     Examples:
         px done 3
     `,
 
         dep: `
-\x1b[32m--- px dep <ID> --needs <ID> ---\x1b[0m
+\x1b[32m--- px dep <ID> [ID ...] --needs <ID> [ID ...] ---\x1b[0m
 
     Add a dependency between tasks.
-    Task A cannot be completed until task B is done.
+    Task A cannot be completed until task B is done - px dep A --needs B.
 
     Examples:
         px dep 5 --needs 3
         → Task 5 "Deploy" needs task 3 "Build" first
+
+    Notes:
+        You can add multiple dependencies at once:
+        px dep 5 6 --needs 3
+        → Tasks 5 and 6 both need task 3
+        Or add multiple needs:
+        px dep 5 --needs 3 4
+        → Task 5 needs both tasks 3 and 4
     `,
 
         undo: `
@@ -313,6 +321,7 @@ function showCommandHelp(cmd: string): void {
         px list
         px list --all
         px list --project "Portfolio"
+        px list --project 3
     `,
 
         status: `

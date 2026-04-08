@@ -1,5 +1,6 @@
 import * as readline from "readline";
 import { loadData, saveData } from "../utils/storage";
+import { generateTaskId } from "../models";
 
 /**
     * px inbox
@@ -59,8 +60,10 @@ export async function inboxReview(): Promise<void> {
             const pid = answer.trim();
             const project = data.projects.find((p) => p.id === pid);
             if (project) {
-                task.projectIds.push(pid);
-                console.log(`  ✓ Assigned to "${project.title}"\n`);
+                task.projectIds = [pid];
+                const oldId = task.id;
+                task.id = generateTaskId(data, pid);
+                console.log(`  ✓ Assigned to "${project.title}" (${oldId} → ${task.id})\n`);
             } else {
                 console.log(`  ⚠ Project #${answer} not found, skipped\n`);
             }

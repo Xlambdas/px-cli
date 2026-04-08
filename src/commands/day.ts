@@ -100,11 +100,11 @@ export async function daySession(): Promise<void> {
                 const subs =
                     t.subtaskIds.length > 0
                         ? (() => {
-                              const doneCount = t.subtaskIds.filter(
-                                  (id) => data.tasks.find((s) => s.id === id)?.status === "done"
-                              ).length;
-                              return `[${doneCount}/${t.subtaskIds.length}]`;
-                          })()
+                            const doneCount = t.subtaskIds.filter(
+                                (id) => data.tasks.find((s) => s.id === id)?.status === "done"
+                            ).length;
+                            return `[${doneCount}/${t.subtaskIds.length}]`;
+                        })()
                         : "";
                 console.log(`  ○ #${t.id}  ${t.title}  ${dur}  ${subs}  ${dl}`);
                 if (t.duration) totalMin += t.duration;

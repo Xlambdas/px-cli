@@ -444,7 +444,7 @@
             if (t.deadline) meta += formatDeadline(t.deadline) + ' ';
             if (t.blocked) meta += `<span class="blocked-reason">⛔ ${esc(t.blockReason)}</span>`;
 
-            const onclick = t.blocked ? '' : `onclick="toggleDone(${t.id})"`;
+            const onclick = t.blocked ? '' : `onclick="toggleDone('${t.id}')"`;
 
             return `
             <div class="${itemClass}">

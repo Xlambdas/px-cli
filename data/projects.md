@@ -23,7 +23,6 @@ Deadline: 2026-06-30
 - [ ] 3.1 test1
 - [ ] 3.2 sper cool en tout cas... (35min)
   - [ ] 3.2.1 first subtask
-    - [ ] 3.2.1.1 nv test subsubtask
   - [ ] 3.2.2 nouvellllllllleauuuuu task
   - [ ] 3.2.3 uctfyvgbhu uni
 - [ ] 3.3 big task (60min)

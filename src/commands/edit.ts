@@ -1,6 +1,7 @@
 import * as readline from "readline";
 import { loadData, saveData } from "../utils/storage";
 import { getTaskOrDie } from "../utils/helpers";
+import { generateTaskId } from "../models";
 
 /**
     * px edit 3
@@ -66,10 +67,19 @@ export async function editTask(args: string[]): Promise<void> {
     const newProj = await ask(`  Project IDs comma-separated (Enter to keep): `);
     if (newProj.trim()) {
         const ids = newProj.split(",").map((s) => s.trim()).filter((n) => n.length > 0);
-        // Validate all IDs exist
         const allValid = ids.every((pid) => data.projects.find((p) => p.id === pid));
         if (allValid) {
+            const oldId = task.id;
             task.projectIds = ids;
+            // Regenerate ID based on new project (only if no parent)
+            if (!task.parentId) {
+                task.id = generateTaskId(data, ids[0]);
+                // Update any references to old ID
+                for (const t of data.tasks) {
+                    t.conditionIds = t.conditionIds.map((c) => c === oldId ? task.id : c);
+                }
+            }
+            console.log(`  (ID: ${oldId} → ${task.id})`);
         } else {
             console.log("  ⚠ Some project IDs not found, kept original");
         }

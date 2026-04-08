@@ -14,7 +14,14 @@ export function listTasks(args: string[]): void {
 
     const showAll = args.includes("--all");
     const projIdx = args.indexOf("--project");
-    const projName = projIdx !== -1 ? args[projIdx + 1] : undefined;
+    // Support: px list --project "X", px list ProjectID, px list "ProjectTitle"
+    let projName: string | undefined;
+    if (projIdx !== -1) {
+        projName = args[projIdx + 1];
+    } else {
+        const other = args.find((a) => a !== "--all");
+        if (other) projName = other;
+    }
 
     let tasks = data.tasks.filter((t) => t.parentId === undefined); // top-level only
 
@@ -24,7 +31,7 @@ export function listTasks(args: string[]): void {
 
     if (projName) {
         const proj = data.projects.find(
-            (p) => p.title.toLowerCase() === projName.toLowerCase()
+            (p) => p.id === projName || p.title.toLowerCase() === projName!.toLowerCase()
         );
         if (!proj) {
             console.error(`Project "${projName}" not found.`);
@@ -34,6 +41,18 @@ export function listTasks(args: string[]): void {
     }
 
     if (tasks.length === 0) {
+        if (projName && !showAll) {
+            const proj = data.projects.find(
+                (p) => p.id === projName || p.title.toLowerCase() === projName!.toLowerCase()
+            );
+            const total = data.tasks.filter(
+                (t) => proj && t.projectIds.includes(proj.id) && t.parentId === undefined
+            ).length;
+            if (total > 0) {
+                console.log(`\n  🎉 All ${total} tasks done for "${proj!.title}"!\n`);
+                return;
+            }
+        }
         console.log("No tasks found.");
         return;
     }

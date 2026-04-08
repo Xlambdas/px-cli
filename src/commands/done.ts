@@ -35,10 +35,24 @@ export function markDone(args: string[]): void {
         return;
     }
 
-    // Mark done
+    // Mark done + cascade to all subtasks
     task.status = "done";
     task.completedAt = new Date().toISOString();
     console.log(`✓ #${id} "${task.title}" done!`);
+
+    // Complete all subtasks recursively
+    function cascadeComplete(taskIds: string[]): void {
+        for (const sid of taskIds) {
+            const sub = data.tasks.find((t) => t.id === sid);
+            if (sub && sub.status !== "done") {
+                sub.status = "done";
+                sub.completedAt = new Date().toISOString();
+                console.log(`  ✓ #${sub.id} "${sub.title}" auto-completed`);
+                if (sub.subtaskIds.length > 0) cascadeComplete(sub.subtaskIds);
+            }
+        }
+    }
+    if (task.subtaskIds.length > 0) cascadeComplete(task.subtaskIds);
 
     // Auto-complete parent if all sibling subtasks are done
     if (task.parentId !== undefined) {
