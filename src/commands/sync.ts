@@ -145,7 +145,7 @@ function cleanOldBackups(): void {
     * 1. If markdown sync enabled, export data to projects.md
     * 2. git add, commit, push
 */
-export function pxEnd(): void {
+export function pxEnd(perso: boolean=false): void {
     const cwd = path.join(__dirname, "../..");
 
     if (ENABLE_MARKDOWN_SYNC) {
@@ -155,27 +155,55 @@ export function pxEnd(): void {
     }
 
     // Git add, commit, push
-    console.log("\n  ⬆ Pushing changes...");
-    try {
-        execSync("git add -A", { cwd, encoding: "utf-8", stdio: "pipe" });
-
-        // Check if there's anything to commit
+    if (perso = process.argv.includes("--perso")) {
+        console.log("\n  ⬆ Pushing changes (personal)...");
+        const home = process.env.USERPROFILE || process.env.HOME || "";
+        const keyPath = path.join(home, ".ssh", "id_ed25519_personal");
+        const sshCmd = `ssh -vvv -i "${keyPath}" -o IdentitiesOnly=yes`;
         try {
-            execSync("git diff --cached --quiet", { cwd, encoding: "utf-8", stdio: "pipe" });
-            console.log("  Nothing to commit.");
-        } catch {
-            // diff --quiet exits with 1 if there are changes
-            const timestamp = new Date().toISOString().slice(0, 16).replace("T", " ");
-            execSync(`git commit -m "px update ${timestamp}"`, { cwd, encoding: "utf-8", stdio: "pipe" });
-            console.log("  ✓ Committed");
+            execSync(`git add -A`, {
+                cwd,
+                stdio: "inherit",
+                env: { ...process.env, GIT_SSH_COMMAND: sshCmd },
+            });
+            execSync(`git commit -m "px update"`, {
+                cwd,
+                stdio: "inherit",
+                env: { ...process.env, GIT_SSH_COMMAND: sshCmd },
+            });
+            execSync(`git push`, {
+                cwd,
+                stdio: "inherit",
+                env: { ...process.env, GIT_SSH_COMMAND: sshCmd },
+            });
+        } catch (err: any) {
+            console.error(`  ⚠ Git error: ${err.message}`);
+            return;
         }
+    } else {
+        console.log("\n  ⬆ Pushing changes...");
+        try {
+            execSync("git add -A", { cwd, encoding: "utf-8", stdio: "pipe" });
 
-        execSync("git push", { cwd, encoding: "utf-8", stdio: "pipe" });
-        console.log("  ✓ Pushed");
-    } catch (err: any) {
-        console.error(`  ⚠ Git error: ${err.message}`);
-        return;
+            // Check if there's anything to commit
+            try {
+                execSync("git diff --cached --quiet", { cwd, encoding: "utf-8", stdio: "pipe" });
+                console.log("  Nothing to commit.");
+            } catch {
+                // diff --quiet exits with 1 if there are changes
+                const timestamp = new Date().toISOString().slice(0, 16).replace("T", " ");
+                execSync(`git commit -m "px update ${timestamp}"`, { cwd, encoding: "utf-8", stdio: "pipe" });
+                console.log("  ✓ Committed");
+            }
+
+            execSync("git push", { cwd, encoding: "utf-8", stdio: "pipe" });
+            console.log("  ✓ Pushed");
+        } catch (err: any) {
+            console.error(`  ⚠ Git error: ${err.message}`);
+            return;
+        }
     }
+    
 
     console.log("\n  ✓ Session saved! 🚀\n");
 }

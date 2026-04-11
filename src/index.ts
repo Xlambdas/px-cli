@@ -123,8 +123,8 @@ async function main() {
             pxStart(process.argv.includes("--perso"));
             break;
         case "end":
-            pxEnd();
-                break;
+            pxEnd(process.argv.includes("--perso"));
+            break;
 
         // Projects
         case "project":
