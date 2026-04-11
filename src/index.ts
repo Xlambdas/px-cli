@@ -117,7 +117,7 @@ async function main() {
         → Gives you a public URL like https://abc123.localhost.run
     `);
             } else {
-                startServer();
+                startServer(args.includes("--qr"));
             }
                 break;
         case "ai":
@@ -171,7 +171,7 @@ function showGeneralHelp(): void {
         stats
 
         ai [next|plan|expand <ID>]
-        web
+        web [--qr]                             Start web server for phone access, show QR code in terminal
         start                                  Pull latest + import changes
         end                                    Export + commit + push
         help <command>
@@ -417,10 +417,13 @@ function showCommandHelp(cmd: string): void {
     `,
 
         web: `
-\x1b[32m--- px web / px web setup ---\x1b[0m
+\x1b[32m--- px web [option] / px web setup ---\x1b[0m
 
     Starts a web server for phone access.
     Shows tasks, inbox, and stats in a mobile-friendly UI.
+
+    Options:
+        --qr    Show QR code in terminal for easy phone access
 
     Troubleshooting (px web setup):
         - Windows Firewall fix

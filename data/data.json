@@ -171,7 +171,7 @@
     },
     {
       "id": "3.3",
-      "title": "big task",
+      "title": "big task 23",
       "projectIds": [
         "3"
       ],
@@ -180,8 +180,9 @@
         "3.1"
       ],
       "status": "todo",
-      "duration": 60,
-      "createdAt": "2026-04-07T12:50:35.592Z"
+      "duration": 16,
+      "createdAt": "2026-04-07T12:50:35.592Z",
+      "deadline": "2026-04-16"
     },
     {
       "projectIds": [
@@ -298,31 +299,64 @@
     }
   ],
   "focus": [
-    "4"
+    "1",
+    "2",
+    "3"
   ],
   "nextTaskId": 4,
-  "nextProjectId": 6,
+  "nextProjectId": 7,
   "projectProfiles": {},
   "todayTasks": [
     {
-      "id": "today-1775899048263",
+      "id": "today-1775900675661-0",
       "title": "test recur",
       "projectIds": [],
       "subtaskIds": [],
       "conditionIds": [],
       "status": "done",
       "recurrence": "3d",
-      "createdAt": "2026-04-11T09:17:28.263Z",
-      "completedAt": "2026-04-11T09:17:43.323Z"
+      "createdAt": "2026-04-11T09:44:35.662Z",
+      "completedAt": "2026-04-11T09:44:35.662Z"
     },
     {
-      "id": "today-1775899444101",
-      "title": "test",
+      "id": "today-1775900675662-1",
+      "title": "test supra",
       "projectIds": [],
       "subtaskIds": [],
       "conditionIds": [],
       "status": "todo",
-      "createdAt": "2026-04-11T09:24:04.102Z"
+      "createdAt": "2026-04-11T09:44:35.662Z",
+      "duration": 12
+    },
+    {
+      "id": "today-1775900675662-2",
+      "title": "truc nouveau",
+      "projectIds": [],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "duration": 30,
+      "recurrence": "1d",
+      "createdAt": "2026-04-11T09:44:35.662Z"
+    },
+    {
+      "id": "today-1775900675662-3",
+      "title": "new task THFDFD",
+      "projectIds": [],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-11T09:44:35.662Z"
+    },
+    {
+      "id": "today-1775900675662-4",
+      "title": "test new tasks",
+      "projectIds": [],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-11T09:44:35.662Z",
+      "duration": 30
     }
   ]
 }

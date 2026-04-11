@@ -342,6 +342,87 @@
             transform: translateX(-50%) translateY(0);
             opacity: 1;
         }
+
+        /* ── Modal ── */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px 20px;
+            width: 90%;
+            max-width: 400px;
+        }
+        .modal h3 {
+            font-size: 16px;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+        .modal label {
+            font-size: 12px;
+            color: var(--text2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 4px;
+            margin-top: 12px;
+        }
+        .modal input, .modal select {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 15px;
+            outline: none;
+        }
+        .modal input:focus, .modal select:focus { border-color: var(--accent); }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-actions button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-save { background: var(--accent); color: white; }
+        .btn-save:active { opacity: 0.7; }
+        .btn-cancel { background: var(--border); color: var(--text2); }
+        .btn-delete { background: var(--red); color: white; margin-top: 10px; width: 100%; padding: 10px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .btn-delete:active { opacity: 0.7; }
+
+        /* ── Edit button ── */
+        .task-edit {
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            border: none;
+            background: none;
+            color: var(--text2);
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .task-edit:active { background: var(--border); }
     </style>
 </head>
 
@@ -369,6 +450,36 @@
     <div class="section" id="sec-inbox"></div>
     <div class="section" id="sec-stats"></div>
 
+    <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+        <div class="modal">
+            <h3 id="modalTitle">Edit Task</h3>
+            <label>Title</label>
+            <input type="text" id="editTitle">
+            <label>Duration (min)</label>
+            <input type="number" id="editDuration" placeholder="e.g. 60">
+            <div id="editDeadlineWrap">
+                <label>Deadline</label>
+                <input type="date" id="editDeadline">
+            </div>
+            <div id="editRecurrenceWrap">
+                <label>Recurrence</label>
+                <select id="editRecurrence">
+                    <option value="">None</option>
+                    <option value="daily">Daily</option>
+                    <option value="2d">Every 2 days</option>
+                    <option value="3d">Every 3 days</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="2w">Every 2 weeks</option>
+                    <option value="monthly">Monthly</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+                <button class="btn-save" onclick="saveEdit()">Save</button>
+            </div>
+            <button class="btn-delete" id="btnDelete" onclick="deleteTask()">Delete</button>
+        </div>
+    </div>
     <div class="toast" id="toast"></div>
 
     <script>
@@ -402,12 +513,15 @@
                 const checkClass = t.status === 'done' ? 'done' : '';
                 const itemClass = `task-item ${t.status === 'done' ? 'done' : ''}`;
                 const dur = t.duration ? `${t.duration}min` : '';
+                const rec = t.recurrence ? `🔁 ${t.recurrence}` : '';
+                const metaParts = [dur, rec].filter(Boolean).join(' · ');
                 html += `<div class="${itemClass}">
                 <button class="task-check ${checkClass}" onclick="todayDone(${i})">${t.status === 'done' ? '✓' : ''}</button>
                 <div class="task-info">
                     <div class="task-title">${esc(t.title)}</div>
-                    ${dur ? `<div class="task-meta">${dur}</div>` : ''}
+                    ${metaParts ? `<div class="task-meta">${metaParts}</div>` : ''}
                 </div>
+                <button class="task-edit" onclick="openEdit(${i})">✎</button>
             </div>`;
             });
             el.innerHTML = html;
@@ -489,6 +603,7 @@
                     <div class="task-title">${esc(t.title)}</div>
                     ${meta ? `<div class="task-meta">${meta}</div>` : ''}
                 </div>
+                <button class="task-edit" onclick="openEditTask('${t.id}')">✎</button>
             </div>`;
         }
 
@@ -627,6 +742,80 @@
             if (e.key === 'Enter') quickCapture();
         });
 
+        let editingIndex = null;
+        let editingTaskId = null;
+        let editMode = null; // 'today' or 'task'
+
+        function openEdit(index) {
+            editingIndex = index;
+            editingTaskId = null;
+            editMode = 'today';
+            const t = TODAY[index];
+            document.getElementById('modalTitle').textContent = 'Edit Today Task';
+            document.getElementById('editTitle').value = t.title;
+            document.getElementById('editDuration').value = t.duration || '';
+            document.getElementById('editDeadline').value = '';
+            document.getElementById('editDeadlineWrap').style.display = 'none';
+            document.getElementById('editRecurrenceWrap').style.display = '';
+            document.getElementById('editRecurrence').value = t.recurrence || '';
+            document.getElementById('modalOverlay').classList.add('show');
+        }
+
+        function openEditTask(id) {
+            editingTaskId = id;
+            editingIndex = null;
+            editMode = 'task';
+            const t = DATA.tasks.find(x => x.id === id);
+            if (!t) return;
+            document.getElementById('modalTitle').textContent = `Edit #${t.id}`;
+            document.getElementById('editTitle').value = t.title;
+            document.getElementById('editDuration').value = t.duration || '';
+            document.getElementById('editDeadline').value = t.deadline || '';
+            document.getElementById('editDeadlineWrap').style.display = '';
+            document.getElementById('editRecurrenceWrap').style.display = 'none';
+            document.getElementById('modalOverlay').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('show');
+            editingIndex = null;
+            editingTaskId = null;
+            editMode = null;
+        }
+
+        async function saveEdit() {
+            const title = document.getElementById('editTitle').value.trim();
+            if (!title) return;
+            const duration = parseInt(document.getElementById('editDuration').value) || null;
+
+            if (editMode === 'today' && editingIndex !== null) {
+                const recurrence = document.getElementById('editRecurrence').value || null;
+                const res = await fetch(`/api/today/${editingIndex}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, duration, recurrence }),
+                });
+                if (res.ok) { toast('✓ Updated'); closeModal(); load(); }
+            } else if (editMode === 'task' && editingTaskId) {
+                const deadline = document.getElementById('editDeadline').value || null;
+                const res = await fetch(`/api/task/${editingTaskId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, duration, deadline }),
+                });
+                if (res.ok) { toast('✓ Updated'); closeModal(); load(); }
+            }
+        }
+
+        async function deleteTask() {
+            if (editMode === 'today' && editingIndex !== null) {
+                const res = await fetch(`/api/today/${editingIndex}`, { method: 'DELETE' });
+                if (res.ok) { toast('✓ Deleted'); closeModal(); load(); }
+            } else if (editMode === 'task' && editingTaskId) {
+                const res = await fetch(`/api/task/${editingTaskId}`, { method: 'DELETE' });
+                if (res.ok) { toast('✓ Deleted'); closeModal(); load(); }
+            }
+        }
         // Initial load
         load();
     </script>

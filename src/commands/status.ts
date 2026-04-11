@@ -67,22 +67,31 @@ export function showStatus(args: string[]): void {
 
         if (topTasks.length > 0) {
             console.log();
+            function printSubtasks(parentSubIds: string[], parentIndent: string): void {
+                for (let j = 0; j < parentSubIds.length; j++) {
+                    const sub = data.tasks.find((s) => s.id === parentSubIds[j]);
+                    if (!sub) continue;
+                    const subMark = sub.status === "done" ? "✓" : "○";
+                    const subIsLast = j === parentSubIds.length - 1;
+                    const subPrefix = subIsLast ? "└─" : "├─";
+                    console.log(`   ${parentIndent}${subPrefix} ${subMark} #${sub.id}  ${sub.title}`);
+                    if (sub.subtaskIds.length > 0) {
+                        const deeper = parentIndent + (subIsLast ? "   " : "│  ");
+                        printSubtasks(sub.subtaskIds, deeper);
+                    }
+                }
+            }
             for (let i = 0; i < topTasks.length; i++) {
                 const t = topTasks[i];
                 const isLast = i === topTasks.length - 1;
+                const indent = isLast ? "   " : "│  ";
                 const mark = t.status === "done" ? "✓" : canComplete(data, t).ok ? "○" : "⛔";
                 const prefix = isLast ? "└─" : "├─";
                 const dur = fmtDuration(t.duration);
                 const tdl = fmtDeadline(t.deadline);
                 console.log(`   ${prefix} ${mark} #${t.id}  ${t.title}  ${dur}  ${tdl}`);
-
-                for (let j = 0; j < t.subtaskIds.length; j++) {
-                    const sub = data.tasks.find((s) => s.id === t.subtaskIds[j]);
-                    if (!sub) continue;
-                    const subMark = sub.status === "done" ? "✓" : "○";
-                    const indent = isLast ? "   " : "│  ";
-                    const subPrefix = j === t.subtaskIds.length - 1 ? "└─" : "├─";
-                    console.log(`   ${indent}${subPrefix} ${subMark} #${sub.id}  ${sub.title}`);
+                if (t.subtaskIds.length > 0) {
+                    printSubtasks(t.subtaskIds, indent);
                 }
             }
         }
@@ -116,13 +125,22 @@ export function showStatus(args: string[]): void {
 
     if (task.subtaskIds.length > 0) {
         console.log(`   Subtasks:`);
-        for (const sid of task.subtaskIds) {
-            const sub = data.tasks.find((t) => t.id === sid);
-            if (sub) {
+        function printSubs(ids: string[], indent: string): void {
+            for (let j = 0; j < ids.length; j++) {
+                const sub = data.tasks.find((t) => t.id === ids[j]);
+                if (!sub) continue;
                 const mark = sub.status === "done" ? "✓" : "○";
-                console.log(`     ${mark} #${sub.id} ${sub.title}`);
+                const isLast = j === ids.length - 1;
+                const prefix = isLast ? "└─" : "├─";
+                const dur = fmtDuration(sub.duration);
+                const tdl = fmtDeadline(sub.deadline);
+                console.log(`   ${indent}${prefix} ${mark} #${sub.id} ${sub.title}  ${dur}  ${tdl}`);
+                if (sub.subtaskIds.length > 0) {
+                    printSubs(sub.subtaskIds, indent + (isLast ? "   " : "│  "));
+                }
             }
         }
+        printSubs(task.subtaskIds, "  ");
     }
 
     if (task.conditionIds.length > 0) {

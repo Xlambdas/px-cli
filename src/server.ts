@@ -4,6 +4,7 @@ import * as os from "os";
 import { loadData, saveData } from "./utils/storage";
 import { generateTaskId } from "./models";
 import { canComplete, projectProgress } from "./utils/helpers";
+import * as qrcode from "qrcode-terminal";
 
 const app = express();
 app.use(express.json());
@@ -92,6 +93,48 @@ app.post("/api/today/done/:index", (req, res) => {
     res.json({ ok: true });
 });
 
+app.put("/api/task/:id", (req, res) => {
+    const id = req.params.id;
+    const data = loadData();
+    const task = data.tasks.find((t) => t.id === id);
+    if (!task) return res.status(404).json({ error: "Task not found" });
+    const { title, duration, deadline, description } = req.body;
+    if (title !== undefined) task.title = title;
+    if (duration !== undefined) task.duration = duration || undefined;
+    if (deadline !== undefined) task.deadline = deadline || undefined;
+    if (description !== undefined) task.description = description || undefined;
+    saveData(data);
+    res.json({ ok: true });
+});
+
+app.delete("/api/task/:id", (req, res) => {
+    const id = req.params.id;
+    const data = loadData();
+    const task = data.tasks.find((t) => t.id === id);
+    if (!task) return res.status(404).json({ error: "Task not found" });
+    // Remove from parent's subtaskIds
+    if (task.parentId) {
+        const parent = data.tasks.find((t) => t.id === task.parentId);
+        if (parent) parent.subtaskIds = parent.subtaskIds.filter((s) => s !== id);
+    }
+    // Remove references from other tasks
+    for (const t of data.tasks) {
+        t.conditionIds = t.conditionIds.filter((c) => c !== id);
+    }
+    // Remove task and all its subtasks recursively
+    function collectIds(taskId: string): string[] {
+        const t = data.tasks.find((x) => x.id === taskId);
+        if (!t) return [taskId];
+        let ids = [taskId];
+        for (const sid of t.subtaskIds) ids = ids.concat(collectIds(sid));
+        return ids;
+    }
+    const removeIds = new Set(collectIds(id));
+    data.tasks = data.tasks.filter((t) => !removeIds.has(t.id));
+    saveData(data);
+    res.json({ ok: true });
+});
+
 app.post("/api/done/:id", (req, res) => {
     const id = req.params.id;
     const data = loadData();
@@ -130,7 +173,32 @@ app.post("/api/untodo/:id", (req, res) => {
     res.json({ ok: true });
 });
 
-export function startServer(): void {
+app.put("/api/today/:index", (req, res) => {
+    const idx = parseInt(req.params.index, 10);
+    const data = loadData();
+    if (!data.todayTasks || idx < 0 || idx >= data.todayTasks.length) {
+        return res.status(404).json({ error: "Not found" });
+    }
+    const { title, duration, recurrence } = req.body;
+    if (title !== undefined) data.todayTasks[idx].title = title;
+    if (duration !== undefined) data.todayTasks[idx].duration = duration || undefined;
+    if (recurrence !== undefined) data.todayTasks[idx].recurrence = recurrence || undefined;
+    saveData(data);
+    res.json({ ok: true });
+});
+
+app.delete("/api/today/:index", (req, res) => {
+    const idx = parseInt(req.params.index, 10);
+    const data = loadData();
+    if (!data.todayTasks || idx < 0 || idx >= data.todayTasks.length) {
+        return res.status(404).json({ error: "Not found" });
+    }
+    data.todayTasks.splice(idx, 1);
+    saveData(data);
+    res.json({ ok: true });
+});
+
+export function startServer(showQr: boolean = false): void {
     const PORT = 3478;
     app.listen(PORT, "0.0.0.0", () => {
         const nets = os.networkInterfaces();
@@ -146,6 +214,9 @@ export function startServer(): void {
         console.log(`\n  📱 px web server running\n`);
         console.log(`  Laptop:  http://localhost:${PORT}`);
         console.log(`  Phone:   http://${localIp}:${PORT}`);
+        if (showQr) {
+            qrcode.generate(`http://${localIp}:${PORT}`, { small: true });
+        }
         console.log(`\n  Press Ctrl+C to stop\n`);
     });
 }
