@@ -290,14 +290,7 @@
       "createdAt": "2026-04-07T12:50:35.592Z"
     },
     {
-      "status": "active",
-      "createdAt": "2026-04-07T12:53:06.035Z",
       "id": "4",
-      "title": "new project",
-      "description": "this is a new project"
-    },
-    {
-      "id": "5",
       "title": "Coffee game",
       "description": "animation of a glass coffee cup filling with coffee liquid",
       "status": "active",
@@ -305,7 +298,7 @@
     }
   ],
   "focus": [
-    "5"
+    "4"
   ],
   "nextTaskId": 4,
   "nextProjectId": 6,

@@ -112,6 +112,8 @@ export function pxStart(perso: boolean = false): void {
         if (changes.durationChanges > 0) console.log(`      ${changes.durationChanges} duration update(s)`);
         if (changes.deadlineChanges > 0) console.log(`      ${changes.deadlineChanges} deadline update(s)`);
         if (changes.depChanges > 0) console.log(`      ${changes.depChanges} dependency update(s)`);
+        if (changes.deletedProjects > 0) console.log(`      ${changes.deletedProjects} deleted project(s)`);
+        if (changes.deletedTasks > 0) console.log(`      ${changes.deletedTasks} deleted task(s)`);
     } else {
         console.log("  No changes detected in projects.md.");
     }
@@ -210,9 +212,8 @@ export function pxEnd(perso: boolean=false): void {
             return;
         }
     }
-    
 
-    console.log("\n  ✓ Session saved! 🚀\n");
+    console.log("\n  ✓ Session saved!\n");
 }
 
 /**
@@ -301,6 +302,8 @@ function formatTaskMd(task: Task, data: AppData, indent: number): string {
 
 interface ImportChanges {
     newProjects: number;
+    deletedProjects: number;
+    deletedTasks: number;
     statusChanges: number;
     titleChanges: number;
     durationChanges: number;
@@ -331,6 +334,8 @@ interface ImportChanges {
 function parseMarkdown(md: string, data: AppData): ImportChanges {
     const changes: ImportChanges = {
         newProjects: 0,
+        deletedProjects: 0,
+        deletedTasks: 0,
         statusChanges: 0,
         titleChanges: 0,
         durationChanges: 0,
@@ -596,7 +601,47 @@ function parseMarkdown(md: string, data: AppData): ImportChanges {
         }
     }
 
-    changes.total = changes.newProjects + changes.statusChanges + changes.titleChanges
+    // Delete projects that exist in JSON but not in markdown
+    const mdProjectNames = new Set<string>();
+    for (const line of lines) {
+        const pm = line.match(/^#\s+(.+?)(?:\s+\(\d+%\))?\s*$/);
+        if (pm) {
+            const name = pm[1].trim().toLowerCase();
+            if (name !== "inbox") mdProjectNames.add(name);
+        }
+    }
+
+    const projectsToDelete = data.projects.filter(
+        (p) => !mdProjectNames.has(p.title.toLowerCase())
+    );
+
+    for (const p of projectsToDelete) {
+        // Remove all tasks belonging to this project
+        const tasksToRemove = data.tasks.filter((t) => t.projectIds.includes(p.id));
+        for (const t of tasksToRemove) {
+            // Clean up references from other tasks
+            for (const other of data.tasks) {
+                other.subtaskIds = other.subtaskIds.filter((sid) => sid !== t.id);
+                other.conditionIds = other.conditionIds.filter((cid) => cid !== t.id);
+            }
+        }
+        data.tasks = data.tasks.filter((t) => !t.projectIds.includes(p.id));
+        changes.deletedTasks += tasksToRemove.length;
+
+        // Remove project profile
+        delete data.projectProfiles[p.id];
+
+        // Remove from focus
+        data.focus = data.focus.filter((fid) => fid !== p.id);
+
+        changes.deletedProjects++;
+    }
+
+    data.projects = data.projects.filter(
+        (p) => mdProjectNames.has(p.title.toLowerCase())
+    );
+
+    changes.total = changes.newProjects + changes.deletedProjects + changes.deletedTasks + changes.statusChanges + changes.titleChanges
         + changes.durationChanges + changes.deadlineChanges + changes.depChanges + changes.newTasks;
 
     return changes;
