@@ -166,11 +166,18 @@ export function pxEnd(perso: boolean=false): void {
                 stdio: "inherit",
                 env: { ...process.env, GIT_SSH_COMMAND: sshCmd },
             });
-            execSync(`git commit -m "px update"`, {
-                cwd,
-                stdio: "inherit",
-                env: { ...process.env, GIT_SSH_COMMAND: sshCmd },
-            });
+            try {
+                execSync("git diff --cached --quiet", { cwd, stdio: "pipe" });
+                console.log("  Nothing to commit.");
+            } catch {
+                const timestamp = new Date().toISOString().slice(0, 16).replace("T", " ");
+                execSync(`git commit -m "px update ${timestamp}"`, {
+                    cwd,
+                    stdio: "inherit",
+                    env: { ...process.env, GIT_SSH_COMMAND: sshCmd },
+                });
+                console.log("  ✓ Committed");
+            }
             execSync(`git push`, {
                 cwd,
                 stdio: "inherit",
