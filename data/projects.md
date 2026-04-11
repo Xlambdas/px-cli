@@ -39,4 +39,6 @@ Deadline: 2026-06-30
 
 - [x] test recur [every 3d]
 - [ ] test
-
+- [ ] truc nouveau (30min) [every 1d]
+- [ ] new task
+- [ ] test new tasks
