@@ -1,31 +1,6 @@
 {
   "tasks": [
     {
-      "id": "1.1",
-      "title": "Design homepage",
-      "projectIds": [
-        "1"
-      ],
-      "subtaskIds": [],
-      "conditionIds": [],
-      "status": "done",
-      "duration": 90,
-      "createdAt": "2026-04-07T12:50:35.591Z",
-      "completedAt": "2026-04-07T12:50:35.591Z"
-    },
-    {
-      "id": "1.2",
-      "title": "truc a faire",
-      "projectIds": [
-        "1"
-      ],
-      "subtaskIds": [],
-      "conditionIds": [],
-      "status": "done",
-      "createdAt": "2026-04-07T12:50:35.592Z",
-      "completedAt": "2026-04-07T12:50:35.592Z"
-    },
-    {
       "id": "3.1",
       "title": "test1",
       "projectIds": [
@@ -244,13 +219,6 @@
   ],
   "projects": [
     {
-      "id": "1",
-      "title": "Portfolio",
-      "status": "active",
-      "deadline": "2026-04-10",
-      "createdAt": "2026-04-07T12:50:35.591Z"
-    },
-    {
       "id": "3",
       "title": "testt",
       "description": "this is not a real project but a test project so I can check if everything is working perfectly.",
@@ -448,6 +416,31 @@
       "status": "done",
       "createdAt": "2026-04-07T12:50:35.592Z",
       "completedAt": "2026-04-07T13:14:11.154Z"
+    },
+    {
+      "id": "1.1",
+      "title": "Design homepage",
+      "projectIds": [
+        "1"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "done",
+      "duration": 90,
+      "createdAt": "2026-04-07T12:50:35.591Z",
+      "completedAt": "2026-04-07T12:50:35.591Z"
+    },
+    {
+      "id": "1.2",
+      "title": "truc a faire",
+      "projectIds": [
+        "1"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "done",
+      "createdAt": "2026-04-07T12:50:35.592Z",
+      "completedAt": "2026-04-07T12:50:35.592Z"
     }
   ],
   "archivedProjects": [
@@ -457,6 +450,13 @@
       "status": "active",
       "deadline": "2026-06-30",
       "createdAt": "2026-04-07T12:50:35.592Z"
+    },
+    {
+      "id": "1",
+      "title": "Portfolio",
+      "status": "active",
+      "deadline": "2026-04-10",
+      "createdAt": "2026-04-07T12:50:35.591Z"
     }
   ]
 }

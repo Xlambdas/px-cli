@@ -2,21 +2,6 @@
 <!-- Format: - [x] ID Title (duration) [needs ID, ID] -->
 <!-- Change [x] to [ ] or [ ] to [x] to toggle status -->
 
-# Portfolio  (100%)
-Deadline: 2026-04-10
-
-- [x] 1.1 Design homepage (90min)
-- [x] 1.2 truc a faire
-
-# Internship  (100%)
-Deadline: 2026-06-30
-
-- [x] 2.1 Write CV (30min)
-- [x] 2.2 faire session sport (40min)
-  - [x] 2.2.1 task testttt
-- [x] 2.3 Test phone
-- [x] 2.4 Nouveau ttst phone
-
 # testt  (25%)
 > this is not a real project but a test project so I can check if everything is working perfectly.
 
@@ -26,19 +11,33 @@ Deadline: 2026-06-30
     - [ ] 3.2.1.1 nv test subsubtask
   - [ ] 3.2.2 nouvellllllllleauuuuu task
   - [x] 3.2.3 uctfyvgbhu uni
-- [ ] 3.3 big task (60min) [needs 3.1]
+- [ ] 3.3 big task 23 (16min) [needs 3.1] {2026-04-16}
 - [ ] 3.4 test quick task (20min)
 
 # Coffee game  (0%)
 > animation of a glass coffee cup filling with coffee liquid
 
 
+# Calisthenics  (0%)
+> mastering a full body control with calisthenics methods and figures
+Deadline: 2026-07
+Type: fitness
+Stage: building
+Goal: master calisthenics technics
+
+- [ ] 7.1 Handstand: static 20s {2026-04-30}
+- [ ] 7.2 Handstand:  2 pushup + 30s static [needs 7.1]
+- [ ] 7.3 Handstand: from horizontal to vertical [needs 7.1, 7.2]
+
 ---
 
 # Todo Today
 
 - [x] test recur [every 3d]
-- [ ] test
+- [ ] test supra (12min)
 - [ ] truc nouveau (30min) [every 1d]
-- [ ] new task
-- [ ] test new tasks
+- [ ] new task THFDFD
+- [ ] test new tasks (30min)
+- [ ] Phone test
+- [ ] Second test
+
