@@ -29,6 +29,7 @@ import { aiCommand } from "./commands/ai";
 import { pxStart, pxEnd } from "./commands/sync";
 import { todayCommand } from "./commands/today";
 import { archiveCommand } from "./commands/archive";
+import { completionCommand } from "./commands/completion";
 
 const [command, ...args] = process.argv.slice(2);
 
@@ -143,6 +144,9 @@ async function main() {
             break;
 
         // Help
+        case "completion":
+            completionCommand(args);
+            break;
         default:
             showGeneralHelp();
             break;
