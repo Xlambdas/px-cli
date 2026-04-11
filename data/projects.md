@@ -33,3 +33,10 @@ Deadline: 2026-06-30
 > animation of a glass coffee cup filling with coffee liquid
 
 
+---
+
+# Todo Today
+
+- [x] test recur [every 3d]
+- [ ] test
+

@@ -323,15 +323,6 @@
       "conditionIds": [],
       "status": "todo",
       "createdAt": "2026-04-11T09:24:04.102Z"
-    },
-    {
-      "id": "today-1775899451506",
-      "title": "tessssssst",
-      "projectIds": [],
-      "subtaskIds": [],
-      "conditionIds": [],
-      "status": "todo",
-      "createdAt": "2026-04-11T09:24:11.506Z"
     }
   ]
 }
