@@ -302,5 +302,27 @@
   ],
   "nextTaskId": 4,
   "nextProjectId": 6,
-  "projectProfiles": {}
+  "projectProfiles": {},
+  "todayTasks": [
+    {
+      "id": "today-1775899048263",
+      "title": "test recur",
+      "projectIds": [],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "done",
+      "recurrence": "3d",
+      "createdAt": "2026-04-11T09:17:28.263Z",
+      "completedAt": "2026-04-11T09:17:43.323Z"
+    },
+    {
+      "id": "today-1775899444101",
+      "title": "test",
+      "projectIds": [],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-11T09:24:04.102Z"
+    }
+  ]
 }

@@ -290,14 +290,7 @@
       "createdAt": "2026-04-07T12:50:35.592Z"
     },
     {
-      "status": "active",
-      "createdAt": "2026-04-07T12:53:06.035Z",
       "id": "4",
-      "title": "new project",
-      "description": "this is a new project"
-    },
-    {
-      "id": "5",
       "title": "Coffee game",
       "description": "animation of a glass coffee cup filling with coffee liquid",
       "status": "active",
@@ -305,9 +298,40 @@
     }
   ],
   "focus": [
-    "5"
+    "4"
   ],
   "nextTaskId": 4,
   "nextProjectId": 6,
-  "projectProfiles": {}
+  "projectProfiles": {},
+  "todayTasks": [
+    {
+      "id": "today-1775899048263",
+      "title": "test recur",
+      "projectIds": [],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "done",
+      "recurrence": "3d",
+      "createdAt": "2026-04-11T09:17:28.263Z",
+      "completedAt": "2026-04-11T09:17:43.323Z"
+    },
+    {
+      "id": "today-1775899444101",
+      "title": "test",
+      "projectIds": [],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-11T09:24:04.102Z"
+    },
+    {
+      "id": "today-1775899451506",
+      "title": "tessssssst",
+      "projectIds": [],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-11T09:24:11.506Z"
+    }
+  ]
 }

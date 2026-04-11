@@ -27,6 +27,7 @@ import { projectAdd, projectList } from "./commands/project";
 import { startServer } from "./server";
 import { aiCommand } from "./commands/ai";
 import { pxStart, pxEnd } from "./commands/sync";
+import { todayCommand } from "./commands/today";
 
 const [command, ...args] = process.argv.slice(2);
 
@@ -45,6 +46,9 @@ async function main() {
             break;
         case "quick":
             quickAdd(args);
+            break;
+        case "todo":
+            todayCommand(args);
             break;
         case "done":
             markDone(args);
@@ -151,6 +155,7 @@ function showGeneralHelp(): void {
 
         add "Task" [--project "X"] [--parent ID] [--duration MIN] [--deadline DATE]
         quick "Task title"
+        todo "task title" [--duration MIN]     # Add to today's list
         inbox
         edit <ID>
 
@@ -206,6 +211,39 @@ function showCommandHelp(cmd: string): void {
     Examples:
         px quick "Fix navbar bug"
         px quick "Read article about system design"
+    `,
+
+        todo: `
+\x1b[32m--- px todo [options] ---\x1b[0m
+
+    Quick daily task list, separate from projects.
+
+    Commands:
+        px todo                          Show today's tasks
+        px todo "Task" [options]         Add a task to today
+        px todo done <number>            Complete a task by its number
+        px todo clear                    Remove completed (keeps recurring)
+        px todo clear --all              Remove ALL tasks (asks confirmation)
+        px todo reset                    New day: reset recurring, remove the rest
+        px todo reset --keep [id ...]    New day but keep tasks id (by shown index from "px todo" list)
+
+    Options for adding:
+        --duration MIN                   Estimated minutes (e.g. 60)
+        --every INTERVAL                 Recurrence interval
+
+    Recurrence intervals:
+        daily, weekly, monthly,
+        <number>d    e.g. 2d = every 2 days,
+        <number>w    e.g. 4w = every 4 weeks,
+        <number>m    e.g. 2m = every 2 months.
+
+    Examples:
+        px todo "Write report" --duration 60
+        px todo "Meditate" --duration 15 --every daily
+        px todo "Workout" --every 2d
+        px todo "Review goals" --every weekly
+        px todo done 3
+        px todo reset --keep 2 4
     `,
 
         inbox: `

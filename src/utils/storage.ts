@@ -20,6 +20,9 @@ export function loadData(): AppData {
         if (!data.projectProfiles) {
             data.projectProfiles = {};
         }
+        if (!data.todayTasks) {
+            data.todayTasks = [];
+        }
         return data;
     } catch {
         // File doesn't exist yet — first run

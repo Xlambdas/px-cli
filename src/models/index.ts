@@ -15,6 +15,7 @@ export interface Task {
     deadline?: string;        // ISO date string e.g. "2026-05-01"
     createdAt: string;        // ISO date string
     completedAt?: string;      // ISO date string
+    recurrence?: string;
 }
 
 export interface Project {
@@ -40,6 +41,7 @@ export interface ProjectProfile {
 // This is what gets saved to disk
 export interface AppData {
     tasks: Task[];
+    todayTasks: Task[];
     projects: Project[];
     focus: string[];           // IDs of today's focused projects
     nextTaskId: number;        // auto-increment counter (converted to string)
@@ -86,6 +88,7 @@ export function createProject(fields: {
 export function createEmptyData(): AppData {
     return {
         tasks: [],
+        todayTasks: [],
         projects: [],
         focus: [],
         nextTaskId: 1,

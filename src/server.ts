@@ -56,6 +56,42 @@ app.post("/api/quick", (req, res) => {
     res.json({ ok: true, task });
 });
 
+app.get("/api/today", (_req, res) => {
+    const data = loadData();
+    res.json(data.todayTasks || []);
+});
+
+app.post("/api/today", (req, res) => {
+    const { title } = req.body;
+    if (!title || !title.trim()) return res.status(400).json({ error: "Title required" });
+    const data = loadData();
+    if (!data.todayTasks) data.todayTasks = [];
+    const task = {
+        id: `today-${Date.now()}`,
+        title: title.trim(),
+        projectIds: [] as string[],
+        subtaskIds: [] as string[],
+        conditionIds: [] as string[],
+        status: "todo" as const,
+        createdAt: new Date().toISOString(),
+    };
+    data.todayTasks.push(task);
+    saveData(data);
+    res.json({ ok: true, task });
+});
+
+app.post("/api/today/done/:index", (req, res) => {
+    const idx = parseInt(req.params.index, 10);
+    const data = loadData();
+    if (!data.todayTasks || idx < 0 || idx >= data.todayTasks.length) {
+        return res.status(404).json({ error: "Not found" });
+    }
+    data.todayTasks[idx].status = "done";
+    data.todayTasks[idx].completedAt = new Date().toISOString();
+    saveData(data);
+    res.json({ ok: true });
+});
+
 app.post("/api/done/:id", (req, res) => {
     const id = req.params.id;
     const data = loadData();

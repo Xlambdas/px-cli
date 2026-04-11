@@ -99,6 +99,24 @@ export function pxStart(perso: boolean = false): void {
     const data = loadData();
     const changes = parseMarkdown(mdContent, data);
 
+    // Auto-reset recurring today tasks that are due
+    if (data.todayTasks) {
+        const today = new Date();
+        for (const t of data.todayTasks) {
+            if (t.recurrence && t.status === "done") {
+                const days = parseRecurrenceDays(t.recurrence);
+                if (days !== null && t.completedAt) {
+                    const lastDone = new Date(t.completedAt);
+                    const diff = Math.floor((today.getTime() - lastDone.getTime()) / (1000 * 60 * 60 * 24));
+                    if (diff >= days) {
+                        t.status = "todo";
+                        t.completedAt = undefined;
+                    }
+                }
+            }
+        }
+    }
+
     // Always save — even if parseMarkdown reports 0 "changes",
     // the git pull may have updated data.json itself
     saveData(data);
@@ -152,6 +170,17 @@ export function pxEnd(perso: boolean=false): void {
 
     if (ENABLE_MARKDOWN_SYNC) {
         const data = loadData();
+
+        // Clear completed non-recurring today tasks, keep the rest
+        if (data.todayTasks) {
+            data.todayTasks = data.todayTasks.filter((t) => {
+                if (t.status !== "done") return true;       // keep undone
+                if (t.recurrence) return true;             // keep recurring even if done
+                return false;                             // remove done non-recurring
+            });
+            saveData(data);
+        }
+
         exportMarkdown(data);
         console.log("  📄 projects.md updated");
     }
@@ -271,6 +300,19 @@ function exportMarkdown(data: AppData): void {
         md += `# Inbox\n\n`;
         for (const t of inbox) {
             md += formatTaskMd(t, data, 0);
+        }
+        md += `\n`;
+    }
+
+    // Today tasks section
+    if (data.todayTasks && data.todayTasks.length > 0) {
+        md += `---\n\n`;
+        md += `# Todo Today\n\n`;
+        for (const t of data.todayTasks) {
+            const check = t.status === "done" ? "[x]" : "[ ]";
+            const dur = t.duration ? ` (${t.duration}min)` : "";
+            const rec = t.recurrence ? ` [every ${t.recurrence}]` : "";
+            md += `- ${check} ${t.title}${dur}${rec}\n`;
         }
         md += `\n`;
     }
@@ -601,13 +643,59 @@ function parseMarkdown(md: string, data: AppData): ImportChanges {
         }
     }
 
+    // Parse "Todo Today" section
+    let inTodaySection = false;
+    const parsedTodayTasks: any[] = [];
+
+    for (const line of lines) {
+        if (line.match(/^#\s+Todo Today\s*$/i)) {
+            inTodaySection = true;
+            continue;
+        }
+        if (inTodaySection && line.match(/^#\s+/)) {
+            break; // hit next section
+        }
+        if (!inTodaySection) continue;
+
+        const tm = line.match(/^\s*-\s+\[(x| )\]\s+(.*)/);
+        if (!tm) continue;
+
+        const isDone = tm[1] === "x";
+        const rest = tm[2].trim();
+        const durMatch = rest.match(/\((\d+)min\)/);
+        const recMatch = rest.match(/\[every\s+([^\]]+)\]/);
+        const title = rest
+            .replace(/\(\d+min\)/, "")
+            .replace(/\[every\s+[^\]]+\]/, "")
+            .trim();
+
+        if (!title) continue;
+
+        parsedTodayTasks.push({
+            id: `today-${Date.now()}-${parsedTodayTasks.length}`,
+            title,
+            projectIds: [],
+            subtaskIds: [],
+            conditionIds: [],
+            status: isDone ? "done" : "todo",
+            duration: durMatch ? parseInt(durMatch[1], 10) : undefined,
+            recurrence: recMatch ? recMatch[1].trim() : undefined,
+            createdAt: new Date().toISOString(),
+            completedAt: isDone ? new Date().toISOString() : undefined,
+        });
+    }
+
+    if (parsedTodayTasks.length > 0) {
+        data.todayTasks = parsedTodayTasks;
+    }
+
     // Delete projects that exist in JSON but not in markdown
     const mdProjectNames = new Set<string>();
     for (const line of lines) {
         const pm = line.match(/^#\s+(.+?)(?:\s+\(\d+%\))?\s*$/);
         if (pm) {
             const name = pm[1].trim().toLowerCase();
-            if (name !== "inbox") mdProjectNames.add(name);
+            if (name !== "inbox" && name !== "todo today") mdProjectNames.add(name);
         }
     }
 
@@ -645,4 +733,19 @@ function parseMarkdown(md: string, data: AppData): ImportChanges {
         + changes.durationChanges + changes.deadlineChanges + changes.depChanges + changes.newTasks;
 
     return changes;
+}
+
+function parseRecurrenceDays(rec: string): number | null {
+    if (rec === "daily") return 1;
+    if (rec === "weekly") return 7;
+    if (rec === "monthly") return 30;
+    const match = rec.match(/^(\d+)(d|w|m)$/);
+    if (!match) return null;
+    const num = parseInt(match[1], 10);
+    switch (match[2]) {
+        case "d": return num;
+        case "w": return num * 7;
+        case "m": return num * 30;
+        default: return null;
+    }
 }

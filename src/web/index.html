@@ -358,12 +358,14 @@
     </div>
 
     <div class="tabs">
-        <button class="tab active" onclick="switchTab('tasks')">Tasks</button>
+        <button class="tab active" onclick="switchTab('today')">Today</button>
+        <button class="tab" onclick="switchTab('tasks')">Tasks</button>
         <button class="tab" onclick="switchTab('inbox')">Inbox <span id="inboxCount"></span></button>
         <button class="tab" onclick="switchTab('stats')">Stats</button>
     </div>
 
-    <div class="section active" id="sec-tasks"></div>
+    <div class="section active" id="sec-today"></div>
+    <div class="section" id="sec-tasks"></div>
     <div class="section" id="sec-inbox"></div>
     <div class="section" id="sec-stats"></div>
 
@@ -371,15 +373,49 @@
 
     <script>
         let DATA = null;
+        let TODAY = null;
 
         // ── Fetch & Render ──
 
         async function load() {
             const res = await fetch('/api/data');
             DATA = await res.json();
+            const todayRes = await fetch('/api/today');
+            TODAY = await todayRes.json();
             renderTasks();
             renderInbox();
+            renderToday();
             renderStats();
+        }
+
+        function renderToday() {
+            const el = document.getElementById('sec-today');
+            if (!TODAY || TODAY.length === 0) {
+                el.innerHTML = '<div class="empty-state">No tasks for today.<br>Type above to add one!</div>';
+                return;
+            }
+            let html = '';
+            const done = TODAY.filter(t => t.status === 'done').length;
+            html += `<div class="project-header"><span class="project-name">Today</span><span class="project-pct">${done}/${TODAY.length}</span></div>`;
+            html += `<div class="progress-track"><div class="progress-fill" style="width:${TODAY.length ? Math.round(done / TODAY.length * 100) : 0}%"></div></div>`;
+            TODAY.forEach((t, i) => {
+                const checkClass = t.status === 'done' ? 'done' : '';
+                const itemClass = `task-item ${t.status === 'done' ? 'done' : ''}`;
+                const dur = t.duration ? `${t.duration}min` : '';
+                html += `<div class="${itemClass}">
+                <button class="task-check ${checkClass}" onclick="todayDone(${i})">${t.status === 'done' ? '✓' : ''}</button>
+                <div class="task-info">
+                    <div class="task-title">${esc(t.title)}</div>
+                    ${dur ? `<div class="task-meta">${dur}</div>` : ''}
+                </div>
+            </div>`;
+            });
+            el.innerHTML = html;
+        }
+
+        async function todayDone(index) {
+            const res = await fetch(`/api/today/done/${index}`, { method: 'POST' });
+            if (res.ok) { toast('✓ Done!'); load(); }
         }
 
         function renderTasks() {
@@ -528,13 +564,13 @@
             if (!title) return;
 
             input.value = '';
-            const res = await fetch('/api/quick', {
+            const res = await fetch('/api/today', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title }),
             });
             if (res.ok) {
-                toast('✓ Added to inbox');
+                toast('✓ Added to today');
                 load();
             }
         }
@@ -558,7 +594,7 @@
 
         function switchTab(name) {
             document.querySelectorAll('.tab').forEach((t, i) => {
-                t.classList.toggle('active', ['tasks', 'inbox', 'stats'][i] === name);
+                t.classList.toggle('active', ['today', 'tasks', 'inbox', 'stats'][i] === name);
             });
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById('sec-' + name).classList.add('active');
