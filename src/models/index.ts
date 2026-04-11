@@ -47,6 +47,8 @@ export interface AppData {
     nextTaskId: number;        // auto-increment counter (converted to string)
     nextProjectId: number;     // auto-increment counter (converted to string)
     projectProfiles: { [projectId: string]: ProjectProfile };
+    archivedTasks: Task[];
+    archivedProjects: Project[];
 }
 
 
@@ -94,6 +96,8 @@ export function createEmptyData(): AppData {
         nextTaskId: 1,
         nextProjectId: 1,
         projectProfiles: {},
+        archivedTasks: [],
+        archivedProjects: [],
     };
 }
 

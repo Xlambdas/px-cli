@@ -28,6 +28,7 @@ import { startServer } from "./server";
 import { aiCommand } from "./commands/ai";
 import { pxStart, pxEnd } from "./commands/sync";
 import { todayCommand } from "./commands/today";
+import { archiveCommand } from "./commands/archive";
 
 const [command, ...args] = process.argv.slice(2);
 
@@ -137,6 +138,10 @@ async function main() {
             else console.log("Usage: px project add|list");
             break;
 
+        case "archive":
+            archiveCommand(args);
+            break;
+
         // Help
         default:
             showGeneralHelp();
@@ -155,7 +160,7 @@ function showGeneralHelp(): void {
 
         add "Task" [--project "X"] [--parent ID] [--duration MIN] [--deadline DATE]
         quick "Task title"
-        todo "task title" [--duration MIN]     # Add to today's list
+        todo "task title" [--duration MIN] [--every INTERVAL]      # Add to today's list
         inbox
         edit <ID>
 
@@ -169,6 +174,7 @@ function showGeneralHelp(): void {
         list [--all] [--project "X"]
         status [ID or "Name"]
         stats
+        archive [--project ID | --task ID | list | restore ID]
 
         ai [next|plan|expand <ID>]
         web [--qr]                             Start web server for phone access, show QR code in terminal
@@ -385,6 +391,22 @@ function showCommandHelp(cmd: string): void {
         - Current streak (consecutive days)
         - All projects with progress bars and task trees
     `,
+
+        archive: `
+\x1b[32m--- px archive [--project ID | --task ID | list | restore ID] ---\x1b[0m
+
+    archive --project <ID>                 Archive a project
+    archive --task <ID>                    Archive a task
+    archive list                           Show archived items
+    archive restore <ID>                   Restore from archive
+
+    Examples:
+        px archive --project 1
+        px archive --task 3
+        px archive list
+        px archive restore 2
+    `,
+
 
         project: `
 \x1b[32m--- px project add "Name" [options] / px project list ---\x1b[0m

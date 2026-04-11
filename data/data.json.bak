@@ -26,71 +26,6 @@
       "completedAt": "2026-04-07T12:50:35.592Z"
     },
     {
-      "id": "2.1",
-      "title": "Write CV",
-      "projectIds": [
-        "2"
-      ],
-      "subtaskIds": [],
-      "conditionIds": [],
-      "status": "done",
-      "duration": 30,
-      "createdAt": "2026-04-07T12:50:35.592Z",
-      "completedAt": "2026-04-07T12:50:35.592Z"
-    },
-    {
-      "id": "2.2",
-      "title": "faire session sport",
-      "projectIds": [
-        "2"
-      ],
-      "subtaskIds": [
-        "2.2.1"
-      ],
-      "conditionIds": [],
-      "status": "done",
-      "duration": 40,
-      "createdAt": "2026-04-07T12:50:35.592Z",
-      "completedAt": "2026-04-07T12:50:35.592Z"
-    },
-    {
-      "id": "2.2.1",
-      "title": "task testttt",
-      "projectIds": [
-        "2"
-      ],
-      "parentId": "2.2",
-      "subtaskIds": [],
-      "conditionIds": [],
-      "status": "done",
-      "createdAt": "2026-04-07T12:50:35.592Z",
-      "completedAt": "2026-04-07T12:50:35.592Z"
-    },
-    {
-      "id": "2.3",
-      "title": "Test phone",
-      "projectIds": [
-        "2"
-      ],
-      "subtaskIds": [],
-      "conditionIds": [],
-      "status": "done",
-      "createdAt": "2026-04-07T12:50:35.592Z",
-      "completedAt": "2026-04-07T13:14:11.154Z"
-    },
-    {
-      "id": "2.4",
-      "title": "Nouveau ttst phone",
-      "projectIds": [
-        "2"
-      ],
-      "subtaskIds": [],
-      "conditionIds": [],
-      "status": "done",
-      "createdAt": "2026-04-07T12:50:35.592Z",
-      "completedAt": "2026-04-07T13:41:06.408Z"
-    },
-    {
       "id": "3.1",
       "title": "test1",
       "projectIds": [
@@ -171,7 +106,7 @@
     },
     {
       "id": "3.3",
-      "title": "big task",
+      "title": "big task 23",
       "projectIds": [
         "3"
       ],
@@ -180,8 +115,9 @@
         "3.1"
       ],
       "status": "todo",
-      "duration": 60,
-      "createdAt": "2026-04-07T12:50:35.592Z"
+      "duration": 16,
+      "createdAt": "2026-04-07T12:50:35.592Z",
+      "deadline": "2026-04-16"
     },
     {
       "projectIds": [
@@ -265,6 +201,45 @@
       "conditionIds": [],
       "status": "todo",
       "createdAt": "2026-04-08T10:19:41.679Z"
+    },
+    {
+      "projectIds": [
+        "7"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-11T14:09:20.851Z",
+      "id": "7.1",
+      "title": "Handstand: static 20s",
+      "deadline": "2026-04-30"
+    },
+    {
+      "projectIds": [
+        "7"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [
+        "7.1"
+      ],
+      "status": "todo",
+      "createdAt": "2026-04-11T14:10:36.016Z",
+      "id": "7.2",
+      "title": "Handstand:  2 pushup + 30s static"
+    },
+    {
+      "projectIds": [
+        "7"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [
+        "7.1",
+        "7.2"
+      ],
+      "status": "todo",
+      "createdAt": "2026-04-11T14:11:47.028Z",
+      "id": "7.3",
+      "title": "Handstand: from horizontal to vertical"
     }
   ],
   "projects": [
@@ -274,13 +249,6 @@
       "status": "active",
       "deadline": "2026-04-10",
       "createdAt": "2026-04-07T12:50:35.591Z"
-    },
-    {
-      "id": "2",
-      "title": "Internship",
-      "status": "active",
-      "deadline": "2026-06-30",
-      "createdAt": "2026-04-07T12:50:35.592Z"
     },
     {
       "id": "3",
@@ -295,16 +263,55 @@
       "description": "animation of a glass coffee cup filling with coffee liquid",
       "status": "active",
       "createdAt": "2026-04-08T10:19:41.679Z"
+    },
+    {
+      "status": "active",
+      "createdAt": "2026-04-11T14:02:24.733Z",
+      "id": "7",
+      "title": "Calisthenics",
+      "description": "mastering a full body control with calisthenics methods and figures",
+      "deadline": "2026-07"
     }
   ],
   "focus": [
-    "1",
-    "2",
-    "3"
+    "3",
+    "4",
+    "7"
   ],
   "nextTaskId": 4,
-  "nextProjectId": 7,
-  "projectProfiles": {},
+  "nextProjectId": 8,
+  "projectProfiles": {
+    "7": {
+      "projectId": "7",
+      "type": "fitness",
+      "stage": "building",
+      "goal": "master calisthenics technics",
+      "learnedPatterns": {
+        "avoidedTaskTypes": [
+          "initial",
+          "calisthenics",
+          "skill",
+          "develop",
+          "foundational",
+          "master",
+          "explosive",
+          "pulling",
+          "strengthen",
+          "planche",
+          "pushup",
+          "achieve",
+          "dynamic",
+          "core",
+          "progress",
+          "towards",
+          "full",
+          "introduce",
+          "back",
+          "lever"
+        ]
+      }
+    }
+  },
   "todayTasks": [
     {
       "id": "today-1775900675661-0",
@@ -356,6 +363,100 @@
       "status": "todo",
       "createdAt": "2026-04-11T09:44:35.662Z",
       "duration": 30
+    },
+    {
+      "id": "today-1775914331757",
+      "title": "Phone test",
+      "projectIds": [],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-11T13:32:11.757Z"
+    },
+    {
+      "id": "today-1775914348821",
+      "title": "Second test",
+      "projectIds": [],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-11T13:32:28.821Z"
+    }
+  ],
+  "archivedTasks": [
+    {
+      "id": "2.4",
+      "title": "Nouveau ttst phone",
+      "projectIds": [
+        "2"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "done",
+      "createdAt": "2026-04-07T12:50:35.592Z",
+      "completedAt": "2026-04-07T13:41:06.408Z"
+    },
+    {
+      "id": "2.1",
+      "title": "Write CV",
+      "projectIds": [
+        "2"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "done",
+      "duration": 30,
+      "createdAt": "2026-04-07T12:50:35.592Z",
+      "completedAt": "2026-04-07T12:50:35.592Z"
+    },
+    {
+      "id": "2.2",
+      "title": "faire session sport",
+      "projectIds": [
+        "2"
+      ],
+      "subtaskIds": [
+        "2.2.1"
+      ],
+      "conditionIds": [],
+      "status": "done",
+      "duration": 40,
+      "createdAt": "2026-04-07T12:50:35.592Z",
+      "completedAt": "2026-04-07T12:50:35.592Z"
+    },
+    {
+      "id": "2.2.1",
+      "title": "task testttt",
+      "projectIds": [
+        "2"
+      ],
+      "parentId": "2.2",
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "done",
+      "createdAt": "2026-04-07T12:50:35.592Z",
+      "completedAt": "2026-04-07T12:50:35.592Z"
+    },
+    {
+      "id": "2.3",
+      "title": "Test phone",
+      "projectIds": [
+        "2"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "done",
+      "createdAt": "2026-04-07T12:50:35.592Z",
+      "completedAt": "2026-04-07T13:14:11.154Z"
+    }
+  ],
+  "archivedProjects": [
+    {
+      "id": "2",
+      "title": "Internship",
+      "status": "active",
+      "deadline": "2026-06-30",
+      "createdAt": "2026-04-07T12:50:35.592Z"
     }
   ]
 }

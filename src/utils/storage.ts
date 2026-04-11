@@ -23,6 +23,8 @@ export function loadData(): AppData {
         if (!data.todayTasks) {
             data.todayTasks = [];
         }
+        if (!data.archivedTasks) data.archivedTasks = [];
+        if (!data.archivedProjects) data.archivedProjects = [];
         return data;
     } catch {
         // File doesn't exist yet — first run
