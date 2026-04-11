@@ -146,7 +146,7 @@ function cleanOldBackups(): void {
     * 2. git add, commit, push
 */
 export function pxEnd(perso: boolean=false): void {
-    const cwd = path.join(__dirname, "../..");
+    const cwd = process.cwd();
 
     if (ENABLE_MARKDOWN_SYNC) {
         const data = loadData();
@@ -155,7 +155,7 @@ export function pxEnd(perso: boolean=false): void {
     }
 
     // Git add, commit, push
-    if (perso = process.argv.includes("--perso")) {
+    if (perso) {
         console.log("\n  ⬆ Pushing changes (personal)...");
         const home = process.env.USERPROFILE || process.env.HOME || "";
         const keyPath = path.join(home, ".ssh", "id_ed25519_personal");
