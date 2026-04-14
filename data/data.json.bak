@@ -89,10 +89,11 @@
       "conditionIds": [
         "3.1"
       ],
-      "status": "todo",
+      "status": "done",
       "duration": 16,
       "createdAt": "2026-04-07T12:50:35.592Z",
-      "deadline": "2026-04-16"
+      "deadline": "2026-04-16",
+      "completedAt": "2026-04-14T19:23:57.881Z"
     },
     {
       "projectIds": [
@@ -226,7 +227,7 @@
       "createdAt": "2026-04-07T12:50:35.592Z"
     },
     {
-      "id": "4",
+      "id": "5",
       "title": "Coffee game",
       "description": "animation of a glass coffee cup filling with coffee liquid",
       "status": "active",
@@ -243,7 +244,7 @@
   ],
   "focus": [
     "3",
-    "4",
+    "5",
     "7"
   ],
   "nextTaskId": 4,

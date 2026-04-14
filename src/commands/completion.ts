@@ -41,6 +41,7 @@ Register-ArgumentCompleter -CommandName 'px','px.cmd','px.ps1' -Native -ScriptBl
             'archive'  { $results = @('--project','--task','list','restore') }
             'start'    { $results = @('--perso') }
             'end'      { $results = @('--perso') }
+            'next'     { $results = @('--top') }
             'list'     { $results = @('--all','--project') }
             'add'      { $results = @('--project','--parent','--duration','--deadline') }
             'help'     { $results = @(

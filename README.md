@@ -106,6 +106,7 @@ Recurrence intervals: `daily`, `weekly`, `monthly`, or `<number><d|w|m>` (e.g. `
 |---------|-------------|
 | `px focus [ID ID ...]` | Set/view today's projects |
 | `px day` | Interactive daily session |
+| `px next` | give a single task - the more important |
 
 ### AI Suggestions
 
@@ -200,7 +201,7 @@ What you can edit in `projects.md`:
 
 ### Web UI
 
-Run `px web --code` and scan the QR code with your phone.
+Run `px web --qr` and scan the QR code with your phone.
 Features: quick capture, today tasks, project task checklist, stats.
 Both CLI and web UI read/write the same `data.json`.
 
@@ -234,6 +235,7 @@ px-cli/
 │   │   ├── dep.ts            # px dep
 │   │   ├── undo.ts           # px undo
 │   │   ├── list.ts           # px list
+│   │   ├── next.ts           # px next
 │   │   ├── status.ts         # px status
 │   │   ├── stats.ts          # px stats
 │   │   ├── project.ts        # px project

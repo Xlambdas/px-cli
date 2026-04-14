@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
 /**
- * px - Project Execute CLI
- *
- * This file is the ROUTER. It reads the command you typed
- * and calls the right function. No logic lives here.
- *
- * WHY a manual router instead of a CLI framework (like Commander.js)?
- * → Zero dependencies. You can add one later if this gets unwieldy.
- *   Right now, with ~10 commands, a switch statement is perfectly fine.
- */
+    * px - Project Execute CLI
+    *
+    * This file is the ROUTER. It reads the command you typed
+    * and calls the right function. No logic lives here.
+    *
+    * WHY a manual router instead of a CLI framework (like Commander.js)?
+    * → Zero dependencies. You can add one later if this gets unwieldy.
+    *   Right now, with ~10 commands, a switch statement is perfectly fine.
+*/
 
 import { addTask } from "./commands/add";
 import { quickAdd } from "./commands/quick";
@@ -30,6 +30,7 @@ import { pxStart, pxEnd } from "./commands/sync";
 import { todayCommand } from "./commands/today";
 import { archiveCommand } from "./commands/archive";
 import { completionCommand } from "./commands/completion";
+import { nextCommand } from "./commands/next";
 
 const [command, ...args] = process.argv.slice(2);
 
@@ -54,6 +55,9 @@ async function main() {
             break;
         case "done":
             markDone(args);
+            break;
+        case "next":
+            nextCommand(args);
             break;
         case "edit":
             await editTask(args);
@@ -176,6 +180,7 @@ function showGeneralHelp(): void {
         undo
 
         list [--all] [--project "X"]
+        next [--top N]
         status [ID or "Name"]
         stats
         archive [--project ID | --task ID | list | restore ID]
@@ -395,6 +400,25 @@ function showCommandHelp(cmd: string): void {
         - Current streak (consecutive days)
         - All projects with progress bars and task trees
     `,
+
+        next: `
+\x1b[32m--- px next [--top N] ---\x1b[0m
+
+    Get next best task to work on, based on:
+        - Unblocked and incomplete tasks only
+        - Focused projects prioritized
+        - Tasks ≤ 2h preferred
+        - Scoring algorithm considers deadlines, durations, project focus, and more
+
+    Options:
+        --top N    Show top N tasks instead of just 1
+
+    Examples:
+        px next              single best task with reason
+        px next --top 3      top 3
+        px next --top 5      top 5
+    `,
+
 
         archive: `
 \x1b[32m--- px archive [--project ID | --task ID | list | restore ID] ---\x1b[0m
