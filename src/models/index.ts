@@ -32,9 +32,14 @@ export interface ProjectProfile {
     type?: string;
     stage?: string;
     goal?: string;
+    lastPromptHash?: string;
     learnedPatterns?: {
         preferredTaskTypes?: string[];
         avoidedTaskTypes?: string[];
+    };
+    aiStats?: {
+        totalSuggested: number;
+        totalAccepted: number;
     };
 }
 

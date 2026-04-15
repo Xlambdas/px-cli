@@ -89,11 +89,10 @@
       "conditionIds": [
         "3.1"
       ],
-      "status": "done",
+      "status": "todo",
       "duration": 16,
       "createdAt": "2026-04-07T12:50:35.592Z",
-      "deadline": "2026-04-16",
-      "completedAt": "2026-04-14T19:23:57.881Z"
+      "deadline": "2026-04-16"
     },
     {
       "projectIds": [
@@ -216,6 +215,185 @@
       "createdAt": "2026-04-11T14:11:47.028Z",
       "id": "7.3",
       "title": "Handstand: from horizontal to vertical"
+    },
+    {
+      "projectIds": [
+        "9"
+      ],
+      "subtaskIds": [
+        "9.1.1",
+        "9.1.2",
+        "9.1.3"
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-15T08:39:18.849Z",
+      "id": "9.1",
+      "title": "Set up initial React project and GitHub repository",
+      "duration": 60
+    },
+    {
+      "projectIds": [
+        "9"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-15T08:39:18.850Z",
+      "id": "9.1.1",
+      "title": "Create new React project (e.g., with Vite)",
+      "duration": 30,
+      "parentId": "9.1"
+    },
+    {
+      "projectIds": [
+        "9"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-15T08:39:18.850Z",
+      "id": "9.1.2",
+      "title": "Initialize local Git repository and make first commit",
+      "duration": 15,
+      "parentId": "9.1"
+    },
+    {
+      "projectIds": [
+        "9"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-15T08:39:18.850Z",
+      "id": "9.1.3",
+      "title": "Create remote GitHub repository and push initial code",
+      "duration": 15,
+      "parentId": "9.1"
+    },
+    {
+      "projectIds": [
+        "9"
+      ],
+      "subtaskIds": [
+        "9.2.1",
+        "9.2.2",
+        "9.2.3",
+        "9.2.4",
+        "9.2.5"
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-15T08:39:18.850Z",
+      "id": "9.2",
+      "title": "Integrate Tailwind CSS into the project",
+      "duration": 90
+    },
+    {
+      "projectIds": [
+        "9"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-15T08:39:18.850Z",
+      "id": "9.2.1",
+      "title": "Install Tailwind CSS and PostCSS dependencies",
+      "duration": 30,
+      "parentId": "9.2"
+    },
+    {
+      "projectIds": [
+        "9"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-15T08:39:18.850Z",
+      "id": "9.2.2",
+      "title": "Generate Tailwind config files (tailwind.config.js, postcss.config.js)",
+      "duration": 15,
+      "parentId": "9.2"
+    },
+    {
+      "projectIds": [
+        "9"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-15T08:39:18.850Z",
+      "id": "9.2.3",
+      "title": "Configure 'content' paths in tailwind.config.js",
+      "duration": 15,
+      "parentId": "9.2"
+    },
+    {
+      "projectIds": [
+        "9"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-15T08:39:18.850Z",
+      "id": "9.2.4",
+      "title": "Add Tailwind directives to main CSS file",
+      "duration": 15,
+      "parentId": "9.2"
+    },
+    {
+      "projectIds": [
+        "9"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-15T08:39:18.850Z",
+      "id": "9.2.5",
+      "title": "Verify Tailwind installation with a simple test class",
+      "duration": 15,
+      "parentId": "9.2"
+    },
+    {
+      "projectIds": [
+        "9"
+      ],
+      "subtaskIds": [
+        "9.3.1",
+        "9.3.2"
+      ],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-15T08:39:18.850Z",
+      "id": "9.3",
+      "title": "Implement a basic page layout structure",
+      "duration": 60
+    },
+    {
+      "projectIds": [
+        "9"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-15T08:39:18.850Z",
+      "id": "9.3.1",
+      "title": "Create a simple App.jsx component layout (e.g., div for header, main, footer)",
+      "duration": 30,
+      "parentId": "9.3"
+    },
+    {
+      "projectIds": [
+        "9"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-15T08:39:18.850Z",
+      "id": "9.3.2",
+      "title": "Add placeholder content to header and footer components",
+      "duration": 30,
+      "parentId": "9.3"
     }
   ],
   "projects": [
@@ -240,14 +418,23 @@
       "title": "Calisthenics",
       "description": "mastering a full body control with calisthenics methods and figures",
       "deadline": "2026-07"
+    },
+    {
+      "status": "active",
+      "createdAt": "2026-04-15T08:20:15.930Z",
+      "id": "9",
+      "title": "Website portfolio",
+      "description": "github page to show every projects (with react, tailwind)",
+      "deadline": "2026-05"
     }
   ],
   "focus": [
     "3",
-    "7"
+    "7",
+    "9"
   ],
   "nextTaskId": 4,
-  "nextProjectId": 8,
+  "nextProjectId": 10,
   "projectProfiles": {
     "7": {
       "projectId": "7",
@@ -278,77 +465,101 @@
           "lever"
         ]
       }
+    },
+    "9": {
+      "projectId": "9",
+      "type": "web page",
+      "stage": "building",
+      "goal": "Deploy a solid webpage presenting every actual project, futurs project and a bit like a portfolio",
+      "learnedPatterns": {
+        "preferredTaskTypes": [
+          "initial",
+          "react",
+          "project",
+          "integrate",
+          "tailwind",
+          "into",
+          "implement",
+          "basic",
+          "page"
+        ],
+        "avoidedTaskTypes": [
+          "research",
+          "github",
+          "pages",
+          "create",
+          "react",
+          "project",
+          "initialize",
+          "local",
+          "repository",
+          "remote",
+          "install",
+          "tailwind",
+          "postcss"
+        ]
+      },
+      "aiStats": {
+        "totalSuggested": 4,
+        "totalAccepted": 3
+      }
     }
   },
   "todayTasks": [
     {
-      "id": "today-1775900675661-0",
-      "title": "test recur",
+      "id": "today-1776252899235",
+      "title": "RL - scene setup",
       "projectIds": [],
       "subtaskIds": [],
       "conditionIds": [],
       "status": "done",
-      "recurrence": "3d",
-      "createdAt": "2026-04-11T09:44:35.662Z",
-      "completedAt": "2026-04-11T09:44:35.662Z"
+      "createdAt": "2026-04-15T11:34:59.235Z",
+      "completedAt": "2026-04-15T11:57:22.558Z"
     },
     {
-      "id": "today-1775900675662-1",
-      "title": "test supra",
+      "id": "today-1776252932253",
+      "title": "RL - street Lamp",
       "projectIds": [],
       "subtaskIds": [],
       "conditionIds": [],
       "status": "todo",
-      "createdAt": "2026-04-11T09:44:35.662Z",
-      "duration": 12
+      "createdAt": "2026-04-15T11:35:32.253Z"
     },
     {
-      "id": "today-1775900675662-2",
-      "title": "truc nouveau",
+      "id": "today-1776252942353",
+      "title": "RL - pedestrian",
       "projectIds": [],
       "subtaskIds": [],
       "conditionIds": [],
       "status": "todo",
-      "duration": 30,
-      "recurrence": "1d",
-      "createdAt": "2026-04-11T09:44:35.662Z"
+      "createdAt": "2026-04-15T11:35:42.353Z"
     },
     {
-      "id": "today-1775900675662-3",
-      "title": "new task THFDFD",
+      "id": "today-1776252952995",
+      "title": "RL - Cars",
       "projectIds": [],
       "subtaskIds": [],
       "conditionIds": [],
       "status": "todo",
-      "createdAt": "2026-04-11T09:44:35.662Z"
+      "createdAt": "2026-04-15T11:35:52.995Z"
     },
     {
-      "id": "today-1775900675662-4",
-      "title": "test new tasks",
+      "id": "today-1776252997326",
+      "title": "RL - Scoring system",
       "projectIds": [],
       "subtaskIds": [],
       "conditionIds": [],
       "status": "todo",
-      "createdAt": "2026-04-11T09:44:35.662Z",
-      "duration": 30
+      "createdAt": "2026-04-15T11:36:37.326Z"
     },
     {
-      "id": "today-1775914331757",
-      "title": "Phone test",
+      "id": "today-1776254265939",
+      "title": "RL - Traffic light",
       "projectIds": [],
       "subtaskIds": [],
       "conditionIds": [],
       "status": "todo",
-      "createdAt": "2026-04-11T13:32:11.757Z"
-    },
-    {
-      "id": "today-1775914348821",
-      "title": "Second test",
-      "projectIds": [],
-      "subtaskIds": [],
-      "conditionIds": [],
-      "status": "todo",
-      "createdAt": "2026-04-11T13:32:28.821Z"
+      "createdAt": "2026-04-15T11:57:45.939Z"
     }
   ],
   "archivedTasks": [

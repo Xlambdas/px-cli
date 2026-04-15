@@ -36,7 +36,11 @@ function formatTaskList(ctx: AIContext): string {
             const depStr = t.conditionIds.length > 0
                 ? `\n  Depends on: ${t.conditionIds.map((id) => ctx.allTasks.find((s) => s.id === id)?.title || `#${id}`).join(", ")}`
                 : "";
-            return `- ${t.title} [${t.status}]${t.duration ? ` (${t.duration}min)` : ""}${subStr}${depStr}`;
+            const blocked = t.conditionIds.length > 0 && t.conditionIds.some(
+                (cid) => { const c = ctx.allTasks.find((x) => x.id === cid); return c && c.status !== "done"; }
+            );
+            const blockedTag = blocked ? " ⛔BLOCKED" : "";
+            return `- ${t.title} [${t.status}]${blockedTag}${t.duration ? ` (${t.duration}min)` : ""}${subStr}${depStr}`;
         })
         .join("\n");
 }
@@ -58,43 +62,101 @@ function projectBlock(ctx: AIContext): string {
             block += `\nUser avoids: ${profile.learnedPatterns.avoidedTaskTypes.join(", ")}`;
         }
     }
+    // Recently completed (last 5)
+    const recent = ctx.doneTasks
+        .filter((t) => t.completedAt)
+        .sort((a, b) => (b.completedAt || "").localeCompare(a.completedAt || ""))
+        .slice(0, 5);
+    if (recent.length > 0) {
+        block += `\nRecently completed: ${recent.map((t) => t.title).join(", ")}`;
+    }
+    if (profile.aiStats && profile.aiStats.totalSuggested > 5) {
+        const rate = Math.round((profile.aiStats.totalAccepted / profile.aiStats.totalSuggested) * 100);
+        block += `\nUser accepts ${rate}% of AI suggestions — ${rate < 40 ? "be more conservative and practical" : "current approach works well"}`;
+    }
     return block;
 }
 
-const JSON_INSTRUCTION = `Respond ONLY in this exact JSON format, no other text, no markdown:
+const JSON_INSTRUCTION = `Respond ONLY in this exact JSON format, no other text, no markdown.
+Tasks MUST be ≤ 2h. If a task would take longer, break it into subtasks.
+Subtasks can also have subtasks — nest as deep as needed until every leaf task is ≤ 2h.
+Use "needs" to specify which tasks must be done first (by their title, exact match).
+
 [
   {
-    "title": "Task title",
+    "title": "Task A",
     "duration": 60,
-    "subtasks": ["Subtask 1", "Subtask 2"]
+    "needs": [],
+    "subtasks": []
+  },
+  {
+    "title": "Task B",
+    "duration": 90,
+    "needs": ["Task A"],
+    "subtasks": [
+      {
+        "title": "Sub B1",
+        "duration": 30,
+        "needs": [],
+        "subtasks": []
+      },
+      {
+        "title": "Sub B2",
+        "duration": 45,
+        "needs": ["Sub B1"],
+        "subtasks": []
+      }
+    ]
   }
 ]`;
 
 export function buildNextPrompt(ctx: AIContext): string {
-    return `${projectBlock(ctx)}
+  const blockedCount = ctx.todoTasks.filter((t) =>
+    t.conditionIds.some((cid) => {
+      const c = ctx.allTasks.find((x) => x.id === cid);
+      return c && c.status !== "done";
+    })
+  ).length;
+
+  return `${projectBlock(ctx)}
 
 Current tasks:
 ${formatTaskList(ctx)}
 
-Based on the current progress and what's already done, suggest 3-5 tasks I should work on NEXT.
-Focus on what's most impactful right now given the project stage.
-Each task should be actionable and completable in 30min-2h.
-Don't repeat tasks that already exist.
+${blockedCount > 0 ? `${blockedCount} task(s) are currently blocked by dependencies.\n` : ""}
+Suggest 3-5 tasks I should work on RIGHT NOW.
+Prioritize:
+1. Tasks that would UNBLOCK other tasks
+2. Tasks matching the current project stage (${ctx.profile.stage || "unknown"})
+3. Quick wins (30-60min) that build momentum
+4. Tasks that are missing but logically come before existing todo tasks
+
+Each task must be actionable and completable in 30min-2h.
+Don't repeat existing tasks (even partially).
+Don't suggest tasks that are already blocked — suggest what unblocks them.
 
 ${JSON_INSTRUCTION}`;
 }
 
 export function buildPlanPrompt(ctx: AIContext): string {
-    return `${projectBlock(ctx)}
+  return `${projectBlock(ctx)}
 
 Current tasks:
 ${formatTaskList(ctx)}
 
-Suggest 5-8 tasks I might be missing to complete this project successfully.
-Consider all phases: planning, building, testing, polishing, launching.
-Each task should be actionable and completable in 30min-2h.
-For complex tasks, suggest 2-3 subtasks.
-Don't repeat tasks that already exist.
+Analyze this project and identify 5-8 MISSING tasks needed to complete it.
+Consider:
+1. What phases are missing? (planning → building → testing → polishing → launching)
+2. What tasks have no dependencies but should? (ordering gaps)
+3. Are there testing, documentation, or review tasks?
+4. Is there a launch/deployment/delivery task?
+5. Are there tasks the user might forget? (backups, edge cases, cleanup)
+
+Current stage: ${ctx.profile.stage || "unknown"}
+Goal: ${ctx.profile.goal || "complete the project"}
+
+Each task: actionable, 30min-2h, with subtasks for complex ones.
+Don't repeat existing tasks.
 
 ${JSON_INSTRUCTION}`;
 }
