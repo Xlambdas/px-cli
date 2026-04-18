@@ -4,7 +4,6 @@ import { execSync } from "child_process";
 import { loadData, saveData } from "../utils/storage";
 import { AppData, Task, generateSubtaskId, generateTaskId } from "../models";
 import { canComplete, fmtDeadline, fmtDuration, projectProgress } from "../utils/helpers";
-
 import { spawnSync } from "child_process";
 
 /**
@@ -18,15 +17,14 @@ const DATA_DIR = path.join(__dirname, "../../data");
 const MD_PATH = path.join(DATA_DIR, "projects.md");
 
 /**
- * px start
- *
- * Morning routine:
- * 1. git pull (get latest from any device)
- * 2. If markdown sync enabled:
- *    - Check if projects.md was edited
- *    - If yes, parse changes back into data.json
- *    - Backup data.json before overwriting
- */
+    * px start
+    *
+    * 1. git pull (get latest from any device)
+    * 2. If markdown sync enabled:
+    *    - Check if projects.md was edited
+    *    - If yes, parse changes back into data.json
+    *    - Backup data.json before overwriting
+*/
 export function pxStart(perso: boolean = false): void {
     const cwd = process.cwd();
 
@@ -91,7 +89,7 @@ export function pxStart(perso: boolean = false): void {
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
         const bakPath = path.join(DATA_DIR, `data.${timestamp}.import.bak`);
         fs.copyFileSync(dataPath, bakPath);
-        console.log(`  📦 Backup: ${path.basename(bakPath)}`);
+        console.log(`  Backup: ${path.basename(bakPath)}`);
         cleanOldBackups();
     }
 
@@ -140,8 +138,8 @@ export function pxStart(perso: boolean = false): void {
 }
 
 /**
- * Keep only the last 5 import backups.
- */
+    * Keep only the last 5 import backups.
+*/
 function cleanOldBackups(): void {
     try {
         const files = fs.readdirSync(DATA_DIR)
@@ -182,7 +180,7 @@ export function pxEnd(perso: boolean=false): void {
         }
 
         exportMarkdown(data);
-        console.log("  📄 projects.md updated");
+        console.log(" -- projects.md updated");
     }
 
     // Git add, commit, push
@@ -247,7 +245,6 @@ export function pxEnd(perso: boolean=false): void {
 
 /**
     * Export data.json → projects.md
-    * Human-readable, editable format.
     *
     * Format:
     *   # Project Name
@@ -356,23 +353,23 @@ interface ImportChanges {
 }
 
 /**
- * Parse projects.md back into data.
- * Updates: status, title, duration, deadline, dependencies.
- * Creates new tasks if they don't have an explicit ID token.
- *
- * Task line format:
- *   - [x] 3.1 Task title (60min) [needs 2.1, 2.2] {2026-05-01}
- *   - [ ] New task without ID (45min)
- *
- * We detect:
- *   ID              → existing task (update it)
- *   no ID           → new task (create it)
- *   [x] vs [ ]      → status
- *   (NUMmin)        → duration
- *   [needs A, B]    → dependencies
- *   {YYYY-MM-DD}    → deadline
- *   everything else → title
- */
+    * Parse projects.md back into data.
+    * Updates: status, title, duration, deadline, dependencies.
+    * Creates new tasks if they don't have an explicit ID token.
+    *
+    * Task line format:
+    *   - [x] 3.1 Task title (60min) [needs 2.1, 2.2] {2026-05-01}
+    *   - [ ] New task without ID (45min)
+    *
+    * Detect:
+    *   ID              → existing task (update it)
+    *   no ID           → new task (create it)
+    *   [x] vs [ ]      → status
+    *   (NUMmin)        → duration
+    *   [needs A, B]    → dependencies
+    *   {YYYY-MM-DD}    → deadline
+    *   everything else → title
+*/
 function parseMarkdown(md: string, data: AppData): ImportChanges {
     const changes: ImportChanges = {
         newProjects: 0,
@@ -503,7 +500,7 @@ function parseMarkdown(md: string, data: AppData): ImportChanges {
         const parentId = indentStack.length > 0 ? indentStack[indentStack.length - 1].taskId : undefined;
 
         if (idMatch) {
-            // ── Existing task: update fields ──
+            // -- Existing task: update fields --
             const taskId = idMatch[1];
             let task = data.tasks.find((t) => t.id === taskId);
 
@@ -602,7 +599,7 @@ function parseMarkdown(md: string, data: AppData): ImportChanges {
             indentStack.push({ indent, taskId });
 
         } else {
-            // ── New task: no explicit ID found ──
+            // -- New task: no explicit ID found --
             if (!title) continue;
 
             const projectIds: string[] = [];

@@ -174,14 +174,21 @@
       "parentId": "4.2",
       "subtaskIds": [],
       "conditionIds": [],
-      "status": "todo",
-      "createdAt": "2026-04-08T10:19:41.679Z"
+      "status": "done",
+      "createdAt": "2026-04-08T10:19:41.679Z",
+      "completedAt": "2026-04-08T10:34:38.582Z"
     },
     {
       "projectIds": [
         "7"
       ],
-      "subtaskIds": [],
+      "subtaskIds": [
+        "7.1.1",
+        "7.1.2",
+        "7.1.3",
+        "7.1.4",
+        "7.1.5"
+      ],
       "conditionIds": [],
       "status": "todo",
       "createdAt": "2026-04-11T14:09:20.851Z",
@@ -394,6 +401,79 @@
       "title": "Add placeholder content to header and footer components",
       "duration": 30,
       "parentId": "9.3"
+    },
+    {
+      "projectIds": [
+        "7"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-18T08:07:25.621Z",
+      "id": "7.1.1",
+      "title": "Perform wrist conditioning routine",
+      "duration": 30,
+      "parentId": "7.1"
+    },
+    {
+      "projectIds": [
+        "7"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [
+        "7.1.1"
+      ],
+      "status": "todo",
+      "createdAt": "2026-04-18T08:07:25.623Z",
+      "id": "7.1.2",
+      "title": "Execute inverted bodyline alignment against wall",
+      "duration": 45,
+      "parentId": "7.1"
+    },
+    {
+      "projectIds": [
+        "7"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [
+        "7.1.2"
+      ],
+      "status": "todo",
+      "createdAt": "2026-04-18T08:07:25.623Z",
+      "id": "7.1.3",
+      "title": "Practice wall-supported balance discovery",
+      "duration": 45,
+      "parentId": "7.1"
+    },
+    {
+      "projectIds": [
+        "7"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [
+        "7.1.3"
+      ],
+      "status": "todo",
+      "createdAt": "2026-04-18T08:07:25.623Z",
+      "id": "7.1.4",
+      "title": "Attempt brief unassisted balance periods",
+      "duration": 60,
+      "parentId": "7.1"
+    },
+    {
+      "projectIds": [
+        "7"
+      ],
+      "subtaskIds": [],
+      "conditionIds": [
+        "7.1.4"
+      ],
+      "status": "todo",
+      "createdAt": "2026-04-18T08:07:25.623Z",
+      "id": "7.1.5",
+      "title": "Extend unassisted balance periods",
+      "duration": 60,
+      "parentId": "7.1"
     }
   ],
   "projects": [
@@ -463,7 +543,26 @@
           "introduce",
           "back",
           "lever"
+        ],
+        "preferredTaskTypes": [
+          "perform",
+          "wrist",
+          "conditioning",
+          "execute",
+          "inverted",
+          "bodyline",
+          "practice",
+          "wallsupported",
+          "balance",
+          "attempt",
+          "brief",
+          "unassisted",
+          "extend"
         ]
+      },
+      "aiStats": {
+        "totalSuggested": 5,
+        "totalAccepted": 5
       }
     },
     "9": {
@@ -551,6 +650,15 @@
       "conditionIds": [],
       "status": "todo",
       "createdAt": "2026-04-15T11:36:37.326Z"
+    },
+    {
+      "id": "today-1776254265939",
+      "title": "RL - Traffic light",
+      "projectIds": [],
+      "subtaskIds": [],
+      "conditionIds": [],
+      "status": "todo",
+      "createdAt": "2026-04-15T11:57:45.939Z"
     }
   ],
   "archivedTasks": [

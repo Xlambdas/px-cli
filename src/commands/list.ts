@@ -2,13 +2,10 @@ import { loadData } from "../utils/storage";
 import { canComplete, fmtDeadline, fmtDuration } from "../utils/helpers";
 
 /**
- * px list              → todo tasks only (top-level)
- * px list --all        → include done tasks
- * px list --project "Name"  → filter by project
- *
- * WHY hide subtasks in the default list?
- * → Subtasks clutter the view. You see them in `px status <id>` or `px day`.
- */
+    * px list              → todo tasks only (top-level)
+    * px list --all        → include done tasks
+    * px list --project "Name"  → filter by project
+*/
 export function listTasks(args: string[]): void {
     const data = loadData();
 

@@ -4,9 +4,6 @@ import { projectProgress, fmtDeadline } from "../utils/helpers";
 
 /**
     * px project add "Title" --deadline 2026-05-01
-    *
-    * WHY separate from tasks? Projects are containers. They have no "done" checkbox —
-    * they're done when all their tasks are done.
 */
 export function projectAdd(args: string[]): void {
     const data = loadData();
@@ -40,7 +37,6 @@ export function projectAdd(args: string[]): void {
     * px project list
     *
     * Shows all projects with completion %.
-    * This is your high-level overview.
 */
 export function projectList(): void {
     const data = loadData();

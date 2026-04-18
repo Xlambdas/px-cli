@@ -1,6 +1,4 @@
 // === MODELS ===
-// These are just TypeScript types — they define the SHAPE of your data.
-// No logic here. Logic lives in services.
 
 export interface Task {
     id: string;
@@ -43,7 +41,6 @@ export interface ProjectProfile {
     };
 }
 
-// This is what gets saved to disk
 export interface AppData {
     tasks: Task[];
     todayTasks: Task[];
@@ -58,7 +55,6 @@ export interface AppData {
 
 
 // Factory functions — create objects with safe defaults
-// WHY: So you never forget a required field when creating a task/project
 
 export function createTask(fields: {
     id: string;
@@ -109,11 +105,11 @@ export function createEmptyData(): AppData {
 // === ID GENERATION ===
 
 /**
- * Generate a new top-level task ID for a project.
- * Format: projectId.index (e.g., "2.1", "2.2").
- *
- * If no project is provided (inbox), falls back to the global counter string.
- */
+    * Generate a new top-level task ID for a project.
+    * Format: projectId.index (e.g., "2.1", "2.2").
+    *
+    * If no project is provided (inbox), falls back to the global counter string.
+*/
 export function generateTaskId(data: AppData, projectId?: string): string {
     if (!projectId) {
         return String(data.nextTaskId++);
@@ -138,17 +134,17 @@ export function generateTaskId(data: AppData, projectId?: string): string {
 }
 
 /**
- * Generate a new project ID
- * Format: just the number as string (e.g., "1", "2", "3")
- */
+    * Generate a new project ID
+    * Format: just the number as string (e.g., "1", "2", "3")
+*/
 export function generateProjectId(data: AppData): string {
     return String(data.nextProjectId++);
 }
 
 /**
- * Generate a nested subtask ID.
- * Format: parentTaskId.index (e.g., "2.2.1", "2.2.2").
- */
+    * Generate a nested subtask ID.
+    * Format: parentTaskId.index (e.g., "2.2.1", "2.2.2").
+*/
 export function generateSubtaskId(data: AppData, parentTaskId: string): string {
     const prefix = `${parentTaskId}.`;
     let maxIndex = 0;

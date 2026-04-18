@@ -7,8 +7,6 @@ import { generateTaskId } from "../models";
     * px edit 3
     *
     * Interactive edit: shows current values, press Enter to keep, type to change.
-    * WHY interactive? Because flags like --title --project --duration --deadline
-    * would be painful to remember. This way you just see what's there and fix it.
 */
 export async function editTask(args: string[]): Promise<void> {
     const id = args[0];

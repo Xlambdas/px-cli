@@ -21,7 +21,7 @@ export function showStatus(args: string[]): void {
             console.log("No projects. Create one: px project add \"Name\"");
             return;
         }
-        console.log("\n📊 Project Status\n");
+        console.log("\n-- Project Status --\n");
         for (const p of data.projects) {
             const pct = projectProgress(data, p.id);
             const total = data.tasks.filter(
@@ -34,7 +34,7 @@ export function showStatus(args: string[]): void {
                     t.status === "done"
             ).length;
             const dl = fmtDeadline(p.deadline);
-            const focus = data.focus.includes(p.id) ? " ★" : "";
+            const focus = data.focus.includes(p.id) ? "*" : "";
             console.log(`  #${p.id}  ${p.title}${focus}  ${done}/${total} tasks  ${pct}%  ${dl}`);
         }
         console.log();
@@ -54,10 +54,10 @@ export function showStatus(args: string[]): void {
         );
         const done = topTasks.filter((t) => t.status === "done").length;
         const dl = fmtDeadline(project.deadline);
-        const focus = data.focus.includes(project.id) ? " ★" : "";
+        const focus = data.focus.includes(project.id) ? "*" : "";
         const profile = (data as any).projectProfiles?.[project.id];
 
-        console.log(`\n📂 ${project.title}${focus}`);
+        console.log(`\n ${project.title}${focus}`);
         if (project.description) console.log(`   ${project.description}`);
         if (dl) console.log(`   Deadline: ${dl}`);
         if (profile?.type) console.log(`   Type: ${profile.type}`);
@@ -110,8 +110,8 @@ export function showStatus(args: string[]): void {
     const check = canComplete(data, task);
     const pct = taskProgress(data, task);
 
-    console.log(`\n📋 Task #${task.id}: ${task.title}`);
-    console.log(`   Status: ${task.status}  ${check.ok ? "✅ ready" : `⛔ ${check.reason}`}`);
+    console.log(`\n Task #${task.id}: ${task.title}`);
+    console.log(`   Status: ${task.status}  ${check.ok ? "Ready" : `⛔ ${check.reason}`}`);
     console.log(`   Progress: ${pct}%`);
     if (task.duration) console.log(`   Duration: ${fmtDuration(task.duration)}`);
     if (task.deadline) console.log(`   Deadline: ${fmtDeadline(task.deadline)}`);

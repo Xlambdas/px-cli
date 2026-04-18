@@ -9,9 +9,6 @@ import { generateTaskId } from "../models";
     *   - assign it to a project
     *   - skip it (keep in inbox)
     *   - delete it
-    *
-    * WHY interactive? Because organizing is a batch activity.
-    * You sit down, go through your inbox, and clear it. Like email triage.
 */
 export async function inboxReview(): Promise<void> {
     const data = loadData();
@@ -22,11 +19,11 @@ export async function inboxReview(): Promise<void> {
     );
 
     if (inbox.length === 0) {
-        console.log("📭 Inbox is empty. Nice!");
+        console.log("  Inbox is empty. Nice!");
         return;
     }
 
-    console.log(`\n📥 Inbox: ${inbox.length} task(s)\n`);
+    console.log(`\n  Inbox: ${inbox.length} task(s)\n`);
 
     // Show available projects for reference
     if (data.projects.length > 0) {

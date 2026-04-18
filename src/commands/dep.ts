@@ -4,10 +4,6 @@ import { getTaskOrDie } from "../utils/helpers";
 /**
     * px dep 5 --needs 3
     * → Task 5 cannot be completed until task 3 is done.
-    *
-    * WHY separate from `add`?
-    * → Dependencies are often added AFTER tasks exist.
-    *   You realize "oh wait, I can't deploy until I build" mid-session.
 */
 export function addDependency(args: string[]): void {
     const needsIdx = args.indexOf("--needs");

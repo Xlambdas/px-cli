@@ -211,7 +211,9 @@ export function startServer(showQr: boolean = false): void {
                 }
             }
         }
-        console.log(`\n  📱 px web server running\n`);
+        console.log("\n╔═══════════════════════════════════════╗");
+        console.log("║               WEB SERVER              ║");
+        console.log("╚═══════════════════════════════════════╝\n");
         console.log(`  Laptop:  http://localhost:${PORT}`);
         console.log(`  Phone:   http://${localIp}:${PORT}`);
         if (showQr) {

@@ -2,8 +2,6 @@ import { Task, AppData } from "../models";
 
 /**
     * Find a task by ID. Throws if not found.
-    * WHY throw? → If you type `px done 999` and task 999 doesn't exist,
-    * you want a clear error, not silent failure.
 */
 export function getTaskOrDie(data: AppData, id: string): Task {
     const task = data.tasks.find((t) => t.id === id);
@@ -15,7 +13,7 @@ export function getTaskOrDie(data: AppData, id: string): Task {
 }
 
 /**
-    * Can this task be completed?
+    * Can a task be completed :
     * Returns { ok: true } or { ok: false, reason: "..." }
     *
     * A task is blocked if:
@@ -34,9 +32,9 @@ export function canComplete(data: AppData, task: Task): { ok: boolean; reason?: 
 }
 
 /**
- * Compute completion % for a task (based on subtasks)
- * If no subtasks → 0% or 100% based on status
- */
+    * Compute completion % for a task (based on subtasks)
+    * If no subtasks → 0% or 100% based on status
+*/
 export function taskProgress(data: AppData, task: Task): number {
     if (task.subtaskIds.length === 0) {
         return task.status === "done" ? 100 : 0;

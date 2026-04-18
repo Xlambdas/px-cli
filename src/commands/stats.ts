@@ -22,7 +22,7 @@ export function showStats(): void {
     const streak = computeStreak(allDone.map((t) => t.completedAt!));
 
     console.log("\n╔═══════════════════════════════════════╗");
-    console.log("║           📊  YOUR STATS              ║");
+    console.log("║               YOUR STATS              ║");
     console.log("╚═══════════════════════════════════════╝\n");
 
     console.log(`  Today:     ${doneToday.length} task${doneToday.length !== 1 ? "s" : ""} done`);
@@ -42,8 +42,8 @@ export function showStats(): void {
     if (data.projects.length > 0) {
         for (const p of data.projects) {
             const pp = projectProgress(data, p.id);
-            const focus = data.focus.includes(p.id) ? " ★" : "";
-            console.log(`  ── ${p.title}${focus} (${pp}%) ──\n`);
+            const focus = data.focus.includes(p.id) ? "*" : "";
+            console.log(`  -- ${p.title}${focus} (${pp}%) --\n`);
 
             // Get top-level tasks for this project
             const topTasks = data.tasks.filter(

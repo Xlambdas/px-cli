@@ -12,17 +12,17 @@ export function archiveCommand(args: string[]): void {
     // px archive list
     if (args[0] === "list") {
         if (data.archivedProjects.length === 0 && data.archivedTasks.length === 0) {
-            console.log("\n  📦 Archive is empty.\n");
+            console.log("\n  Archive is empty.\n");
             return;
         }
         if (data.archivedProjects.length > 0) {
-            console.log("\n  📦 Archived Projects\n");
+            console.log("\n  Archived Projects\n");
             for (const p of data.archivedProjects) {
                 console.log(`    #${p.id}  ${p.title}`);
             }
         }
         if (data.archivedTasks.length > 0) {
-            console.log("\n  📦 Archived Tasks\n");
+            console.log("\n  Archived Tasks\n");
             for (const t of data.archivedTasks) {
                 // const proj = t.projectIds.length > 0 ? ` (was in project #${t.projectIds[0]})` : "";
                 // console.log(`    #${t.id}  ${t.title}${proj}`);

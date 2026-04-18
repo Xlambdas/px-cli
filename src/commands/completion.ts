@@ -1,14 +1,16 @@
 import { loadData } from "../utils/storage";
 
 /**
- * px completion              → outputs PowerShell completion script
- * px completion --install    → adds it to your PowerShell profile
- */
+    * px completion              → outputs PowerShell completion script
+    * px completion --install    → adds it to your PowerShell profile
+*/
 export function completionCommand(args: string[]): void {
     const script = `
 
-# -----------------------------
-# --- px CLI tab completion ---
+#╔═══════════════════════════════════════╗
+#║        px CLI tab completion          ║
+#╚═══════════════════════════════════════╝
+
 Register-ArgumentCompleter -CommandName 'px','px.cmd','px.ps1' -Native -ScriptBlock {
     param($wordToComplete, $commandAst, $cursorPosition)
 
@@ -64,7 +66,7 @@ Register-ArgumentCompleter -CommandName 'px','px.cmd','px.ps1' -Native -ScriptBl
         [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
     }
 }
-# -----------------------------
+#════════════════════════════════════════
 `;
 
     if (args.includes("--install")) {

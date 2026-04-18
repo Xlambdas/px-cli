@@ -4,10 +4,7 @@ import { projectProgress, fmtDeadline } from "../utils/helpers";
 /**
     * px focus 1 3
     *
-    * Sets which projects you're working on today.
-    * WHY limit to 2-3? → Context switching kills productivity.
-    * The system doesn't enforce a limit, but you should.
-    *
+    * Sets which projects you're working on today (every other command uses this focus).
     * px focus (no args) → shows current focus
 */
 export function setFocus(args: string[]): void {
@@ -46,5 +43,5 @@ export function setFocus(args: string[]): void {
     const names = ids
         .map((id) => data.projects.find((p) => p.id === id)!.title)
         .join(", ");
-    console.log(`★ Focus set: ${names}`);
+    console.log(` -- Focus set: ${names}`);
 }

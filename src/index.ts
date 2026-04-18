@@ -1,36 +1,15 @@
 #!/usr/bin/env node
-
-/**
-    * px - Project Execute CLI
-    *
-    * This file is the ROUTER. It reads the command you typed
-    * and calls the right function. No logic lives here.
-    *
-    * WHY a manual router instead of a CLI framework (like Commander.js)?
-    * → Zero dependencies. You can add one later if this gets unwieldy.
-    *   Right now, with ~10 commands, a switch statement is perfectly fine.
-*/
-
-import { addTask } from "./commands/add";
-import { quickAdd } from "./commands/quick";
-import { inboxReview } from "./commands/inbox";
-import { setFocus } from "./commands/focus";
-import { daySession } from "./commands/day";
-import { markDone } from "./commands/done";
-import { addDependency } from "./commands/dep";
-import { listTasks } from "./commands/list";
-import { showStatus } from "./commands/status";
-import { showStats } from "./commands/stats";
-import { editTask } from "./commands/edit";
-import { undo } from "./commands/undo";
-import { projectAdd, projectList } from "./commands/project";
 import { startServer } from "./server";
-import { aiCommand } from "./commands/ai";
-import { pxStart, pxEnd } from "./commands/sync";
-import { todayCommand } from "./commands/today";
-import { archiveCommand } from "./commands/archive";
-import { completionCommand } from "./commands/completion";
-import { nextCommand } from "./commands/next";
+import {
+    addTask, quickAdd, inboxReview,
+    setFocus, daySession, markDone,
+    addDependency, listTasks, showStats,
+    showStatus, editTask, undo,
+    projectAdd, projectList, aiCommand,
+    pxStart, pxEnd, todayCommand,
+    archiveCommand, completionCommand, nextCommand,
+    cleanCommand
+} from "./commands";
 
 const [command, ...args] = process.argv.slice(2);
 
@@ -64,6 +43,9 @@ async function main() {
             break;
         case "undo":
             undo();
+            break;
+        case "clean":
+            await cleanCommand(args);
             break;
         case "dep":
             addDependency(args);
@@ -178,6 +160,7 @@ function showGeneralHelp(): void {
         done <ID>
         dep <ID> --needs <ID>
         undo
+        clean [--report] [--auto]
 
         list [--all] [--project "X"]
         next [--top N]
@@ -185,7 +168,7 @@ function showGeneralHelp(): void {
         stats
         archive [--project ID | --task ID | list | restore ID]
 
-        ai [next|plan|expand <ID>]
+        ai [next|plan|expand|clean <ID>]
         web [--qr]                             Start web server for phone access, show QR code in terminal
         start                                  Pull latest + import changes
         end                                    Export + commit + push
@@ -361,6 +344,26 @@ function showCommandHelp(cmd: string): void {
         px undo         (task 3 is todo again)
     `,
 
+        clean: `
+\x1b[32m--- px clean [options] ---\x1b[0m
+    Cleanup for your task list.
+
+    What it does:
+        1. Suggests tasks to archive or delete based on age, inactivity, or being blocked for a long time.
+        2. Provides a report of what was cleaned and why.
+        3. Optionally auto-cleans without confirmation.
+
+    Options:
+    px clean              → interactive: finds dupes, orphans, oversize, dead refs
+    px clean --report     → just shows issues
+    px clean --auto       → auto-fixes safe issues (dead refs, orphans, empty)
+    px ai clean           → AI analyzes writing style, suggests renames/merges/splits/reorders
+
+    Examples:
+        px clean --report
+        px clean --auto
+    `,
+
         list: `
 \x1b[32m--- px list [options] ---\x1b[0m
 
@@ -458,6 +461,7 @@ function showCommandHelp(cmd: string): void {
         px ai next         Same as above
         px ai plan         Full project plan (5-8 tasks)
         px ai expand <ID>  Break a task into subtasks
+        px ai clean <ID>   Suggest improvements for a task (title, description, project)
         px ai setup        Show setup instructions and tips
 
     Notes:

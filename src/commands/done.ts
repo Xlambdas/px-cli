@@ -8,10 +8,6 @@ import { getTaskOrDie, canComplete, taskProgress } from "../utils/helpers";
     *   - If it has unfinished subtasks → BLOCKED
     *   - If it has unmet conditions → BLOCKED
     *   - If completing it finishes all subtasks of a parent → auto-complete parent
-    *
-    * WHY auto-complete parent?
-    * → If a task has 3 subtasks and you finish the last one,
-    *   the parent task is logically done. No need to manually mark it.
 */
 export function markDone(args: string[]): void {
     const id = args[0];

@@ -1,13 +1,13 @@
 import * as readline from "readline";
 import { loadData, saveData } from "../utils/storage";
-import { createTask, generateSubtaskId, generateTaskId, ProjectProfile } from "../models";
+import { Task, createTask, generateSubtaskId, generateTaskId, ProjectProfile } from "../models";
 import { getTaskOrDie } from "../utils/helpers";
-import { buildContext, buildNextPrompt, buildPlanPrompt, buildExpandPrompt } from "../ai/promptBuilder";
+import { buildContext, buildNextPrompt, buildPlanPrompt, buildExpandPrompt, buildCleanPrompt } from "../ai/promptBuilder";
 import { parseAIResponse, TaskSuggestion } from "../ai/parser";
 import { callGemini } from "../ai/gemini";
 
 export async function aiCommand(args: string[]): Promise<void> {
-    const apiKey = process.env.px_cli_KEY;
+    const apiKey = process.env.GEMINI_API_KEY;     //px_cli_KEY;
     if (!apiKey) {
         console.error("  ⚠ GEMINI_API_KEY not set.");
         console.error('  1. Go to aistudio.google.com → Get API key');
@@ -22,7 +22,7 @@ export async function aiCommand(args: string[]): Promise<void> {
     const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
     const ask = (q: string): Promise<string> => new Promise((r) => rl.question(q, r));
 
-    // ── Pick project ──
+    // -- Pick project --
     let projectId: string;
 
     if (mode === "setup") {
@@ -55,8 +55,8 @@ export async function aiCommand(args: string[]): Promise<void> {
         Quota error?      Wait 30 seconds and retry (rolling rate limit)
         Wrong model?      Check src/ai/gemini.ts uses gemini-2.5-flash
 
-    `);
-    return;
+        `);
+        return;
     } else if (mode === "expand") {
         const taskId = args[1];
         if (!taskId) {
@@ -100,13 +100,13 @@ export async function aiCommand(args: string[]): Promise<void> {
         }
     }
 
-    // ── Load or create profile ──
+    // -- Load or create profile --
     if (!data.projectProfiles[projectId]) {
         data.projectProfiles[projectId] = { projectId };
     }
     const profile = data.projectProfiles[projectId];
 
-    // ── Ask missing context (saved permanently) ──
+    // -- Ask missing context (saved permanently) --
     let profileChanged = false;
 
     if (!profile.type) {
@@ -132,10 +132,170 @@ export async function aiCommand(args: string[]): Promise<void> {
         console.log("  ✓ Profile saved — won't ask these again\n");
     }
 
-    // ── Build prompt ──
+    // -- Build prompt --
     const ctx = buildContext(data, projectId);
     let prompt: string;
     let modeLabel: string;
+
+    if (mode === "clean") {
+        prompt = buildCleanPrompt(ctx);
+        modeLabel = "cleaning tasks";
+
+        console.log(`  BOT : Getting ${modeLabel} for "${ctx.project.title}"...\n`);
+
+        const promptHash = Buffer.from(prompt).toString("base64").slice(0, 32);
+
+        let rawResponse: string;
+        try {
+            rawResponse = await callGemini(apiKey, prompt);
+        } catch (err: any) {
+            console.error(`  ⚠ API error: ${err.message}`);
+            rl.close();
+            return;
+        }
+
+        // Parse clean suggestions
+        const jsonMatch = rawResponse.match(/\[[\s\S]*\]/);
+        if (!jsonMatch) {
+            console.log(" No issues found.\n");
+            rl.close();
+            return;
+        }
+
+        let fixes: any[];
+        try {
+            fixes = JSON.parse(jsonMatch[0]);
+        } catch {
+            console.error("  ⚠ Couldn't parse response.");
+            rl.close();
+            return;
+        }
+
+        if (fixes.length === 0) {
+            console.log(" No issues found. Tasks look clean.\n");
+            rl.close();
+            return;
+        }
+
+        console.log(` Found ${fixes.length} suggestion(s):\n`);
+
+        for (let i = 0; i < fixes.length; i++) {
+            const fix = fixes[i];
+            switch (fix.action) {
+                case "rename":
+                    console.log(`  ${i + 1}. RENAME: "${fix.taskTitle}" → "${fix.newTitle}"`);
+                    break;
+                case "merge":
+                    console.log(`  ${i + 1}. MERGE: ${fix.taskTitles.map((t: string) => `"${t}"`).join(" + ")} → "${fix.mergedTitle}"`);
+                    break;
+                case "split":
+                    console.log(`  ${i + 1}. SPLIT: "${fix.taskTitle}" → ${fix.splitInto.map((t: string) => `"${t}"`).join(", ")}`);
+                    break;
+                case "reorder":
+                    console.log(`  ${i + 1}. REORDER: "${fix.taskTitle}" should need "${fix.needsTitle}"`);
+                    break;
+            }
+        }
+
+        console.log();
+        const answer = await ask("  Apply which? (e.g. 1,3 / all / none): ");
+        const trimmed = answer.trim().toLowerCase();
+
+        if (trimmed === "none" || trimmed === "n" || trimmed === "") {
+            rl.close();
+            console.log("  Nothing changed.");
+            return;
+        }
+
+        let indices: number[];
+        if (trimmed === "all" || trimmed === "a") {
+            indices = fixes.map((_: any, i: number) => i);
+        } else {
+            indices = trimmed.split(",").map((s) => parseInt(s.trim(), 10) - 1)
+                .filter((n) => !isNaN(n) && n >= 0 && n < fixes.length);
+        }
+
+        let applied = 0;
+        for (const idx of indices) {
+            const fix = fixes[idx];
+            switch (fix.action) {
+                case "rename": {
+                    const task = data.tasks.find((t) => t.title.toLowerCase() === fix.taskTitle.toLowerCase());
+                    if (task) {
+                        task.title = fix.newTitle;
+                        applied++;
+                        console.log(`  ✓ Renamed → "${fix.newTitle}"`);
+                    }
+                    break;
+                }
+                case "merge": {
+                    const tasks = fix.taskTitles.map((title: string) =>
+                        data.tasks.find((t) => t.title.toLowerCase() === title.toLowerCase())
+                    ).filter(Boolean) as Task[];
+                    if (tasks.length >= 2) {
+                        // Keep first, rename it, delete rest
+                        tasks[0].title = fix.mergedTitle;
+                        // Absorb subtasks and deps from others
+                        for (let j = 1; j < tasks.length; j++) {
+                            for (const sid of tasks[j].subtaskIds) {
+                                if (!tasks[0].subtaskIds.includes(sid)) {
+                                    tasks[0].subtaskIds.push(sid);
+                                    const sub = data.tasks.find((t) => t.id === sid);
+                                    if (sub) sub.parentId = tasks[0].id;
+                                }
+                            }
+                            // Remove merged task
+                            const rid = tasks[j].id;
+                            for (const t of data.tasks) {
+                                t.conditionIds = t.conditionIds.map((c) => c === rid ? tasks[0].id : c);
+                                t.subtaskIds = t.subtaskIds.filter((s) => s !== rid);
+                            }
+                            data.tasks = data.tasks.filter((t) => t.id !== rid);
+                        }
+                        applied++;
+                        console.log(`  ✓ Merged → "${fix.mergedTitle}"`);
+                    }
+                    break;
+                }
+                case "split": {
+                    const task = data.tasks.find((t) => t.title.toLowerCase() === fix.taskTitle.toLowerCase());
+                    if (task && Array.isArray(fix.splitInto)) {
+                        // Convert original into parent, add split items as subtasks
+                        const { generateSubtaskId } = require("../models");
+                        for (const subTitle of fix.splitInto) {
+                            const sub = createTask({
+                                id: generateSubtaskId(data, task.id),
+                                title: subTitle,
+                                projectIds: [...task.projectIds],
+                                parentId: task.id,
+                            });
+                            data.tasks.push(sub);
+                            task.subtaskIds.push(sub.id);
+                        }
+                        applied++;
+                        console.log(`  ✓ Split "${task.title}" into ${fix.splitInto.length} subtasks`);
+                    }
+                    break;
+                }
+                case "reorder": {
+                    const task = data.tasks.find((t) => t.title.toLowerCase() === fix.taskTitle.toLowerCase());
+                    const needs = data.tasks.find((t) => t.title.toLowerCase() === fix.needsTitle.toLowerCase());
+                    if (task && needs && !task.conditionIds.includes(needs.id)) {
+                        task.conditionIds.push(needs.id);
+                        applied++;
+                        console.log(`  ✓ #${task.id} now needs #${needs.id}`);
+                    }
+                    break;
+                }
+            }
+        }
+
+        profile.lastPromptHash = promptHash;
+        rl.close();
+        saveData(data);
+        console.log(`\n  ✓ Applied ${applied} fix(es)\n`);
+        return;
+    }
 
     if (mode === "expand") {
         const taskId = args[1];
@@ -143,24 +303,36 @@ export async function aiCommand(args: string[]): Promise<void> {
         prompt = buildExpandPrompt(ctx, task);
         modeLabel = `expanding "${task.title}"`;
     } else if (mode === "plan") {
-        prompt = buildPlanPrompt(ctx);
+        // Ask user what area to focus on
+        const focus = await ask("  Any specific area to focus on? (Enter to skip): ");
+        let userHint = "";
+        if (focus.trim()) {
+            userHint = `\nUser wants to focus on: ${focus.trim()}`;
+        }
+        prompt = buildPlanPrompt(ctx) + userHint;
         modeLabel = "full plan";
     } else {
-        prompt = buildNextPrompt(ctx);
+        // Ask user what they want to work on
+        const hint = await ask("  What do you want to work on? (Enter to let AI decide): ");
+        let userHint = "";
+        if (hint.trim()) {
+            userHint = `\nThe user says they want to work on: "${hint.trim()}". Prioritize suggestions related to this.`;
+        }
+        prompt = buildNextPrompt(ctx) + userHint;
         modeLabel = "next tasks";
     }
 
-    console.log(`  🤖 Getting ${modeLabel} for "${ctx.project.title}"...\n`);
+    console.log(`  Generating ${modeLabel} for "${ctx.project.title}"...\n`);
 
     // Skip API if prompt is identical to last call
     const promptHash = Buffer.from(prompt).toString("base64").slice(0, 32);
     if (profile.lastPromptHash === promptHash && mode !== "expand") {
-        console.log("  ℹ No changes since last suggestion. Use px ai plan for fresh ideas.");
+        console.log("  No changes since last suggestion. Use px ai plan for fresh ideas.");
         rl.close();
         return;
     }
 
-    // ── Call API ──
+    // -- Call API --
     let rawResponse: string;
     try {
         rawResponse = await callGemini(apiKey, prompt);
@@ -170,7 +342,7 @@ export async function aiCommand(args: string[]): Promise<void> {
         return;
     }
 
-    // ── Parse ──
+    // -- Parse --
     const suggestions = parseAIResponse(rawResponse);
     if (!suggestions) {
         console.error("  ⚠ Couldn't parse AI response. Raw output:");
@@ -179,7 +351,7 @@ export async function aiCommand(args: string[]): Promise<void> {
         return;
     }
 
-    // ── Display ──
+    // -- Display --
     console.log("  Suggestions:\n");
     function displaySuggestion(s: TaskSuggestion, index: string, indent: string): void {
         const deps = s.needs.length > 0 ? ` [needs ${s.needs.join(", ")}]` : "";
@@ -192,7 +364,7 @@ export async function aiCommand(args: string[]): Promise<void> {
         displaySuggestion(s, `${i + 1}.`, "  ");
     });
 
-    // ── Pick ──
+    // -- Pick --
     console.log();
     const answer = await ask("  Add which? (e.g. 1,3,5 / all / none): ");
     const trimmed = answer.trim().toLowerCase();
@@ -218,7 +390,7 @@ export async function aiCommand(args: string[]): Promise<void> {
     const accepted = indices.map((i) => suggestions[i]);
     const rejected = suggestions.filter((_, i) => !indices.includes(i));
 
-    // ── Add tasks ──
+    // -- Add tasks --
     const isExpand = mode === "expand";
     const parentTask = isExpand ? getTaskOrDie(data, args[1]) : undefined;
 

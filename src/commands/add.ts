@@ -11,9 +11,6 @@ import { createTask, generateTaskId, generateSubtaskId } from "../models";
     *   --deadline X    → ISO date
     *
     * No --project and no --parent = inbox task (unassigned)
-    *
-    * WHY parse flags manually instead of using a library?
-    * → Zero dependencies. You understand every line. Add a library later if this gets annoying.
 */
 export function addTask(args: string[]): void {
     const data = loadData();

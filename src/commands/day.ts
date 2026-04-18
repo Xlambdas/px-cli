@@ -10,18 +10,11 @@ import {
 
 /**
     * px day
-    *
-    * This is the HEART of the system. Your morning ritual:
     * 1. Shows focused projects
     * 2. Displays today's checklist (ready + blocked)
     * 3. You mark tasks done interactively
     * 4. Progress updates live
     * 5. Type "q" to quit
-    *
-    * WHY interactive and not just a static list?
-    * → Because execution is a LOOP. You do a task, check it off, see what unblocked,
-    *   do the next one. A static list can't show you that task #5 just became ready
-    *   because you finished #3.
 */
 export async function daySession(): Promise<void> {
     let data = loadData();
@@ -74,24 +67,23 @@ export async function daySession(): Promise<void> {
             return a.createdAt.localeCompare(b.createdAt);
         });
 
-        // Print header
-        console.log("\n═══════════════════════════════════════");
-        console.log("  ★ TODAY'S SESSION");
-        console.log("═══════════════════════════════════════\n");
+        console.log("\n╔═══════════════════════════════════════╗");
+        console.log("║            TODAY'S SESSION            ║");
+        console.log("╚═══════════════════════════════════════╝\n");
 
         // Show focused projects with progress
         for (const pid of data.focus) {
             const p = data.projects.find((pr) => pr.id === pid);
             if (p) {
                 const pct = projectProgress(data, p.id);
-                console.log(`  📂 ${p.title}  [${pct}%]  ${fmtDeadline(p.deadline)}`);
+                console.log(`  ${p.title}  [${pct}%]  ${fmtDeadline(p.deadline)}`);
             }
         }
 
         // Ready tasks
-        console.log("\n── Ready ─────────────────────────────\n");
+        console.log("\n-- Ready -----------------\n");
         if (ready.length === 0) {
-            console.log("  🎉 All tasks done or blocked!\n");
+            console.log("  All tasks done or blocked!\n");
         } else {
             let totalMin = 0;
             for (const t of ready) {
@@ -124,14 +116,14 @@ export async function daySession(): Promise<void> {
 
         // Blocked tasks
         if (blocked.length > 0) {
-            console.log("\n── Blocked ───────────────────────────\n");
+            console.log("\n-- Blocked ----------------\n");
             for (const t of blocked) {
                 const check = canComplete(data, t);
                 console.log(`  ⛔ #${t.id}  ${t.title}  → ${check.reason}`);
             }
         }
 
-        console.log("\n───────────────────────────────────────");
+        console.log("\n#-------------------------------#");
 
         // Prompt
         const input = await ask("  done <id> / q to quit: ");
@@ -193,5 +185,5 @@ export async function daySession(): Promise<void> {
     }
 
     rl.close();
-    console.log("\n  Session ended. Good work! 🚀\n");
+    console.log("\n  Session ended. Good work!\n");
 }

@@ -2,31 +2,31 @@ import { loadData, saveData } from "../utils/storage";
 import { fmtDuration } from "../utils/helpers";
 
 /**
- * px todo "Task title" [--duration MIN] [--every daily|2d|3d|weekly|biweekly|monthly]
- * px todo                → list today's tasks
- * px todo done <index>   → complete a today task
- * px todo clear          → remove completed non-recurring tasks
- * px todo clear --all    → remove ALL today tasks (asks confirmation)
- * px todo reset          → clear everything for a new day + re-add recurring tasks
- *
- * Recurrence shortcuts:
- *   daily      → every day
- *   2d         → every 2 days
- *   3d         → every 3 days
- *   weekly     → every 7 days
- *   biweekly   → every 14 days
- *   monthly    → every 30 days
- */
+    * px todo "Task title" [--duration MIN] [--every daily|2d|3d|weekly|biweekly|monthly]
+    * px todo                → list today's tasks
+    * px todo done <index>   → complete a today task
+    * px todo clear          → remove completed non-recurring tasks
+    * px todo clear --all    → remove ALL today tasks (asks confirmation)
+    * px todo reset          → clear everything for a new day + re-add recurring tasks
+    *
+    * Recurrence shortcuts:
+    *   daily      → every day
+    *   2d         → every 2 days
+    *   3d         → every 3 days
+    *   weekly     → every 7 days
+    *   biweekly   → every 14 days
+    *   monthly    → every 30 days
+*/
 export function todayCommand(args: string[]): void {
     const data = loadData();
 
     // No args → show today's list
     if (args.length === 0) {
         if (data.todayTasks.length === 0) {
-            console.log('\n  📋 No tasks for today. Add one: px todo "Task title"\n');
+            console.log('\n  No tasks for today. Add one: px todo "Task title"\n');
             return;
         }
-        console.log("\n  📋 Today\n");
+        console.log("\n  Today\n");
         data.todayTasks.forEach((t, i) => {
             const mark = t.status === "done" ? "✓" : "○";
             const dur = fmtDuration(t.duration);
@@ -175,16 +175,16 @@ export function todayCommand(args: string[]): void {
     });
 
     saveData(data);
-    const recLabel = recurrence ? ` (🔁 ${recurrence})` : "";
+    const recLabel = recurrence ? ` ( ${recurrence})` : "";
     console.log(`  ✓ "${title}" added to today${recLabel}`);
 }
 
 /**
- * Parse recurrence string into number of days.
- * "daily" → 1, "weekly" → 7, "monthly" → 30
- * "2d" → 2, "4w" → 28, "2m" → 60
- * Returns null if invalid.
- */
+    * Parse recurrence string into number of days.
+    * "daily" → 1, "weekly" → 7, "monthly" → 30
+    * "2d" → 2, "4w" → 28, "2m" → 60
+    * Returns null if invalid.
+*/
 function parseRecurrence(rec: string): number | null {
     if (rec === "daily") return 1;
     if (rec === "weekly") return 7;

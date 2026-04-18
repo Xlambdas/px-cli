@@ -3,11 +3,6 @@ import { createTask, generateTaskId } from "../models";
 
 /**
     * px quick "Fix the navbar"
-    *
-    * WHY a separate command from `add`?
-    * → `add` has flags (--project, --duration, etc). When you're on your phone
-    *   and an idea hits, you don't want to think about which project it belongs to.
-    *   `quick` is ONE argument, ZERO decisions. Organize later with `px inbox`.
 */
 export function quickAdd(args: string[]): void {
     const title = args.join(" ");
