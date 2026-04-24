@@ -15,10 +15,10 @@ export function projectAdd(args: string[]): void {
         process.exit(1);
     }
 
-    const descrIdx = args.indexOf("--descr");
+    const descrIdx = args.indexOf("--descr") !== -1 ? args.indexOf("--descr") : args.indexOf("-d");
     const description = descrIdx !== -1 ? args[descrIdx + 1] : undefined;
 
-    const deadlineIdx = args.indexOf("--deadline");
+    const deadlineIdx = args.indexOf("--deadline") !== -1 ? args.indexOf("--deadline") : args.indexOf("-D");
     const deadline = deadlineIdx !== -1 ? args[deadlineIdx + 1] : undefined;
 
     const project = createProject({
@@ -51,7 +51,7 @@ export function projectList(): void {
         const pct = projectProgress(data, p.id);
         const dl = fmtDeadline(p.deadline);
         const bar = progressBar(pct);
-        const focusTag = data.focus.includes(p.id) ? " ★" : "";
+        const focusTag = data.focus.includes(p.id) ? "*" : "";
         const description = p.description ? ` - ${p.description}` : "";
         console.log(`  #${p.id}  ${bar} ${pct}%  ${p.title}${description}${focusTag}  ${dl}`);
     }

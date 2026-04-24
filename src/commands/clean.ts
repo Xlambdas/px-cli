@@ -10,8 +10,8 @@ import { fmtDuration } from "../utils/helpers";
 */
 export async function cleanCommand(args: string[]): Promise<void> {
     const data = loadData();
-    const reportOnly = args.includes("--report");
-    const auto = args.includes("--auto");
+    const reportOnly = args.includes("--report") || args.includes("-r");
+    const auto = args.includes("--auto") || args.includes("-a");
 
     console.log("\n -- Scanning for issues... -- \n");
 

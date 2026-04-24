@@ -55,7 +55,7 @@ export function todayCommand(args: string[]): void {
 
     // px todo clear → remove completed non-recurring tasks
     if (args[0] === "clear") {
-        if (args.includes("--all")) {
+        if (args.includes("--all")||args.includes("-a")) {
             // Ask confirmation
             const readline = require("readline");
             const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
@@ -81,7 +81,7 @@ export function todayCommand(args: string[]): void {
 
     // px todo reset → clear done, reset recurring to todo, remove non-recurring done
     if (args[0] === "reset") {
-        const keepIdx = args.indexOf("--keep");
+        const keepIdx = args.indexOf("--keep") !== -1 ? args.indexOf("--keep") : args.indexOf("-k");
         const keepIndices = keepIdx !== -1
             ? args.slice(keepIdx + 1).map((s) => parseInt(s, 10) - 1).filter((n) => !isNaN(n))
             : [];
@@ -140,9 +140,9 @@ export function todayCommand(args: string[]): void {
 
     let i = 0;
     while (i < args.length) {
-        if (args[i] === "--duration") {
+        if (args[i] === "--duration" || args[i] === "-t") {
             duration = parseInt(args[++i], 10);
-        } else if (args[i] === "--every") {
+        } else if (args[i] === "--every" || args[i] === "-e") {
             const val = args[++i];
             if (parseRecurrence(val) !== null) {
                 recurrence = val;

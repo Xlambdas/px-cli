@@ -26,15 +26,15 @@ export function addTask(args: string[]): void {
     let i = 0;
     while (i < args.length) {
         const arg = args[i];
-        if (arg === "--project") {
+        if (arg === "--project" || arg === "-p") {
             projectNames.push(args[++i]);
-        } else if (arg == "--descr") {
+        } else if (arg == "--descr" || arg === "-d") {
             description = args[++i];
-        } else if (arg === "--duration") {
+        } else if (arg === "--duration" || arg === "-t") {
             duration = parseInt(args[++i], 10);
-        } else if (arg === "--deadline") {
+        } else if (arg === "--deadline" || arg === "-D") {
             deadline = args[++i];
-        } else if (arg === "--parent") {
+        } else if (arg === "--parent" || arg === "-P") {
             parentId = args[++i];
         } else if (!arg.startsWith("--")) {
             title = arg;

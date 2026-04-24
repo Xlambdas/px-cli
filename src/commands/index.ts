@@ -18,3 +18,5 @@ export { archiveCommand } from "./archive";
 export { completionCommand } from "./completion";
 export { nextCommand } from "./next";
 export { cleanCommand } from "./clean";
+export { versionCommand } from "./version";
+export { initCommand } from "./init";

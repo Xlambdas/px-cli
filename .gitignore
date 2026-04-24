@@ -1,2 +1,5 @@
 ﻿node_modules/
 dist/
+
+*.bak
+data/config.json

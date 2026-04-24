@@ -9,8 +9,8 @@ import { canComplete, fmtDeadline, fmtDuration } from "../utils/helpers";
 export function listTasks(args: string[]): void {
     const data = loadData();
 
-    const showAll = args.includes("--all");
-    const projIdx = args.indexOf("--project");
+    const showAll = args.includes("--all") || args.includes("-a");
+    const projIdx = args.indexOf("--project") !== -1 ? args.indexOf("--project") : args.indexOf("-p");
     // Support: px list --project "X", px list ProjectID, px list "ProjectTitle"
     let projName: string | undefined;
     if (projIdx !== -1) {

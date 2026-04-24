@@ -83,7 +83,7 @@ export function archiveCommand(args: string[]): void {
     }
 
     // px archive --project ID
-    const projFlag = args.indexOf("--project");
+    const projFlag = args.indexOf("--project") !== -1 ? args.indexOf("--project") : args.indexOf("-p");
     if (projFlag !== -1) {
         const id = args[projFlag + 1];
         if (!id) {
@@ -125,7 +125,7 @@ export function archiveCommand(args: string[]): void {
     }
 
     // px archive --task ID
-    const taskFlag = args.indexOf("--task");
+    const taskFlag = args.indexOf("--task") !== -1 ? args.indexOf("--task") : args.indexOf("-t");
     if (taskFlag !== -1) {
         const id = args[taskFlag + 1];
         if (!id) {
@@ -177,12 +177,10 @@ export function archiveCommand(args: string[]): void {
 
     // No valid args
     console.log(`
-\x1b[32m--- px archive ---\x1b[0m
-
-    Commands:
-        px archive --project <ID>     Archive a project and all its tasks
-        px archive --task <ID>        Archive a task and its subtasks
-        px archive list               Show archived items
-        px archive restore <ID>       Restore from archive
+    Usage:
+        px archive --project <ID>    Archive a project and all its tasks
+        px archive --task <ID>       Archive a single task (and its subtasks)
+        px archive list              Show archived items
+        px archive restore <ID>      Restore an archived project or task
     `);
 }

@@ -1,6 +1,6 @@
-# px — Project Execute CLI
+# px — Project Execute
 
-A personal project & task management system built for speed, daily execution, and zero decision fatigue.
+A personal project & task management CLI. Built for speed, daily execution, and zero decision fatigue.
 
 ---
 
@@ -11,7 +11,10 @@ cd px-cli
 npm install
 npx tsc
 npm link
+px init
 ```
+
+`px init` walks you through git remote, Gemini API key, SSH key, and creates the data directory.
 
 ### Tab Completion (PowerShell)
 
@@ -19,7 +22,7 @@ npm link
 px completion --install
 ```
 
-If that doesn't work, paste this instead:
+Or manually:
 
 ```powershell
 px completion | Out-File -Append $PROFILE -Encoding utf8
@@ -32,43 +35,29 @@ Restart PowerShell after installing.
 ## Quick Start
 
 ```bash
-# Create projects
 px project add "Portfolio" --descr "Personal website" --deadline 2026-05-01
-px project add "Internship" --descr "Find summer internships"
-
-# Add tasks
 px add "Design homepage" --project "Portfolio" --duration 90
-px add "Write CV" --project "Internship" --duration 45
-
-# Add subtasks
 px add "Header layout" --parent 1.1
-px add "Hero section" --parent 1.1
-
-# Add dependencies
 px dep 1.3 --needs 1.2
-
-# Focus on 2-3 projects
 px focus 1 2
-
-# Start your day
 px day
 ```
 
 ---
 
-## All Commands
+## Commands
 
 ### Projects
 
-| Command | What it does |
-|---------|-------------|
+| Command | Description |
+|---|---|
 | `px project add "Name" [--descr "X"] [--deadline DATE]` | Create a project |
 | `px project list` | List all projects |
 
 ### Tasks
 
-| Command | What it does |
-|---------|-------------|
+| Command | Description |
+|---|---|
 | `px add "Task" [--project "X"] [--parent ID] [--duration MIN] [--deadline DATE]` | Add a task |
 | `px quick "Task"` | Fast capture → inbox |
 | `px inbox` | Review & assign inbox tasks |
@@ -77,81 +66,103 @@ px day
 | `px dep <ID> [ID ...] --needs <ID> [ID ...]` | Add dependencies |
 | `px undo` | Revert last action |
 
-### Today (daily quick tasks)
+### Today
 
-| Command | What it does |
-|---------|-------------|
-| `px todo "Task" [--duration MIN] [--every INTERVAL]` | Add today task |
+Separate daily task list, outside of projects.
+
+| Command | Description |
+|---|---|
+| `px todo "Task" [--duration MIN] [--every INTERVAL]` | Add a today task |
 | `px todo` | Show today's list |
-| `px todo done <number>` | Complete a today task |
+| `px todo done <number>` | Complete by number |
 | `px todo clear` | Remove completed (keeps recurring) |
-| `px todo clear --all` | Remove ALL (asks confirmation) |
-| `px todo reset [--keep 2 5]` | New day: reset recurring, keep specified |
+| `px todo clear --all` | Remove all (asks confirmation) |
+| `px todo reset [--keep 2 5]` | New day: reset recurring, optionally keep specific tasks |
 
-Recurrence intervals: `daily`, `weekly`, `monthly`, or `<number><d|w|m>` (e.g. `2d`, `4w`, `2m`)
+Recurrence: `daily`, `weekly`, `monthly`, `2d`, `4w`, `2m`, etc.
 
 ### Views
 
-| Command | What it does |
-|---------|-------------|
+| Command | Description |
+|---|---|
 | `px list [--all] [--project "X" or ID]` | Browse tasks |
 | `px status` | All projects overview |
-| `px status <ID or "Name">` | Project detail (tree view) |
+| `px status <ID or "Name">` | Project detail with tree view |
 | `px status <task-ID>` | Task detail |
-| `px stats` | Productivity dashboard |
+| `px stats` | Productivity dashboard with streak |
+| `px next [--top N]` | Best next task(s) to work on |
 
 ### Daily Workflow
 
-| Command | What it does |
-|---------|-------------|
-| `px focus [ID ID ...]` | Set/view today's projects |
+| Command | Description |
+|---|---|
+| `px focus [ID ...]` | Set/view today's focus projects |
 | `px day` | Interactive daily session |
-| `px next` | give a single task - the more important |
 
-### AI Suggestions
+### Sync
 
-| Command | What it does |
-|---------|-------------|
+| Command | Description |
+|---|---|
+| `px start [--perso]` | `git pull` + import changes from `projects.md` |
+| `px end [--perso]` | Export `projects.md` + `git commit` + `git push` |
+
+`--perso` uses a personal SSH key (`~/.ssh/id_ed25519_personal`). Configure the path with `px init`.
+
+### AI
+
+Requires a Gemini API key — run `px init` or `px ai setup` to configure.
+
+| Command | Description |
+|---|---|
 | `px ai` | Suggest next tasks (default) |
 | `px ai next` | What should I work on next? |
-| `px ai plan` | Full project plan (5-8 tasks) |
+| `px ai plan` | Full project plan (5–8 tasks) |
 | `px ai expand <ID>` | Break a task into subtasks |
-| `px ai setup` | Setup guide for Gemini API |
-
-Requires `GEMINI_API_KEY` — run `px ai setup` for instructions.
+| `px ai clean <ID>` | Suggest improvements for a task |
+| `px ai setup` | Setup guide |
 
 ### Archive
 
-| Command | What it does |
-|---------|-------------|
-| `px archive --project <ID>` | Archive a project + tasks |
-| `px archive --task <ID>` | Archive a task + subtasks |
+| Command | Description |
+|---|---|
+| `px archive --project <ID>` | Archive a project and its tasks |
+| `px archive --task <ID>` | Archive a task and its subtasks |
 | `px archive list` | Show archived items |
 | `px archive restore <ID>` | Restore from archive |
 
-### Sync (Git)
-
-| Command | What it does |
-|---------|-------------|
-| `px start` | Pull latest + import from projects.md |
-| `px start --perso` | Same with personal SSH key |
-| `px end` | Export projects.md + commit + push |
-| `px end --perso` | Same with personal SSH key |
-
-### Web UI (phone access)
-
-| Command | What it does |
-|---------|-------------|
-| `px web` | Start web server |
-| `px web --code` | Start + show QR code |
-| `px web setup` | Troubleshooting guide |
-
 ### Other
 
-| Command | What it does |
-|---------|-------------|
+| Command | Description |
+|---|---|
+| `px init` | First-time setup wizard |
+| `px version` | Show current version |
+| `px version --check` | Check if an update is available |
+| `px version --update` | Update to latest version |
+| `px clean [--report\|--auto]` | Find and fix data issues |
+| `px web [--qr]` | Start web UI (add `--qr` for phone QR code) |
+| `px web setup` | Web UI troubleshooting guide |
+| `px completion --install` | Install PowerShell tab completion |
 | `px help <command>` | Detailed help for any command |
-| `px completion --install` | Install tab completion |
+
+---
+
+## Daily Flow
+
+```
+Morning
+  px start          → pull latest + import markdown changes
+  px todo reset     → reset recurring tasks for the new day
+  px focus 1 2      → pick 2–3 projects to focus on
+  px day            → interactive session
+
+During the day
+  px todo "Meeting notes"   → quick today capture
+  px quick "Random idea"    → capture to inbox (assign later)
+  px done 1.3               → complete tasks
+
+Evening
+  px end            → export markdown + push to git
+```
 
 ---
 
@@ -159,60 +170,31 @@ Requires `GEMINI_API_KEY` — run `px ai setup` for instructions.
 
 ### ID System
 
-Tasks use hierarchical IDs based on their project:
-
-- Project `1` → tasks `1.1`, `1.2`, `1.3`
-- Subtasks of `1.2` → `1.2.1`, `1.2.2`
-- Sub-subtasks of `1.2.1` → `1.2.1.1`
-- Inbox tasks (no project) → simple numbers `1`, `2`, `3`
-
-### Daily Flow
+IDs are hierarchical and project-scoped:
 
 ```
-Morning:
-  px start          → git pull + import markdown changes
-  px todo reset     → reset recurring tasks
-  px focus 1 2      → pick projects
-  px day            → interactive session
-
-During the day:
-  px todo "Quick task"     → add to today
-  px quick "Random idea"   → capture to inbox
-  px done 1.3              → complete tasks
-
-Evening:
-  px end            → export markdown + git push
+Project 1  →  tasks 1.1, 1.2, 1.3
+              subtasks 1.2.1, 1.2.2
+              sub-subtasks 1.2.1.1
+Inbox      →  1, 2, 3 (no project prefix)
 ```
 
-### Sync via Git
+### Git Sync
 
-`px end` exports all projects/tasks to `data/projects.md` (human-readable).
-You can edit this file on GitHub or any device.
-`px start` imports changes back into `data.json`.
+`px end` exports everything to `data/projects.md`. Edit that file anywhere — on GitHub, your phone, another device — then `px start` imports the changes back.
 
 What you can edit in `projects.md`:
 
 - Toggle status: `[ ]` ↔ `[x]`
 - Change titles, durations `(60min)`, deadlines `{2026-05-01}`
-- Change dependencies `[needs 1.1, 1.2]`
-- Add new tasks (lines without an ID)
+- Update dependencies `[needs 1.1, 1.2]`
+- Add new tasks (lines without an ID get new IDs on import)
 - Add new projects (new `# Header`)
 - Delete projects (remove the `# Header` section)
 
-### Web UI
+### Update Notifications
 
-Run `px web --qr` and scan the QR code with your phone.
-Features: quick capture, today tasks, project task checklist, stats.
-Both CLI and web UI read/write the same `data.json`.
-
-### AI Suggestions
-
-Uses Google Gemini API (free tier). The AI:
-
-- Reads your project context, existing tasks, and progress
-- Asks 3 questions on first run (type, stage, goal) — saved forever
-- Learns from what you accept vs reject
-- Suggests actionable tasks (30min-2h each)
+`px` checks for updates in the background (once per day). If a newer version is available, you'll see a one-time notice on any command. `px end` always does a live check.
 
 ---
 
@@ -221,42 +203,41 @@ Uses Google Gemini API (free tier). The AI:
 ```
 px-cli/
 ├── src/
-│   ├── index.ts              # CLI router
-│   ├── server.ts             # Express web server
+│   ├── index.ts
+│   ├── server.ts
 │   ├── commands/
-│   │   ├── add.ts            # px add
-│   │   ├── quick.ts          # px quick
-│   │   ├── today.ts          # px todo
-│   │   ├── inbox.ts          # px inbox
-│   │   ├── edit.ts           # px edit
-│   │   ├── focus.ts          # px focus
-│   │   ├── day.ts            # px day
-│   │   ├── done.ts           # px done
-│   │   ├── dep.ts            # px dep
-│   │   ├── undo.ts           # px undo
-│   │   ├── list.ts           # px list
-│   │   ├── next.ts           # px next
-│   │   ├── status.ts         # px status
-│   │   ├── stats.ts          # px stats
-│   │   ├── project.ts        # px project
-│   │   ├── archive.ts        # px archive
-│   │   ├── sync.ts           # px start / px end
-│   │   ├── ai.ts             # px ai
-│   │   └── completion.ts     # px completion
+│   │   ├── index.ts
+│   │   ├── init.ts
+│   │   ├── add.ts, quick.ts, today.ts
+│   │   ├── inbox.ts, edit.ts, done.ts
+│   │   ├── dep.ts, undo.ts, clean.ts
+│   │   ├── focus.ts, day.ts, next.ts
+│   │   ├── list.ts, status.ts, stats.ts
+│   │   ├── project.ts, archive.ts
+│   │   ├── sync.ts, ai.ts
+│   │   ├── version.ts, completion.ts
 │   ├── ai/
-│   │   ├── gemini.ts         # Gemini API caller
-│   │   ├── parser.ts         # AI response parser
-│   │   └── promptBuilder.ts  # Context-aware prompts
-│   ├── models/
-│   │   └── index.ts          # Data types + ID generation
+│   │   ├── gemini.ts
+│   │   ├── parser.ts
+│   │   └── promptBuilder.ts
+│   ├── models/index.ts
 │   ├── utils/
-│   │   ├── storage.ts        # JSON read/write
-│   │   └── helpers.ts        # Shared logic
-│   └── web/
-│       └── index.html        # Mobile web UI
+│   │   ├── storage.ts
+│   │   ├── versionCheck.ts
+│   │   └── helpers.ts
+│   └── web/index.html
 ├── data/
-│   ├── data.json             # All data
-│   └── projects.md           # Human-readable export
+│   ├── data.json          ← all task/project data
+│   ├── config.json        ← api keys, settings (gitignored)
+│   └── projects.md        ← human-readable export
 ├── package.json
 └── tsconfig.json
 ```
+
+---
+
+## License
+
+ISC License — see [LICENSE.md](./LICENSE.md)
+
+© 2026 XLS.studio

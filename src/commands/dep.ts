@@ -6,7 +6,7 @@ import { getTaskOrDie } from "../utils/helpers";
     * → Task 5 cannot be completed until task 3 is done.
 */
 export function addDependency(args: string[]): void {
-    const needsIdx = args.indexOf("--needs");
+    const needsIdx = args.indexOf("--needs") !== -1 ? args.indexOf("--needs") : args.indexOf("-n");
 
     if (needsIdx === -1 || needsIdx === 0) {
         console.error("Usage: px dep <id> [id ...] --needs <id> [id ...]");

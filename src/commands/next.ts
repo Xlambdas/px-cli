@@ -9,7 +9,7 @@ import { Task, AppData } from "../models";
 export function nextCommand(args: string[]): void {
     const data = loadData();
 
-    const topIdx = args.indexOf("--top");
+    const topIdx = args.indexOf("--top") !== -1 ? args.indexOf("--top") : args.indexOf("-t");
     const count = topIdx !== -1 ? parseInt(args[topIdx + 1], 10) || 1 : 1;
 
     // Get all unblocked, incomplete, top-level tasks from focused projects

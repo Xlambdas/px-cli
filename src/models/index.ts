@@ -51,6 +51,7 @@ export interface AppData {
     projectProfiles: { [projectId: string]: ProjectProfile };
     archivedTasks: Task[];
     archivedProjects: Project[];
+    lastUpdateCheck?: string;     // ISO date string of last update check
 }
 
 

@@ -1,23 +1,34 @@
 {
-    "name": "px-cli",
+    "name": "multi-project-assistant-cli",
     "version": "1.0.0",
-    "description": "Personal project execution CLI",
+    "description": "Personal project & tasks management CLI. Inspired by todo.txt but with projects, dependencies, and AI assistance, and local web view to access tasks from your phone/and pc on the same time (beta).",
     "main": "dist/index.js",
     "bin": {
         "px": "dist/index.js"
     },
     "scripts": {
         "build": "tsc",
-        "dev": "tsc && node dist/index.js"
+        "dev": "tsc && node dist/index.js",
+        "package": "tsc && pkg . --output px.exe"
+    },
+    "pkg": {
+        "targets": [
+            "node18-win-x64"
+        ],
+        "outputPath": ".",
+        "assets": [
+            "data/**/*"
+        ]
     },
     "license": "ISC",
     "keywords": [],
-    "author": "",
+    "author": "XLS.studio  <contact@xls-studio.com>",
     "type": "commonjs",
     "devDependencies": {
         "@types/express": "^5.0.6",
         "@types/node": "^25.5.2",
         "@types/qrcode-terminal": "^0.12.2",
+        "pkg": "^5.8.1",
         "typescript": "^6.0.2"
     },
     "dependencies": {

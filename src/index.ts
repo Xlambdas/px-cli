@@ -8,12 +8,14 @@ import {
     projectAdd, projectList, aiCommand,
     pxStart, pxEnd, todayCommand,
     archiveCommand, completionCommand, nextCommand,
-    cleanCommand
+    cleanCommand, versionCommand, initCommand
 } from "./commands";
+import { checkVersionOnce } from "./utils/versionCheck";
 
 const [command, ...args] = process.argv.slice(2);
 
 async function main() {
+    checkVersionOnce();
     switch (command) {
         case "help":
             if (args[0]) {
@@ -21,6 +23,12 @@ async function main() {
             } else {
                 showGeneralHelp();
             }
+            break;
+        case "version":
+            await versionCommand(args);
+            break;
+        case "init":
+            await initCommand();
             break;
         // Tasks
         case "add":
@@ -112,10 +120,10 @@ async function main() {
             await aiCommand(args);
             break;
         case "start":
-            pxStart(process.argv.includes("--perso"));
+            pxStart(process.argv.includes("--perso") || process.argv.includes("-p"));
             break;
         case "end":
-            pxEnd(process.argv.includes("--perso"));
+            pxEnd(process.argv.includes("--perso") || process.argv.includes("-p"));
             break;
 
         // Projects
@@ -150,7 +158,7 @@ function showGeneralHelp(): void {
 
         add "Task" [--project "X"] [--parent ID] [--duration MIN] [--deadline DATE]
         quick "Task title"
-        todo "task title" [--duration MIN] [--every INTERVAL]      # Add to today's list
+        todo "task title" [--duration MIN] [--every INTERVAL]       Add to today's list
         inbox
         edit <ID>
 
@@ -169,9 +177,10 @@ function showGeneralHelp(): void {
         archive [--project ID | --task ID | list | restore ID]
 
         ai [next|plan|expand|clean <ID>]
-        web [--qr]                             Start web server for phone access, show QR code in terminal
-        start                                  Pull latest + import changes
-        end                                    Export + commit + push
+        web [--qr]
+        start [--perso]
+        end [--perso]
+        version [--check | --update]
         help <command>
 
 --- Run "px help <command>" for details on any command ---
@@ -185,10 +194,11 @@ function showCommandHelp(cmd: string): void {
 \x1b[32m--- px add "Task title" [options] ---\x1b[0m
 
     Options:
-        --project "Name"    Assign to project (repeat for multiple)
-        --parent ID         Make this a subtask of task #ID
-        --duration MIN      Estimated minutes (e.g. 60)
-        --deadline DATE     Due date (YYYY-MM-DD)
+        --project, -p  "Name"          Assign to project (repeat for multiple)
+        --parent, -P    ID             Make this a subtask of task #ID
+        --descr, -d    "Description"   Task description
+        --duration, -t  MIN            Estimated minutes (e.g. 60)
+        --deadline, -D  DATE           Due date (YYYY-MM-DD)
 
     Examples:
         px add "Design homepage" --project "Portfolio" --duration 90
@@ -217,17 +227,17 @@ function showCommandHelp(cmd: string): void {
     Quick daily task list, separate from projects.
 
     Commands:
-        px todo                          Show today's tasks
-        px todo "Task" [options]         Add a task to today
-        px todo done <number>            Complete a task by its number
-        px todo clear                    Remove completed (keeps recurring)
-        px todo clear --all              Remove ALL tasks (asks confirmation)
-        px todo reset                    New day: reset recurring, remove the rest
-        px todo reset --keep [id ...]    New day but keep tasks id (by shown index from "px todo" list)
+        px todo                              Show today's tasks
+        px todo "Task" [options]             Add a task to today
+        px todo done <number>                Complete a task by its number
+        px todo clear                        Remove completed (keeps recurring)
+        px todo clear --all, -a              Remove ALL tasks (asks confirmation)
+        px todo reset                        New day: reset recurring, remove the rest
+        px todo reset --keep, -k [id ...]    New day but keep tasks id (by shown index from "px todo" list)
 
     Options for adding:
-        --duration MIN                   Estimated minutes (e.g. 60)
-        --every INTERVAL                 Recurrence interval
+        --duration, -t MIN                   Estimated minutes (e.g. 60)
+        --every, -e INTERVAL                 Recurrence interval
 
     Recurrence intervals:
         daily, weekly, monthly,
@@ -320,6 +330,9 @@ function showCommandHelp(cmd: string): void {
     Add a dependency between tasks.
     Task A cannot be completed until task B is done - px dep A --needs B.
 
+    Usage:
+        --needs, -n    Specify dependencies (repeat for multiple)
+
     Examples:
         px dep 5 --needs 3
         → Task 5 "Deploy" needs task 3 "Build" first
@@ -354,10 +367,10 @@ function showCommandHelp(cmd: string): void {
         3. Optionally auto-cleans without confirmation.
 
     Options:
-    px clean              → interactive: finds dupes, orphans, oversize, dead refs
-    px clean --report     → just shows issues
-    px clean --auto       → auto-fixes safe issues (dead refs, orphans, empty)
-    px ai clean           → AI analyzes writing style, suggests renames/merges/splits/reorders
+    px clean                  → interactive: finds dupes, orphans, oversize, dead refs
+    px clean --report, -r     → just shows issues
+    px clean --auto, -a       → auto-fixes safe issues (dead refs, orphans, empty)
+    px ai clean               → AI analyzes writing style, suggests renames/merges/splits/reorders
 
     Examples:
         px clean --report
@@ -370,8 +383,8 @@ function showCommandHelp(cmd: string): void {
     Browse tasks. Shows top-level todo tasks by default.
 
     Options:
-        --all              Include done tasks
-        --project "Name"   Filter by project
+        --all, -a              Include done tasks
+        --project, -p "Name"   Filter by project
 
     Examples:
         px list
@@ -414,7 +427,7 @@ function showCommandHelp(cmd: string): void {
         - Scoring algorithm considers deadlines, durations, project focus, and more
 
     Options:
-        --top N    Show top N tasks instead of just 1
+        --top, -t  N         Show top N tasks instead of just 1
 
     Examples:
         px next              single best task with reason
@@ -426,8 +439,8 @@ function showCommandHelp(cmd: string): void {
         archive: `
 \x1b[32m--- px archive [--project ID | --task ID | list | restore ID] ---\x1b[0m
 
-    archive --project <ID>                 Archive a project
-    archive --task <ID>                    Archive a task
+    archive --project, -p <ID>             Archive a project
+    archive --task, -t    <ID>             Archive a task
     archive list                           Show archived items
     archive restore <ID>                   Restore from archive
 
@@ -443,8 +456,8 @@ function showCommandHelp(cmd: string): void {
 \x1b[32m--- px project add "Name" [options] / px project list ---\x1b[0m
 
     Options for add:
-        --descr "Description"   Project description
-        --deadline DATE         Due date (YYYY-MM-DD)
+        --descr, -d     "Description"         Project description
+        --deadline, -D   DATE                 Due date (YYYY-MM-DD)
 
     Examples:
         px project add "Portfolio" --descr "Personal website" --deadline 2026-05-01
@@ -514,6 +527,20 @@ function showCommandHelp(cmd: string): void {
         projects.md is human-readable and editable.
         You can edit it on your phone and run px start to import.
     `,
+
+        version: `
+\x1b[32m--- px version [--check | --update] ---\x1b[0m
+    Show current version, check for updates, or self-update.
+
+    Options:
+        --check, -c     Check if a newer version is available
+        --update, -u    If a newer version exists, update to it
+
+    Examples:
+        px version
+        px version --check
+        px version --update
+    `
         };
 
     const text = help[cmd];

@@ -5,6 +5,7 @@ import { loadData, saveData } from "../utils/storage";
 import { AppData, Task, generateSubtaskId, generateTaskId } from "../models";
 import { canComplete, fmtDeadline, fmtDuration, projectProgress } from "../utils/helpers";
 import { spawnSync } from "child_process";
+import { checkVersionForEnd } from "../utils/versionCheck";
 
 /**
     * FEATURE FLAG
@@ -13,7 +14,12 @@ import { spawnSync } from "child_process";
 */
 const ENABLE_MARKDOWN_SYNC = true;
 
-const DATA_DIR = path.join(__dirname, "../../data");
+const isPackaged = !!(process as any).pkg;
+const ROOT_DIR = isPackaged
+    ? path.dirname(process.execPath)
+    : path.join(__dirname, "../..");
+
+const DATA_DIR = path.join(ROOT_DIR, "data");
 const MD_PATH = path.join(DATA_DIR, "projects.md");
 
 /**
@@ -163,7 +169,7 @@ function cleanOldBackups(): void {
     * 1. If markdown sync enabled, export data to projects.md
     * 2. git add, commit, push
 */
-export function pxEnd(perso: boolean=false): void {
+export async function pxEnd(perso: boolean=false): Promise<void> {
     const cwd = process.cwd();
 
     if (ENABLE_MARKDOWN_SYNC) {
@@ -240,6 +246,7 @@ export function pxEnd(perso: boolean=false): void {
         }
     }
 
+    await checkVersionForEnd();
     console.log("\n  ✓ Session saved!\n");
 }
 
