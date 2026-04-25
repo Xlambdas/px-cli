@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { execSync } from "child_process";
-import { loadData, saveData, getDataDir, getGitDir } from "../utils/storage";
+import { loadData, saveData, getDataDir, getGitDir, loadConfig } from "../utils/storage";
 import { AppData, Task, generateSubtaskId, generateTaskId } from "../models";
 import { canComplete, fmtDeadline, fmtDuration, projectProgress } from "../utils/helpers";
 import { spawnSync } from "child_process";
@@ -33,9 +33,10 @@ export function pxStart(perso: boolean = false): void {
     // Git pull
     if (perso) {
         console.log("\n  ⬇ Pulling latest changes (personal)...");
+        const config = loadConfig();
         const home = process.env.USERPROFILE || process.env.HOME || "";
-        const keyPath = path.join(home, ".ssh", "id_ed25519_personal");
-        const sshCmd = `ssh -vvv -i "${keyPath}" -o IdentitiesOnly=yes`;
+        const keyPath = config.personalSshKey || path.join(home, ".ssh", "id_ed25519_personal");
+        const sshCmd = `ssh -i "${keyPath}" -o IdentitiesOnly=yes`;
         // console.log(`  DEBUG: key = ${keyPath}`);
         // console.log(`  DEBUG: cwd = ${cwd}`);
         // console.log(`  DEBUG: GIT_SSH_COMMAND = ${sshCmd}`);
@@ -189,9 +190,10 @@ export async function pxEnd(perso: boolean=false): Promise<void> {
     // Git add, commit, push
     if (perso) {
         console.log("\n  ⬆ Pushing changes (personal)...");
+        const config = loadConfig();
         const home = process.env.USERPROFILE || process.env.HOME || "";
-        const keyPath = path.join(home, ".ssh", "id_ed25519_personal");
-        const sshCmd = `ssh -vvv -i "${keyPath}" -o IdentitiesOnly=yes`;
+        const keyPath = config.personalSshKey || path.join(home, ".ssh", "id_ed25519_personal");
+        const sshCmd = `ssh -i "${keyPath}" -o IdentitiesOnly=yes`;
         try {
             execSync(`git add -A`, {
                 cwd,

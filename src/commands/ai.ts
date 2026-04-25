@@ -1,5 +1,5 @@
 import * as readline from "readline";
-import { loadData, saveData } from "../utils/storage";
+import { loadConfig, loadData, saveData } from "../utils/storage";
 import { Task, createTask, generateSubtaskId, generateTaskId, ProjectProfile } from "../models";
 import { getTaskOrDie } from "../utils/helpers";
 import { buildContext, buildNextPrompt, buildPlanPrompt, buildExpandPrompt, buildCleanPrompt } from "../ai/promptBuilder";
@@ -7,7 +7,8 @@ import { parseAIResponse, TaskSuggestion } from "../ai/parser";
 import { callGemini } from "../ai/gemini";
 
 export async function aiCommand(args: string[]): Promise<void> {
-    const apiKey = process.env.GEMINI_API_KEY;     //px_cli_KEY;
+    const config = loadConfig();
+    const apiKey = process.env.GEMINI_API_KEY || config.GEMINI_API_KEY;
     if (!apiKey) {
         console.error("  ⚠ GEMINI_API_KEY not set.");
         console.error('  1. Go to aistudio.google.com → Get API key');
