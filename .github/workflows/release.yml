@@ -44,3 +44,14 @@ jobs:
 #git push origin main --follow-tags
 
 # Done — GitHub Action takes over
+
+
+# --- local testing ---
+# In your project folder
+# npm link
+
+# Now test it from anywhere
+# px
+
+# Remove the link when done
+# npm unlink -g multi-project-assistant-cli
