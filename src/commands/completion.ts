@@ -73,22 +73,54 @@ Register-ArgumentCompleter -CommandName 'px','px.cmd','px.ps1' -Native -ScriptBl
         const fs = require("fs");
         const os = require("os");
         const path = require("path");
-        const profileDir = path.join(os.homedir(), "Documents", "PowerShell");
-        const profilePath = path.join(profileDir, "Microsoft.PowerShell_profile.ps1");
+        const readline = require("readline");
 
-        if (!fs.existsSync(profileDir)) {
-            fs.mkdirSync(profileDir, { recursive: true });
-        }
+        const defaultProfileDir = path.join(os.homedir(), "Documents", "PowerShell");
+        const defaultProfilePath = path.join(defaultProfileDir, "Microsoft.PowerShell_profile.ps1");
 
-        const existing = fs.existsSync(profilePath) ? fs.readFileSync(profilePath, "utf-8") : "";
-        if (existing.includes("Register-ArgumentCompleter -CommandName px")) {
-            console.log("  Already installed in PowerShell profile.");
-            return;
-        }
+        const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
-        fs.appendFileSync(profilePath, "\n" + script + "\n");
-        console.log(`  ✓ Completion installed to ${profilePath}`);
-        console.log("  Restart PowerShell to activate.");
+        rl.question(
+            `  Where should the completion file be saved?\n  [default: ${defaultProfilePath}]: `,
+            (answer: string) => {
+                rl.close();
+
+                const targetPath = answer.trim() || defaultProfilePath;
+                const targetDir = path.dirname(targetPath);
+
+                if (!fs.existsSync(targetDir)) {
+                    fs.mkdirSync(targetDir, { recursive: true });
+                }
+
+                // Write (or append) the script to the chosen file
+                const existing = fs.existsSync(targetPath) ? fs.readFileSync(targetPath, "utf-8") : "";
+                if (existing.includes("Register-ArgumentCompleter -CommandName px")) {
+                    console.log("  Already installed — nothing changed.");
+                    return;
+                }
+                fs.appendFileSync(targetPath, "\n" + script + "\n");
+                console.log(`  ✓ Completion script written to ${targetPath}`);
+
+                // If the user picked a non-default location, dot-source it from the real profile
+                if (path.resolve(targetPath) !== path.resolve(defaultProfilePath)) {
+                    if (!fs.existsSync(defaultProfileDir)) {
+                        fs.mkdirSync(defaultProfileDir, { recursive: true });
+                    }
+                    const profileContent = fs.existsSync(defaultProfilePath)
+                        ? fs.readFileSync(defaultProfilePath, "utf-8")
+                        : "";
+                    const sourceLine = `. "${targetPath}"`;
+                    if (!profileContent.includes(sourceLine)) {
+                        fs.appendFileSync(defaultProfilePath, `\n${sourceLine}\n`);
+                        console.log(`  ✓ Linked from PowerShell profile → ${defaultProfilePath}`);
+                    } else {
+                        console.log("  Profile already references this file — skipped.");
+                    }
+                }
+
+                console.log("  Restart PowerShell to activate.");
+            }
+        );
         return;
     }
 
