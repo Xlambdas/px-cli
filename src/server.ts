@@ -10,7 +10,17 @@ const app = express();
 app.use(express.json());
 
 app.get("/", (_req, res) => {
-    res.sendFile(path.join(__dirname, "../src/web/index.html"));
+    const candidates = [
+        path.join(__dirname, "../src/web/index.html"),   // running from dist/
+        path.join(__dirname, "../../src/web/index.html"), // running from dist/commands/
+        path.join(process.cwd(), "src/web/index.html"),  // running from project root
+    ];
+    const found = candidates.find(p => require("fs").existsSync(p));
+    if (!found) {
+        res.status(500).send("Could not locate index.html — run px web from the project root.");
+        return;
+    }
+    res.sendFile(found);
 });
 
 app.get("/api/data", (_req, res) => {
