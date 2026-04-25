@@ -17,30 +17,29 @@ function askWithDefault(rl: readline.Interface, question: string, defaultValue: 
 }
 
 async function setupDataDir(rl: readline.Interface, config: any): Promise<string> {
-    console.log("\n--- 📁 Data Directory ---\n");
+    console.log("\n--- Data Directory ---\n");
     console.log("  Where should px store your tasks and config?");
     console.log("  Options:");
-    console.log("    1) Inside the install folder (default, portable)");
-    console.log("    2) Home directory  (~/.px-data)");
-    console.log("    3) Custom path");
+    console.log("    1) Current folder (recommended — git + data in one place)");
+    console.log("    2) Inside the install folder (portable)");
+    console.log("    3) Home directory  (~/.px-data)");
+    console.log("    4) Custom path");
 
-    const choice = (await ask(rl, "\n  Choose [1/2/3]: ")).trim();
+    const choice = (await ask(rl, "\n  Choose [1/2/3/4]: ")).trim();
 
     let dataDir: string;
 
     if (choice === "2") {
+        dataDir = path.join(ROOT, "data");
+    } else if (choice === "3") {
         const home = process.env.USERPROFILE || process.env.HOME || "~";
         dataDir = path.join(home, ".px-data");
-    } else if (choice === "3") {
+    } else if (choice === "4") {
         const custom = (await ask(rl, "  Enter full path: ")).trim();
-        if (!custom) {
-            console.log("  ⚠ No path entered, using default.");
-            dataDir = path.join(ROOT, "data");
-        } else {
-            dataDir = path.resolve(custom);
-        }
+        dataDir = custom ? path.resolve(custom) : path.join(process.cwd(), "data");
+        if (!custom) console.log("  ⚠ No path entered, using current folder.");
     } else {
-        dataDir = path.join(ROOT, "data");
+        dataDir = path.join(process.cwd(), "data");
     }
 
     // Create directory if it doesn't exist
@@ -86,6 +85,27 @@ async function setupGit(rl: readline.Interface, config: any, dataDir: string): P
     let gitDir: string = ROOT;
     let hasGit = false;
 
+    // Build GIT_SSH_COMMAND env from a key path
+    const sshEnv = (keyPath: string) => ({
+        ...process.env,
+        GIT_SSH_COMMAND: `ssh -i "${keyPath}" -o IdentitiesOnly=yes`,
+    });
+
+    // Prompt for an SSH key whenever a remote URL is involved
+    const askSshKey = async (): Promise<string | undefined> => {
+        const home = process.env.USERPROFILE || process.env.HOME || "~";
+        const use = (await ask(rl, "  Use a specific SSH key for this remote? (y/N): ")).trim().toLowerCase();
+        if (use !== "y") return undefined;
+        const defaultKey = config.personalSshKey || path.join(home, ".ssh", "id_ed25519");
+        const keyPath = await askWithDefault(rl, "  SSH key path", defaultKey);
+        if (!fs.existsSync(keyPath)) {
+            console.log(`  ⚠ Key not found at ${keyPath} — using default SSH agent.`);
+            return undefined;
+        }
+        config.personalSshKey = keyPath;
+        return keyPath;
+    };
+
     // ── Option 1: current directory ──────────────────────────────────────
     if (choice === "1") {
         try {
@@ -127,30 +147,14 @@ async function setupGit(rl: readline.Interface, config: any, dataDir: string): P
 
         const remote = (await ask(rl, "  Remote URL (Enter to skip): ")).trim();
         if (remote) {
-            execSync(`git remote add origin ${remote}`, { cwd: gitDir, stdio: "inherit" });
+            const sshKey = await askSshKey();
+            const env = sshKey ? sshEnv(sshKey) : { ...process.env };
+            execSync(`git remote add origin ${remote}`, { cwd: gitDir, stdio: "inherit", env });
             console.log("  ✔ Remote set.");
         }
 
         config.gitDir = gitDir;
         hasGit = true;
-
-        // Ask if data dir should be moved inside the git repo
-        const moveData = (await ask(rl, "\n  Move data folder inside this git repo for auto-sync? (Y/n): "))
-            .trim()
-            .toLowerCase();
-        if (moveData !== "n") {
-            const newDataDir = path.join(gitDir, "data");
-            if (!fs.existsSync(newDataDir)) {
-                fs.mkdirSync(newDataDir, { recursive: true });
-            }
-            // Copy existing data files
-            for (const file of fs.readdirSync(dataDir)) {
-                fs.copyFileSync(path.join(dataDir, file), path.join(newDataDir, file));
-            }
-            config.dataDir = newDataDir;
-            saveConfig(config);
-            console.log(`  ✔ Data moved to: ${newDataDir}`);
-        }
     }
 
     // ── Option 3: remote URL ──────────────────────────────────────────────
@@ -168,23 +172,41 @@ async function setupGit(rl: readline.Interface, config: any, dataDir: string): P
             alreadyGit = true;
         } catch { }
 
+        const sshKey = await askSshKey();
+        const env = sshKey ? sshEnv(sshKey) : { ...process.env };
+
         if (alreadyGit) {
             try {
-                execSync(`git remote set-url origin ${remote}`, { stdio: "inherit" });
+                execSync(`git remote set-url origin ${remote}`, { stdio: "inherit", env });
                 console.log("  ✔ Updated remote URL.");
             } catch {
-                execSync(`git remote add origin ${remote}`, { stdio: "inherit" });
+                execSync(`git remote add origin ${remote}`, { stdio: "inherit", env });
                 console.log("  ✔ Remote added.");
             }
             config.gitDir = process.cwd();
         } else {
-            // Initialize and link
-            execSync("git init", { stdio: "inherit" });
-            execSync(`git remote add origin ${remote}`, { stdio: "inherit" });
+            execSync("git init", { stdio: "inherit", env });
+            execSync(`git remote add origin ${remote}`, { stdio: "inherit", env });
             console.log("  ✔ Repo initialized and remote set.");
             config.gitDir = process.cwd();
         }
         hasGit = true;
+    }
+
+    // Always keep data inside the git repo so px end commits it automatically
+    if (hasGit && config.gitDir) {
+        const syncedDataDir = path.join(config.gitDir, "data");
+        if (path.resolve(config.dataDir || dataDir) !== path.resolve(syncedDataDir)) {
+            if (!fs.existsSync(syncedDataDir)) fs.mkdirSync(syncedDataDir, { recursive: true });
+            const sourceDir = config.dataDir || dataDir;
+            if (fs.existsSync(sourceDir)) {
+                for (const file of fs.readdirSync(sourceDir)) {
+                    fs.copyFileSync(path.join(sourceDir, file), path.join(syncedDataDir, file));
+                }
+            }
+            config.dataDir = syncedDataDir;
+            console.log(`  ✔ Data linked inside git repo: ${syncedDataDir}`);
+        }
     }
 
     saveConfig(config);
@@ -249,17 +271,21 @@ export async function initCommand(): Promise<void> {
 
     // ── 4. Personal SSH key ───────────────────────────────────────────────
     console.log("\n--- 🔑 SSH Key (optional) ---\n");
-    const usesPerso = (await ask(rl, "  Use a personal SSH key for git? (y/N): ")).trim().toLowerCase();
-    if (usesPerso === "y") {
-        const home = process.env.USERPROFILE || process.env.HOME || "~";
-        const defaultKey = path.join(home, ".ssh", "id_ed25519_personal");
-        const keyPath = await askWithDefault(rl, "  SSH key path", defaultKey);
-        if (fs.existsSync(keyPath)) {
-            config.personalSshKey = keyPath;
-            saveConfig(config);
-            console.log(`  ✔ SSH key saved: ${keyPath}`);
-        } else {
-            console.log(`  ⚠ Key not found at ${keyPath} — skipped.`);
+    if (config.personalSshKey) {
+        console.log(`  ✔ SSH key already configured: ${config.personalSshKey}`);
+    } else {
+        const usesPerso = (await ask(rl, "  Use a specific SSH key for git? (y/N): ")).trim().toLowerCase();
+        if (usesPerso === "y") {
+            const home = process.env.USERPROFILE || process.env.HOME || "~";
+            const defaultKey = path.join(home, ".ssh", "id_ed25519_personal");
+            const keyPath = await askWithDefault(rl, "  SSH key path", defaultKey);
+            if (fs.existsSync(keyPath)) {
+                config.personalSshKey = keyPath;
+                saveConfig(config);
+                console.log(`  ✔ SSH key saved: ${keyPath}`);
+            } else {
+                console.log(`  ⚠ Key not found at ${keyPath} — skipped.`);
+            }
         }
     }
 
