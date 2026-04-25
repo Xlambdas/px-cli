@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { execSync } from "child_process";
-import { loadData, saveData } from "../utils/storage";
+import { loadData, saveData, getDataDir, getGitDir } from "../utils/storage";
 import { AppData, Task, generateSubtaskId, generateTaskId } from "../models";
 import { canComplete, fmtDeadline, fmtDuration, projectProgress } from "../utils/helpers";
 import { spawnSync } from "child_process";
@@ -14,13 +14,7 @@ import { checkVersionForEnd } from "../utils/versionCheck";
 */
 const ENABLE_MARKDOWN_SYNC = true;
 
-const isPackaged = !!(process as any).pkg;
-const ROOT_DIR = isPackaged
-    ? path.dirname(process.execPath)
-    : path.join(__dirname, "../..");
-
-const DATA_DIR = path.join(ROOT_DIR, "data");
-const MD_PATH = path.join(DATA_DIR, "projects.md");
+function getMarkdownPath(): string { return path.join(getDataDir(), "projects.md"); }
 
 /**
     * px start
@@ -32,7 +26,9 @@ const MD_PATH = path.join(DATA_DIR, "projects.md");
     *    - Backup data.json before overwriting
 */
 export function pxStart(perso: boolean = false): void {
-    const cwd = process.cwd();
+    const cwd = getGitDir();
+    const DATA_DIR = getDataDir();
+    const MD_PATH = getMarkdownPath();
 
     // Git pull
     if (perso) {
@@ -147,6 +143,7 @@ export function pxStart(perso: boolean = false): void {
     * Keep only the last 5 import backups.
 */
 function cleanOldBackups(): void {
+    const DATA_DIR = getDataDir();
     try {
         const files = fs.readdirSync(DATA_DIR)
             .filter((f) => f.match(/^data\..*\.import\.bak$/))
@@ -170,7 +167,7 @@ function cleanOldBackups(): void {
     * 2. git add, commit, push
 */
 export async function pxEnd(perso: boolean=false): Promise<void> {
-    const cwd = process.cwd();
+    const cwd = getGitDir();
 
     if (ENABLE_MARKDOWN_SYNC) {
         const data = loadData();
@@ -267,6 +264,8 @@ export async function pxEnd(perso: boolean=false): Promise<void> {
     *   - [ ] 9 Unassigned task
 */
 function exportMarkdown(data: AppData): void {
+    const MD_PATH = getMarkdownPath();
+
     let md = `<!-- PX PROJECTS — Edit tasks here, then run px start to import -->\n`;
     md += `<!-- Format: - [x] ID Title (duration) [needs ID, ID] -->\n`;
     md += `<!-- Change [x] to [ ] or [ ] to [x] to toggle status -->\n\n`;

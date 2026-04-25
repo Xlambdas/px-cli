@@ -7,8 +7,31 @@ const ROOT_DIR = isPackaged
     ? path.dirname(process.execPath)
     : path.join(__dirname, "../..");
 
-const DATA_PATH = path.join(ROOT_DIR, "data/data.json");
-const CONFIG_PATH = path.join(ROOT_DIR, "data/config.json");
+const CONFIG_PATH = path.join(ROOT_DIR, "data/config.json"); // always next to binary
+
+export function loadConfig(): PxConfig {
+    try {
+        return JSON.parse(fs.readFileSync(CONFIG_PATH, "utf-8")) as PxConfig;
+    } catch {
+        return {};
+    }
+}
+
+export function saveConfig(config: PxConfig): void {
+    const dir = path.dirname(CONFIG_PATH);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2), "utf-8");
+}
+
+export function getDataDir(): string {
+    const config = loadConfig();
+    return config.dataDir ?? path.join(ROOT_DIR, "data");
+}
+
+export function getGitDir(): string {
+    const config = loadConfig();
+    return config.gitDir ?? process.cwd();
+    }
 
 /**
     * Load all data from disk.
@@ -16,6 +39,7 @@ const CONFIG_PATH = path.join(ROOT_DIR, "data/config.json");
 */
 export function loadData(): AppData {
     // Inject config.json values into process.env if not already set
+    const DATA_PATH = path.join(getDataDir(), "data.json");
     try {
         const cfg = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf-8"));
         if (cfg.GEMINI_API_KEY && !process.env.GEMINI_API_KEY) {
@@ -44,6 +68,7 @@ export function loadData(): AppData {
     * Save all data to disk.
 */
 export function saveData(data: AppData): void {
+    const DATA_PATH = path.join(getDataDir(), "data.json");
     // Ensure the data directory exists
     const dir = path.dirname(DATA_PATH);
     if (!fs.existsSync(dir)) {
@@ -61,18 +86,6 @@ export interface PxConfig {
     personalSshKey?: string;
     lastVersionCheck?: { checkedAt: string; latestVersion: string };
     notifiedUpdateVersion?: string;
-}
-
-export function loadConfig(): PxConfig {
-    try {
-        return JSON.parse(fs.readFileSync(CONFIG_PATH, "utf-8")) as PxConfig;
-    } catch {
-        return {};
-    }
-}
-
-export function saveConfig(config: PxConfig): void {
-    const dir = path.dirname(CONFIG_PATH);
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2), "utf-8");
+    dataDir?: string;
+    gitDir?: string;
 }

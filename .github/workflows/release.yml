@@ -1,0 +1,46 @@
+name: Release & Publish
+
+on:
+  push:
+    tags:
+      - "v*" # triggers on v1.0.0, v1.2.3,...
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true # auto-generates notes from commits
+
+
+# 1. Bump version in package.json
+#npm version patch   # 1.0.0 → 1.0.1
+                    # or: minor (1.1.0), major (2.0.0)
+
+# 2. Push commit + tag (npm version creates the tag automatically)
+#git push origin main --follow-tags
+
+# Done — GitHub Action takes over

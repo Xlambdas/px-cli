@@ -1,35 +1,40 @@
 {
     "name": "multi-project-assistant-cli",
     "version": "1.0.0",
-    "description": "Personal project & tasks management CLI. Inspired by todo.txt but with projects, dependencies, and AI assistance, and local web view to access tasks from your phone/and pc on the same time (beta).",
+    "description": "Personal project & tasks management CLI. Inspired by todo.txt but with projects, dependencies, and AI assistance.",
     "main": "dist/index.js",
     "bin": {
         "px": "dist/index.js"
     },
+    "files": [
+        "dist/"
+    ],
+    "engines": {
+        "node": ">=18"
+    },
+    "keywords": [
+        "cli",
+        "task-manager",
+        "todo",
+        "project-management",
+        "productivity"
+    ],
+    "author": "XLS.studio <contact@xls-studio.com>",
+    "license": "ISC",
+    "type": "commonjs",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Xlambdas/px-cli.git"
+    },
     "scripts": {
         "build": "tsc",
-        "dev": "tsc && node dist/index.js",
-        "package": "tsc && pkg . --output px.exe"
+        "dev": "tsc && node dist/index.js"
     },
-    "pkg": {
-        "targets": [
-            "node18-win-x64"
-        ],
-        "outputPath": ".",
-        "assets": [
-            "data/**/*"
-        ]
-    },
-    "license": "ISC",
-    "keywords": [],
-    "author": "XLS.studio  <contact@xls-studio.com>",
-    "type": "commonjs",
     "devDependencies": {
         "@types/express": "^5.0.6",
-        "@types/node": "^25.5.2",
+        "@types/node": "^22.0.0",
         "@types/qrcode-terminal": "^0.12.2",
-        "pkg": "^5.8.1",
-        "typescript": "^6.0.2"
+        "typescript": "^5.5.0"
     },
     "dependencies": {
         "express": "^5.2.1",
